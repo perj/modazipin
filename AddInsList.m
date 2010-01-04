@@ -6,9 +6,9 @@
 //  Copyright __MyCompanyName__ 2010 . All rights reserved.
 //
 
-#import "MyDocument.h"
+#import "AddInsList.h"
 
-@implementation MyDocument
+@implementation AddInsList
 
 - (id)init 
 {
@@ -21,7 +21,7 @@
 
 - (NSString *)windowNibName 
 {
-    return @"MyDocument";
+    return @"AddInsList";
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)windowController 

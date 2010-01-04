@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface MyDocument : NSPersistentDocument {
+@interface AddInsList : NSPersistentDocument {
 }
 
 @end
