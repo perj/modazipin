@@ -283,7 +283,7 @@
 		}
 		
 		/* Make sure the file exists. */
-		[[NSFileManager defaultManager] createFileAtPath:[url path] contents:nil attributes:nil];
+		//[[NSFileManager defaultManager] createFileAtPath:[url path] contents:nil attributes:nil];
 		
 		struct archive *a = archive_read_new();
 		struct archive_entry *entry;
