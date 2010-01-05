@@ -10,10 +10,7 @@
 
 @implementation DataStore
 
-- (NSString *)identifier
-{
-	return @"12345678-1234-1234-1234-1234567890AB";
-}
+@synthesize identifier;
 
 - (NSDictionary*)metadata {
 	return [NSDictionary dictionaryWithObjectsAndKeys:
@@ -224,6 +221,7 @@
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self && url)
 	{
+		self.identifier = @"AddInsList";
 		[self loadXML:url];
 	}
 	return self;

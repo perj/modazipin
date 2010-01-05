@@ -10,8 +10,11 @@
 
 
 @interface DataStore : NSAtomicStore {
+	NSString *identifier;
 	NSXMLDocument *xmldoc;
 }
+
+@property(copy) NSString *identifier;
 
 @end
 
