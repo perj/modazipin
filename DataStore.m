@@ -227,15 +227,20 @@
 		NSError *error = nil;
 		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&error];
 		
-		if (!xmldata && [url isFileURL] && [[error domain] isEqualToString:NSURLErrorDomain])
+		if (!xmldata)
 		{
-			NSInteger code = [error code];
-			
-			if ((code == NSURLErrorCannotOpenFile) || (code == NSURLErrorZeroByteResource))
+			if ([url isFileURL] && [[error domain] isEqualToString:NSURLErrorDomain])
 			{
-				[[NSFileManager defaultManager] createFileAtPath:[url path] contents:nil attributes:nil];
-				xmldoc = nil;
+				NSInteger code = [error code];
+				
+				if ((code == NSURLErrorCannotOpenFile) || (code == NSURLErrorZeroByteResource))
+				{
+					[[NSFileManager defaultManager] createFileAtPath:[url path] contents:nil attributes:nil];
+				}
 			}
+			else
+				[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not open URL %@", url] userInfo:nil] raise];
+			xmldoc = nil;
 		}
 		else
 			[self loadXML:xmldata];

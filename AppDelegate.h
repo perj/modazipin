@@ -15,4 +15,6 @@
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notice;
 
+- (IBAction)openAddInsList:(id)sender;
+
 @end

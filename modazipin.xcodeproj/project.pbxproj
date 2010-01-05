@@ -40,7 +40,7 @@
 		6652961D10F2AF300095E65F /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		6652970210F2C88D0095E65F /* AddIns.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = AddIns.xml; sourceTree = "<group>"; };
 		66581ECD10F3A7840088EC73 /* archive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = archive.h; path = include/archive.h; sourceTree = MacPorts; };
-		66581ED510F3A7C00088EC73 /* libarchive.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarchive.dylib; path = lib/libarchive.dylib; sourceTree = MacPorts; };
+		66581ED510F3A7C00088EC73 /* libarchive.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarchive.dylib; path = /usr/lib/libarchive.dylib; sourceTree = "<absolute>"; };
 		66581EE610F3AAFC0088EC73 /* archive_entry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = archive_entry.h; path = /opt/local/include/archive_entry.h; sourceTree = "<absolute>"; };
 		66581F0410F3B0110088EC73 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/AddIn.xib; sourceTree = "<group>"; };
 		66581F0A10F3B0400088EC73 /* AddIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddIn.h; sourceTree = "<group>"; };

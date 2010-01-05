@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="6"/>
+			<integer value="100202"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -135,7 +135,7 @@
 																	<double key="NSMinWidth">45</double>
 																	<double key="NSMaxWidth">45</double>
 																	<object class="NSTableHeaderCell" key="NSHeaderCell">
-																		<int key="NSCellFlags">67239488</int>
+																		<int key="NSCellFlags">75628096</int>
 																		<int key="NSCellFlags2">2048</int>
 																		<string key="NSContents">Enabled</string>
 																		<object class="NSFont" key="NSSupport" id="26">
@@ -188,7 +188,7 @@
 																	<double key="NSMinWidth">36.50048828125</double>
 																	<double key="NSMaxWidth">3.4028234663852886e+38</double>
 																	<object class="NSTableHeaderCell" key="NSHeaderCell">
-																		<int key="NSCellFlags">67239488</int>
+																		<int key="NSCellFlags">75628096</int>
 																		<int key="NSCellFlags2">2048</int>
 																		<string key="NSContents">Image</string>
 																		<reference key="NSSupport" ref="26"/>
@@ -213,7 +213,7 @@
 																	<double key="NSMinWidth">27.5576171875</double>
 																	<double key="NSMaxWidth">3.4028234663852886e+38</double>
 																	<object class="NSTableHeaderCell" key="NSHeaderCell">
-																		<int key="NSCellFlags">67239488</int>
+																		<int key="NSCellFlags">75628096</int>
 																		<int key="NSCellFlags2">2048</int>
 																		<string key="NSContents">Title</string>
 																		<reference key="NSSupport" ref="26"/>
@@ -246,7 +246,7 @@
 																	<double key="NSMinWidth">53.2529296875</double>
 																	<double key="NSMaxWidth">3.4028234663852886e+38</double>
 																	<object class="NSTableHeaderCell" key="NSHeaderCell">
-																		<int key="NSCellFlags">67239488</int>
+																		<int key="NSCellFlags">75628096</int>
 																		<int key="NSCellFlags2">2048</int>
 																		<string key="NSContents">Publisher</string>
 																		<reference key="NSSupport" ref="26"/>
@@ -271,7 +271,7 @@
 																	<double key="NSMinWidth">49.8583984375</double>
 																	<double key="NSMaxWidth">3.4028234663852886e+38</double>
 																	<object class="NSTableHeaderCell" key="NSHeaderCell">
-																		<int key="NSCellFlags">67239488</int>
+																		<int key="NSCellFlags">75628096</int>
 																		<int key="NSCellFlags2">2048</int>
 																		<string key="NSContents">Bio Ware</string>
 																		<reference key="NSSupport" ref="26"/>
@@ -300,7 +300,7 @@
 																	<double key="NSMinWidth">44.19189453125</double>
 																	<double key="NSMaxWidth">3.4028234663852886e+38</double>
 																	<object class="NSTableHeaderCell" key="NSHeaderCell">
-																		<int key="NSCellFlags">67239488</int>
+																		<int key="NSCellFlags">75628096</int>
 																		<int key="NSCellFlags2">2048</int>
 																		<string key="NSContents">Version</string>
 																		<reference key="NSSupport" ref="26"/>
@@ -330,7 +330,7 @@
 																	<double key="NSMinWidth">78.09423828125</double>
 																	<double key="NSMaxWidth">3.4028234663852886e+38</double>
 																	<object class="NSTableHeaderCell" key="NSHeaderCell">
-																		<int key="NSCellFlags">67239488</int>
+																		<int key="NSCellFlags">75628096</int>
 																		<int key="NSCellFlags2">2048</int>
 																		<string key="NSContents">Game Version</string>
 																		<reference key="NSSupport" ref="26"/>
@@ -485,11 +485,6 @@
 				<string key="NSMaxSize">{1.79769e+308, 1.79769e+308}</string>
 			</object>
 			<object class="NSUserDefaultsController" id="369797604">
-				<object class="NSMutableArray" key="NSDeclaredKeys">
-					<bool key="EncodedWithXMLCoder">YES</bool>
-					<string>addinslistHeight</string>
-					<string>addinslistWidth</string>
-				</object>
 				<bool key="NSSharedInstance">YES</bool>
 			</object>
 			<object class="NSArrayController" id="565607778">
@@ -743,6 +738,14 @@
 					</object>
 					<int key="connectionID">100249</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">saveDocument:</string>
+						<reference key="source" ref="488872867"/>
+						<reference key="destination" ref="687483433"/>
+					</object>
+					<int key="connectionID">100250</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -987,6 +990,27 @@
 				<object class="NSArray" key="dict.sortedKeys">
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>-3.IBPluginDependency</string>
+					<string>100021.IBPluginDependency</string>
+					<string>100145.IBPluginDependency</string>
+					<string>100147.IBPluginDependency</string>
+					<string>100150.IBPluginDependency</string>
+					<string>100151.IBPluginDependency</string>
+					<string>100193.IBPluginDependency</string>
+					<string>100194.IBPluginDependency</string>
+					<string>100197.IBPluginDependency</string>
+					<string>100198.IBPluginDependency</string>
+					<string>100199.IBPluginDependency</string>
+					<string>100200.IBPluginDependency</string>
+					<string>100201.IBPluginDependency</string>
+					<string>100202.IBPluginDependency</string>
+					<string>100206.IBPluginDependency</string>
+					<string>100209.IBPluginDependency</string>
+					<string>100213.IBPluginDependency</string>
+					<string>100214.IBPluginDependency</string>
+					<string>100216.IBPluginDependency</string>
+					<string>100217.IBPluginDependency</string>
+					<string>100219.IBPluginDependency</string>
+					<string>100225.IBPluginDependency</string>
 					<string>100231.IBPluginDependency</string>
 					<string>100234.IBPluginDependency</string>
 					<string>100236.IBPluginDependency</string>
@@ -1009,9 +1033,30 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{328, 351}, {748, 505}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{328, 351}, {748, 505}}</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>{{356, 351}, {748, 505}}</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>{{356, 351}, {748, 505}}</string>
 					<integer value="1"/>
 					<integer value="1"/>
 					<string>{131.131, 86}</string>
@@ -1035,7 +1080,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">100249</int>
+			<int key="maxID">100250</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

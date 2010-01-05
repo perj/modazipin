@@ -30,4 +30,9 @@
     // user interface preparation code
 }
 
+- (NSString *)persistentStoreTypeForFileType:(NSString *)fileType
+{
+	return @"AddInsListStore";
+}
+
 @end

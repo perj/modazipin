@@ -9,22 +9,6 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>xml</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>Dragon Age AddIns List</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSTypeIsPackage</key>
-			<false/>
-			<key>NSDocumentClass</key>
-			<string>AddInsList</string>
-			<key>NSPersistentStoreTypeKey</key>
-			<string>AddInsListStore</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
 				<string>dazip</string>
 			</array>
 			<key>CFBundleTypeName</key>
