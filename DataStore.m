@@ -8,6 +8,9 @@
 
 #import "DataStore.h"
 
+#include <archive.h>
+#include <archive_entry.h>
+
 @implementation DataStore
 
 @synthesize identifier;
@@ -21,30 +24,20 @@
 			nil];
 }
 
-- (void)loadXML:(NSURL *)url
+- (void)loadXML:(NSData *)data
 {
+	NSInteger xmlopt = NSXMLNodePreserveCharacterReferences | NSXMLNodePreserveWhitespace;
+	NSError *error;
+	
 	NSAssert(xmldoc == nil, @"xmldoc != nil");
 	
-	NSInteger xmlopt = NSXMLNodePreserveCharacterReferences | NSXMLNodePreserveWhitespace;
-	NSError *error = nil;
-	
-	xmldoc = [[NSXMLDocument alloc] initWithContentsOfURL:url options:xmlopt error:&error];
-	
-	if (!xmldoc && [url isFileURL] && [[error domain] isEqualToString:NSURLErrorDomain])
-	{
-		NSInteger code = [error code];
-		
-		if ((code == NSURLErrorCannotOpenFile) || (code == NSURLErrorZeroByteResource))
-		{
-			[[NSFileManager defaultManager] createFileAtPath:[url path] contents:nil attributes:nil];
-			xmldoc = [[NSXMLDocument alloc] initWithKind:NSXMLDocumentXMLKind options:xmlopt];
-		}
-	}
+	xmldoc = [[NSXMLDocument alloc] initWithData:data options:xmlopt error:&error];
 	
 	if (!xmldoc)
 	{
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not open URL %@", url] userInfo:nil] raise];
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not read XML"] userInfo:nil] raise];
 	}
+	
 }
 
 /*
@@ -231,8 +224,23 @@
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self && url)
 	{
+		NSError *error = nil;
+		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&error];
+		
+		if (!xmldata && [url isFileURL] && [[error domain] isEqualToString:NSURLErrorDomain])
+		{
+			NSInteger code = [error code];
+			
+			if ((code == NSURLErrorCannotOpenFile) || (code == NSURLErrorZeroByteResource))
+			{
+				[[NSFileManager defaultManager] createFileAtPath:[url path] contents:nil attributes:nil];
+				xmldoc = nil;
+			}
+		}
+		else
+			[self loadXML:xmldata];
+		
 		self.identifier = @"AddInsList";
-		[self loadXML:url];
 	}
 	return self;
 }
@@ -261,5 +269,94 @@
 @end
 
 @implementation AddInStore
+
+- (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator configurationName:(NSString *)configurationName URL:(NSURL *)url options:(NSDictionary *)options {
+    self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
+	if (self && url)
+	{
+		NSError *error = nil;
+		NSData *data;
+		
+		if (![url isFileURL])
+		{
+			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not open URL %@", url] userInfo:nil] raise];
+		}
+		
+		/* Make sure the file exists. */
+		[[NSFileManager defaultManager] createFileAtPath:[url path] contents:nil attributes:nil];
+		
+		struct archive *a = archive_read_new();
+		struct archive_entry *entry;
+		NSMutableData *xmldata = nil;
+		int err;
+		
+		/* Used to do archive_read_open_memory, but couldn't get it to work. */
+		archive_read_support_compression_all(a);
+		archive_read_support_format_all(a);
+		if (archive_read_open_filename(a, [[url path] cStringUsingEncoding:NSUTF8StringEncoding],
+									   10 * 1024) != ARCHIVE_OK)
+		{
+			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not read URL %@", url] userInfo:nil] raise];
+		}
+		
+		while ((err = archive_read_next_header(a, &entry)) == ARCHIVE_OK)
+		{
+			const char *path = archive_entry_pathname(entry);
+			
+			if (strcasecmp(path, "Manifest.xml") == 0)
+			{
+				xmldata = [NSMutableData dataWithLength:archive_entry_size(entry)];
+				
+				if (archive_read_data(a, [xmldata mutableBytes], [xmldata length]) < [xmldata length])
+				{
+					archive_read_finish(a);
+					[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not read Manifest.xml from URL %@", url] userInfo:nil] raise];
+				}
+				break;
+			}
+			archive_read_data_skip(a);
+		}
+		
+		if (!xmldata && err != 1)
+		{
+			NSException *except = [NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Archive error: %s", archive_error_string(a)] userInfo:nil];
+			archive_read_finish(a);
+			[except raise];
+		}
+		
+		archive_read_finish(a);
+		
+		if (!xmldata)
+			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not find Manifest.xml in URL %@", url] userInfo:nil] raise];
+		
+		[self loadXML:xmldata];
+		self.identifier = @"AddIn"; // XXX get a better one.
+	}
+	return self;
+}
+
+- (NSString *)type {
+    return @"AddInStore";
+}
+
+- (BOOL)load:(NSError **)error
+{
+	if (!xmldoc)
+		return YES;
+	
+	NSXMLElement *rootelem = [xmldoc rootElement];
+	
+	if (![[rootelem name] isEqualToString:@"Manifest"])
+	{
+		return NO;
+	}
+	
+	NSMutableSet *set = [self loadAddInsList:(NSXMLElement*)[rootelem childAtIndex:0] error:error];
+	if (!set)
+		return NO;
+	
+	[self addCacheNodes:set];
+	return YES;
+}
 
 @end

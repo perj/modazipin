@@ -22,6 +22,22 @@
 			<key>NSPersistentStoreTypeKey</key>
 			<string>AddInsListStore</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>dazip</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Dragon Age AddIn</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+			<key>NSDocumentClass</key>
+			<string>AddIn</string>
+			<key>NSPersistentStoreTypeKey</key>
+			<string>AddInStore</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
