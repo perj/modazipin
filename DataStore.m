@@ -62,9 +62,6 @@
 			[data setObject:[attr stringValue] forKey:[attr name]];
 			continue;
 		}
-		
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Unknown Text attribute"
-							   userInfo:[NSDictionary dictionaryWithObject:attr forKey:@"node"]] raise];
 	}
 	
 	for (NSXMLElement *subnode in [node children])
@@ -105,6 +102,7 @@
 	
 	data = [NSMutableDictionary dictionary];
 	
+	[data setObject:node forKey:@"node"];
 	for (NSXMLNode *attr in [node attributes])
 	{
 		if ([[attr name] isEqualToString:@"UID"]
@@ -125,9 +123,6 @@
 			[data setObject:[NSDecimalNumber decimalNumberWithString:[attr stringValue]] forKey:[attr name]];
 			continue;
 		}
-		
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Unknown AddInItem attribute"
-							   userInfo:[NSDictionary dictionaryWithObject:attr forKey:@"node"]] raise];
 	}
 	
 	for (NSXMLElement *subnode in [node children])
@@ -171,12 +166,9 @@
 		}
 		
 		if ([[subnode name] isEqualToString:@"PrereqList"]) {
-			/* Noop, don't know format. XXX error if non-empty. */
+			/* Noop, don't know format. */
 			continue;
 		}
-		
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Unknown AddInItem element"
-							   userInfo:[NSDictionary dictionaryWithObject:subnode forKey:@"node"]] raise];
 	}
 	
 	NSEntityDescription *entity = [[[[self persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:@"AddInItem"];
@@ -213,6 +205,24 @@
 	return res;
 }
 
+- (void)updateCacheNode:(NSAtomicStoreCacheNode *)node fromManagedObject:(NSManagedObject *)managedObject
+{
+	NSMutableDictionary *data = [self referenceObjectForObjectID:[managedObject objectID]];
+	NSXMLElement *elem = [data objectForKey:@"node"];
+	NSXMLNode *attr;
+	
+	/* Only support updating Enabled for now */
+	
+	if (![[elem name] isEqualToString:@"AddInItem"])
+		return;
+	
+	attr = [elem attributeForName:@"Enabled"];
+	if ([[managedObject valueForKey:@"Enabled"] intValue])
+		[attr setStringValue:@"1"];
+	else
+		[attr setStringValue:@"0"];
+}
+
 @end
 
 @implementation AddInsListStore
@@ -241,6 +251,11 @@
 	
 	[self addCacheNodes:set];
 	return YES;
+}
+
+- (BOOL)save:(NSError **)error
+{
+	return [[xmldoc XMLData] writeToURL:[self URL] atomically:YES];
 }
 
 @end
