@@ -10,7 +10,7 @@
 
 
 @interface DataStore : NSAtomicStore {
-
+	NSXMLDocument *xmldoc;
 }
 
 @end

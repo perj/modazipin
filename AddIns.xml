@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--   AddIn information -->
+<AddInsList>
+    <AddInItem UID="DAO_PRC_PROMO_ME" Name="PROMO_MassEffect" ExtendedModuleUID="Single Player" Priority="1" Enabled="1" State="2" Format="1" BioWare="1" RequiresAuthorization="1">
+        <Title DefaultText="Blood Dragon Armor">
+            <en-us><![CDATA[Blood Dragon Armor]]></en-us>
+            <fr-fr><![CDATA[Armure de dragon de sang]]></fr-fr>
+            <it-it><![CDATA[Armatura di sangue di drago]]></it-it>
+            <de-de><![CDATA[Blutdrachen-Rüstung]]></de-de>
+            <es-es><![CDATA[Armadura sangre de dragón]]></es-es>
+            <pl-pl><![CDATA[Zbroja Krwawego Smoka]]></pl-pl>
+            <ru-ru><![CDATA[Доспех Кровавого Дракона]]></ru-ru>
+            <pseudo><![CDATA[Blood Dragon Armor]]></pseudo>
+            <cs-cz><![CDATA[Zbroj Krvavého draka]]></cs-cz>
+            <hu-hu><![CDATA[Vérsárkány páncélzat]]></hu-hu>
+        </Title>
+        <Description DefaultText="Commissioned by an infamous Nevarran dragon hunter, this armor was crafted in a time when dragons had almost been hunted to extinction. Infused with their blood, the armor gained notoriety after the hunter died at the hands of men rather than the dragons it was designed to protect him from. You'll receive one piece immediately. The other parts are available from Bodahn in the party camp.">
+            <en-us><![CDATA[Commissioned by an infamous Nevarran dragon hunter, this armor was crafted in a time when dragons had almost been hunted to extinction. Infused with their blood, the armor gained notoriety after the hunter died at the hands of men rather than the dragons it was designed to protect him from. You'll receive one piece immediately. The other parts are available from Bodahn in the party camp.]]></en-us>
+            <fr-fr><![CDATA[Conçue à l'origine pour un chasseur de dragons névarran notoire, cette armure fut forgée à une époque où les dragons furent menés au bord de l'extinction. Gorgée de leur sang, cette armure acquit en notoriété après que son porteur eut péri aux mains des hommes, et non des dragons dont elle devait le protéger. Vous recevrez une pièce d'armure sur-le-champ. Les autres pièces s'obtiendront auprès de Bodahn, au campement du groupe.]]></fr-fr>
+            <it-it><![CDATA[Commissionata da un malfamato cacciatore di draghi di Nevarra, quest'armatura è stata creata in un'epoca in cui la caccia ai draghi li aveva portati quasi all'estinzione. Infusa con il loro sangue, l'armatura divenne celebre quando il cacciatore morì per mano di alcuni umani, invece dei draghi contro i quali intendeva proteggersi. Ne riceverai un pezzo immediatamente, mentre gli altri saranno disponibili da Bodahn, nell'accampamento del gruppo.]]></it-it>
+            <de-de><![CDATA[Diese von einem berüchtigten Drachenjäger aus Nevarra in Auftrag gegebene Rüstung wurde zu einer Zeit hergestellt, als die Drachen schon beinahe ausgerottet waren. Sie ist mit Drachenblut angereichert und erlangte traurige Berühmtheit, als der Jäger durch Menschenhand starb, statt durch die Drachen, vor denen ihn die Rüstung schützen sollte. Ein Rüstungsteil erhältst du sofort, die restlichen Bestandteile findest du bei Bodahn im Lager der Gruppe.]]></de-de>
+            <es-es><![CDATA[La armadura fue encargada por un infame cazador de dragones nevarrano cuando estas criaturas estaban ya prácticamente extintas debido a la caza. Está impregnada de sangre de dragón, así que esta armadura ganó notoriedad tras la muerte del cazador a manos de humanos, no de las bestias de las que se suponía que debía protegerse. Recibirás una parte inmediatamente. Las demás, las tiene Bodahn en el campamento del grupo.]]></es-es>
+            <pl-pl><![CDATA[Ta nasycona smoczą krwią zbroja wykonana została na zamówienie cieszącego się złą sławą łowcy smoków, Nevarrana, w czasach, gdy stworzenia te praktycznie już wyginęły. Szerszy rozgłos zdobyła sobie po tym, jak jej właściciel zabity został przez ludzi, nie zaś przez smoki, przed którymi miała go chronić. Jeden fragment zbroi otrzymasz natychmiast. Pozostałe części dostępne będą u Bodahna w obozie drużyny]]></pl-pl>
+            <ru-ru><![CDATA[Эти доспехи сделаны по заказу одного неварранца, скандально известного охотника на драконов. Они были изготовлены в те времена, когда драконов почти истребили. Пропитанные кровью драконов, эти доспехи обрели дурную славу после того, как охотник был убит — людьми, а не драконами, от которых был  призван защищать его доспех. Один предмет вы получите сразу. Остальные — у Бодана в лагере отряда.]]></ru-ru>
+            <pseudo><![CDATA[Commissioned by an infamous Nevarran dragon hunter, this armor was crafted in a time when dragons had almost been hunted to extinction. Infused with their blood, the armor gained notoriety after the hunter died at the hands of men rather than the dragons it was designed to protect him from. You'll receive one piece immediately. The other parts are available from Bodahn in the party camp.]]></pseudo>
+            <cs-cz><![CDATA[Tuto zbroj si nechal na zakázku vyrobit nechvalně známý drakobijce Nevarran v časech, kdy byli draci téměř vyhubeni. Je prosycena jejich krví a svou proslulost získala až poté, co zmíněný lovec padl - nepodlehl však spárům draků, před nimiž ho měla chránit, ale zbraním lidí. První část získáte okamžitě, ostatní lze získat od Bodahna v ležení družiny.]]></cs-cz>
+            <hu-hu><![CDATA[Ez a páncél egy hírhedt nevarrai sárkányölő megrendelésére készült egy olyan korban, mikor a sárkányokat kihalás fenyegette a vadászok miatt. Fémjét vérükben edzették, tulajdonosa életét mégsem sikerült megóvnia: az illetőt tulajdon fajtársai ölték meg holmi hüllőfajzat helyett. Egy darabját azonnal megkapod. A többit Bodahntól szerezheted be, a csapat táborában.]]></hu-hu>
+        </Description>
+        <Image>blood_dragon_armor_module</Image>
+        <Rating DefaultText="">
+            <en-us><![CDATA[]]></en-us>
+            <fr-fr><![CDATA[]]></fr-fr>
+            <it-it><![CDATA[]]></it-it>
+            <de-de><![CDATA[]]></de-de>
+            <es-es><![CDATA[]]></es-es>
+            <pl-pl><![CDATA[]]></pl-pl>
+            <ru-ru><![CDATA[]]></ru-ru>
+            <pseudo><![CDATA[]]></pseudo>
+            <cs-cz><![CDATA[]]></cs-cz>
+            <hu-hu><![CDATA[]]></hu-hu>
+        </Rating>
+        <RatingDescription DefaultText="">
+            <en-us><![CDATA[]]></en-us>
+            <fr-fr><![CDATA[]]></fr-fr>
+            <it-it><![CDATA[]]></it-it>
+            <de-de><![CDATA[]]></de-de>
+            <es-es><![CDATA[]]></es-es>
+            <pl-pl><![CDATA[]]></pl-pl>
+            <ru-ru><![CDATA[]]></ru-ru>
+            <pseudo><![CDATA[]]></pseudo>
+            <cs-cz><![CDATA[]]></cs-cz>
+            <hu-hu><![CDATA[]]></hu-hu>
+        </RatingDescription>
+        <URL DefaultText="http://go.bioware.com/dragonage/store/en-us/blooddragonplate">
+            <en-us><![CDATA[http://go.bioware.com/dragonage/store/en-us/blooddragonplate]]></en-us>
+            <fr-fr><![CDATA[http://go.bioware.com/dragonage/store/en-us/blooddragonplate (site en anglais)]]></fr-fr>
+            <it-it><![CDATA[http://go.bioware.com/dragonage/store/it-it/blooddragonplate]]></it-it>
+            <de-de><![CDATA[http://go.bioware.com/dragonage/store/en-us/blooddragonplate]]></de-de>
+            <es-es><![CDATA[http://go.bioware.com/dragonage/store/es-es/blooddragonplate]]></es-es>
+            <pl-pl><![CDATA[http://go.bioware.com/dragonage/store/pl-pl/blooddragonplate]]></pl-pl>
+            <ru-ru><![CDATA[http://go.bioware.com/dragonage/store/ru-ru/blooddragonplate]]></ru-ru>
+            <pseudo><![CDATA[http://go.bioware.com/dragonage/store/en-us/blooddragonplate]]></pseudo>
+            <cs-cz><![CDATA[http://go.bioware.com/dragonage/store/en-us/blooddragonplate]]></cs-cz>
+            <hu-hu><![CDATA[http://go.bioware.com/dragonage/store/en-us/blooddragonplate]]></hu-hu>
+        </URL>
+        <ReleaseDate>18/11/2009</ReleaseDate>
+        <Version>1.1</Version>
+        <GameVersion>1.0</GameVersion>
+        <Type>1</Type>
+        <Price>0</Price>
+        <Size>5</Size>
+        <Publisher DefaultText="Electronic Arts">
+            <en-us><![CDATA[Electronic Arts]]></en-us>
+            <fr-fr><![CDATA[Electronic Arts]]></fr-fr>
+            <it-it><![CDATA[Electronic Arts]]></it-it>
+            <de-de><![CDATA[Electronic Arts]]></de-de>
+            <es-es><![CDATA[Electronic Arts]]></es-es>
+            <pl-pl><![CDATA[Electronic Arts]]></pl-pl>
+            <ru-ru><![CDATA[Electronic Arts]]></ru-ru>
+            <pseudo><![CDATA[Electronic Arts]]></pseudo>
+            <cs-cz><![CDATA[Electronic Arts]]></cs-cz>
+            <hu-hu><![CDATA[Electronic Arts]]></hu-hu>
+        </Publisher>
+        <PrereqList/>
+    </AddInItem>
+    <AddInItem UID="DAO_PRC_PROMO_C2" Name="PROMO_DA_Collectors" ExtendedModuleUID="Single Player" Priority="1" Enabled="1" State="2" Format="1" BioWare="1" RequiresAuthorization="1">
+        <Title DefaultText="Collector's Edition">
+            <en-us><![CDATA[Collector's Edition]]></en-us>
+            <fr-fr><![CDATA[Edition Collector]]></fr-fr>
+            <it-it><![CDATA[Edizione da collezionista]]></it-it>
+            <de-de><![CDATA[Collector's Edition]]></de-de>
+            <es-es><![CDATA[Edición de coleccionista]]></es-es>
+            <pl-pl><![CDATA[Edycja kolekcjonerska]]></pl-pl>
+            <ru-ru><![CDATA[Коллекционное издание]]></ru-ru>
+            <pseudo><![CDATA[Collector's Edition]]></pseudo>
+            <cs-cz><![CDATA[Sběratelská edice]]></cs-cz>
+            <hu-hu><![CDATA[Gyűjtői kiadás]]></hu-hu>
+        </Title>
+        <Description DefaultText="A collection of three special items exclusive to the Dragon Age: Origins Collector's Edition. You'll receive one item immediately. The others are available from Bodahn in the party camp. Thank you, and enjoy!">
+            <en-us><![CDATA[A collection of three special items exclusive to the Dragon Age: Origins Collector's Edition. You'll receive one item immediately. The others are available from Bodahn in the party camp. Thank you, and enjoy!]]></en-us>
+            <fr-fr><![CDATA[Un pack de trois objets spéciaux exclusifs à l'édition Collector de Dragon Age: Origins. Vous recevrez un objet immédiatement ; les autres seront disponibles auprès de Bodahn à votre campement. Merci et bonnes aventures !]]></fr-fr>
+            <it-it><![CDATA[Una raccolta di tre oggetti speciali esclusivi per l'edizione da collezionisti di Dragon Age: Origins. Riceverai immediatamente un oggetto, mentre gli altri saranno disponibili da Bodahn, nell'accampamento del gruppo. Grazie e buon divertimento!]]></it-it>
+            <de-de><![CDATA[Eine Kollektion aus drei besonderen Gegenständen, die exklusiv in der Collector's Edition von Dragon Age: Origins verfügbar sind. Einen der Gegenstände erhältst du sofort, die anderen findest du bei Bodahn im Lager der Gruppe. Vielen Dank und viel Spaß!]]></de-de>
+            <es-es><![CDATA[Una colección de tres objetos especiales exclusivos de la edición de coleccionista de Dragon Age: Origins. Recibirás uno inmediatamente. Los demás estarán disponibles en el campamento del grupo, con Bodahn. ¡Gracias y disfrútalos!]]></es-es>
+            <pl-pl><![CDATA[Zestaw trzech unikalnych przedmiotów, dostępnych tylko z edycją kolekcjonerską gry Dragon Age: Początek. Jeden z przedmiotów otrzymasz natychmiast. Pozostałe dostępne są u Bodahna, w obozie drużyny. Dziękujemy i życzymy dobrej zabawy!]]></pl-pl>
+            <ru-ru><![CDATA[Эксклюзивный набор из трех предметов — только в специальном издании Dragon Age: Начало Collector's Edition. Один предмет вы получите сразу. Остальные — у Бодана в лагере отряда. Спасибо и удачи!]]></ru-ru>
+            <pseudo><![CDATA[A collection of three special items exclusive to the Dragon Age: Origins Collector's Edition. You'll receive one item immediately. The others are available from Bodahn in the party camp. Thank you, and enjoy!]]></pseudo>
+            <cs-cz><![CDATA[Kolekce tří speciálních předmětů vyskytujících se pouze ve sběratelské edici Dragon Age: Prameny. Jeden předmět obdržíte okamžitě. Ostatní lze získat od Bodahna v ležení družiny. Děkujeme a dobře se bavte!]]></cs-cz>
+            <hu-hu><![CDATA[Három különleges tárgyból álló kollekció, melyet csak a Dragon Age: Vérvonalak gyűjtői kiadásában találsz meg. Egyet azonnal megkapsz, a többit Bodahntól szerezheted meg, a csapat táborában. Köszönjük, és jó szórakozást!]]></hu-hu>
+        </Description>
+        <Image>bergenhonor_module</Image>
+        <Rating DefaultText="">
+            <en-us><![CDATA[]]></en-us>
+            <fr-fr><![CDATA[]]></fr-fr>
+            <it-it><![CDATA[]]></it-it>
+            <de-de><![CDATA[]]></de-de>
+            <es-es><![CDATA[]]></es-es>
+            <pl-pl><![CDATA[]]></pl-pl>
+            <ru-ru><![CDATA[]]></ru-ru>
+            <pseudo><![CDATA[]]></pseudo>
+            <cs-cz><![CDATA[]]></cs-cz>
+            <hu-hu><![CDATA[]]></hu-hu>
+        </Rating>
+        <RatingDescription DefaultText="">
+            <en-us><![CDATA[]]></en-us>
+            <fr-fr><![CDATA[]]></fr-fr>
+            <it-it><![CDATA[]]></it-it>
+            <de-de><![CDATA[]]></de-de>
+            <es-es><![CDATA[]]></es-es>
+            <pl-pl><![CDATA[]]></pl-pl>
+            <ru-ru><![CDATA[]]></ru-ru>
+            <pseudo><![CDATA[]]></pseudo>
+            <cs-cz><![CDATA[]]></cs-cz>
+            <hu-hu><![CDATA[]]></hu-hu>
+        </RatingDescription>
+        <URL DefaultText="http://go.bioware.com/dragonage/store/en-us/promobioware">
+            <en-us><![CDATA[http://go.bioware.com/dragonage/store/en-us/promobioware]]></en-us>
+            <fr-fr><![CDATA[http://go.bioware.com/dragonage/store/fr-fr/bandoffire (site en anglais)]]></fr-fr>
+            <it-it><![CDATA[http://go.bioware.com/dragonage/store/it-it/promobioware]]></it-it>
+            <de-de><![CDATA[http://go.bioware.com/dragonage/store/de-de/promobioware]]></de-de>
+            <es-es><![CDATA[http://go.bioware.com/dragonage/store/es-es/promobioware]]></es-es>
+            <pl-pl><![CDATA[http://go.bioware.com/dragonage/store/pl-pl/promobioware]]></pl-pl>
+            <ru-ru><![CDATA[http://go.bioware.com/dragonage/store/ru-ru/promobioware]]></ru-ru>
+            <pseudo><![CDATA[http://go.bioware.com/dragonage/store/en-us/promobioware]]></pseudo>
+            <cs-cz><![CDATA[http://go.bioware.com/dragonage/store/cs-cz/promobioware]]></cs-cz>
+            <hu-hu><![CDATA[http://go.bioware.com/dragonage/store/hu-hu/promobioware]]></hu-hu>
+        </URL>
+        <ReleaseDate>03/11/2009</ReleaseDate>
+        <Version>1.0</Version>
+        <GameVersion>1.0</GameVersion>
+        <Type>1</Type>
+        <Price>0</Price>
+        <Size>15</Size>
+        <Publisher DefaultText="Electronic Arts">
+            <en-us><![CDATA[Electronic Arts]]></en-us>
+            <fr-fr><![CDATA[Electronic Arts]]></fr-fr>
+            <it-it><![CDATA[Electronic Arts]]></it-it>
+            <de-de><![CDATA[Electronic Arts]]></de-de>
+            <es-es><![CDATA[Electronic Arts]]></es-es>
+            <pl-pl><![CDATA[Electronic Arts]]></pl-pl>
+            <ru-ru><![CDATA[Electronic Arts]]></ru-ru>
+            <pseudo><![CDATA[Electronic Arts]]></pseudo>
+            <cs-cz><![CDATA[Electronic Arts]]></cs-cz>
+            <hu-hu><![CDATA[Electronic Arts]]></hu-hu>
+        </Publisher>
+        <PrereqList/>
+    </AddInItem>
+    <AddInItem UID="DAO_PRC_CP_2" Name="PRC_CP2_Shale" ExtendedModuleUID="Single Player" Priority="100" Enabled="1" State="2" Format="1" BioWare="1" RequiresAuthorization="1">
+        <Title DefaultText="The Stone Prisoner">
+            <en-us><![CDATA[The Stone Prisoner]]></en-us>
+            <fr-fr><![CDATA[Le prisonnier de la Pierre]]></fr-fr>
+            <it-it><![CDATA[Il prigioniero di pietra]]></it-it>
+            <de-de><![CDATA[In Stein gefangen]]></de-de>
+            <es-es><![CDATA[El prisionero de piedra]]></es-es>
+            <pl-pl><![CDATA[Kamienny więzień]]></pl-pl>
+            <ru-ru><![CDATA[Каменная пленница]]></ru-ru>
+            <pseudo><![CDATA[The Stone Prisoner]]></pseudo>
+            <cs-cz><![CDATA[Kamenný vězeň]]></cs-cz>
+            <hu-hu><![CDATA[Kőbe zárva]]></hu-hu>
+        </Title>
+        <Description DefaultText="Some copies of Dragon Age: Origins contain a redemption code for this content. Check your game's packaging before purchasing. Crafted by the ancient dwarves as their first line of defense against the darkspawn, the dread sentinels known as golems dwindled in number after the art of their creation was lost. Shale, one of the few golems remaining, was found in the Deep Roads, reactivated and brought to the surface, and may prove to be the Grey Wardens' most effective weapon against the onslaught of the Blight. Includes: (1) Shale, a unique and powerful golem, as a recruitable party member who is fully integrated into the main Dragon Age: Origins campaign. (2) Brand new plots and adventure areas. (3) Fantastic new items.">
+            <en-us><![CDATA[Some copies of Dragon Age: Origins contain a redemption code for this content. Check your game's packaging before purchasing. Crafted by the ancient dwarves as their first line of defense against the darkspawn, the dread sentinels known as golems dwindled in number after the art of their creation was lost. Shale, one of the few golems remaining, was found in the Deep Roads, reactivated and brought to the surface, and may prove to be the Grey Wardens' most effective weapon against the onslaught of the Blight. Includes: (1) Shale, a unique and powerful golem, as a recruitable party member who is fully integrated into the main Dragon Age: Origins campaign. (2) Brand new plots and adventure areas. (3) Fantastic new items.]]></en-us>
+            <fr-fr><![CDATA[Certains exemplaires de Dragon Age: Origins peuvent contenir un code d'accès gratuit pour ce contenu. Vérifiez l'emballage du jeu avant d'acheter. Forgées par les nains du temps jadis pour leur tenir lieu de premier rempart contre les engeances, les formidables sentinelles connues sous le nom de golems ont largement décru en nombre depuis que l'art de leur création s'est perdu. Shale, l'un des derniers golems qui aient subsisté, fut retrouvé dans les Tréfonds, réactivé puis ramené à la surface. Il pourrait représenter un inestimable atout pour les Gardes des ombres dans leur lutte contre l'Enclin.]]></fr-fr>
+            <it-it><![CDATA[Alcune copie di Dragon Age: Origins includono un codice da riscattare gratuito per questo contenuto. Controlla la confezione del gioco prima dell'acquisto. Realizzate dai nani come prima linea di difesa contro la Prole Oscura, le temibili sentinelle note come golem si fecero sempre meno numerose dopo che l'arte della loro creazione andò perduta. Shale, uno dei pochi golem rimasti, fu trovata nelle Vie Profonde, riattivata e portata in superficie. Potrebbe rivelarsi l'arma più potente dei Custodi Grigi contro il massacro provocato dal Flagello. Include: (1) Shale, un golem unico e potente, membro reclutabile del gruppo pienamente integrato nella campagna principale di Dragon Age: Origins. (2) Nuove missioni e zone da esplorare.]]></it-it>
+            <de-de><![CDATA[Einige Exemplare von Dragon Age: Origins enthalten einen Gutscheincode für diesen Inhalt. Sieh bitte vor dem Kauf des Spiels auf der Verpackung nach. Die Zwerge vergangener Zeiten erschufen gewaltige, als Golems bekannte, Wächter als erste Verteidigungslinie gegen die Dunkle Brut. Allerdings ging die Kunst ihrer Erschaffung verloren, sodass ihre Zahl im Laufe der Zeit sank. Einer der wenigen verbliebenen Golems namens Shale wurde in den Tiefen Wegen entdeckt, reaktiviert und an die Oberfläche gebracht. Hier könnte er sich als die effektivste Waffe der Grauen Wächter im Kampf gegen die Dunkle Brut erweisen.]]></de-de>
+            <es-es><![CDATA[Algunas copias de Dragon Age: Origins tienen un código de canje para este contenido. Comprueba el embalaje de tu juego antes de comprar. Los temibles centinelas llamados gólems fueron fabricados por los antiguos enanos para formar la primera línea de defensa contra los engendros tenebrosos. Ahora el secreto de su creación se ha perdido y su número se ha reducido drásticamente. Shale, uno de los pocos gólems restantes, fue descubierta en los Caminos de las Profundidades y, tras ser reactivada y llevada de vuelta a la superficie, podría convertirse en el arma más eficaz de los guardas grises contra el ataque de la Ruina.]]></es-es>
+            <pl-pl><![CDATA[Niektóre egzemplarze gry Dragon Age: Początek zawierają kod do odblokowania tego dodatku. Przed jego zakupem sprawdź opakowanie swojej gry. Budzący grozę strażnicy znani jako golemy zostali skonstruowani przez pradawne krasnoludy jako pierwsza linia obrony przed mrocznymi pomiotami. Ich liczba znacznie się zmniejszyła, kiedy utracono wiedzę o ich tworzeniu. Shale, jeden z niewielu pozostałych golemów, został znaleziony na Głębokich Ścieżkach, ponownie uaktywniony i sprowadzony na powierzchnię. Może okazać się jeszcze najskuteczniejszym orężem Szarej Straży w walce z nacierającą Plagą.]]></pl-pl>
+            <ru-ru><![CDATA[В вашей копии "Dragon Age: Начало" может оказаться бесплатный код выкупа для этого контента. Проверьте упаковку перед покупкой. Грозные стражи, известные как големы, созданы гномами древности как первая линия обороны от порождений тьмы. С годами их число уменьшилось, так как секрет их создания был утерян. Шейлу, одного из немногих оставшихся големов, нашли на Глубинных тропах, оживили и доставили на поверхность. Она может оказаться наиболее действенным оружием Серых Стражей в борьбе с нашествием порождений тьмы. Входят: (1) Шейла, уникальный и могущественный голем, который может стать вашим спутником и является неотъемлемой частью основной кампании "Dragon Age: Начало". (2) Совершенно новые сюжеты и территории.]]></ru-ru>
+            <pseudo><![CDATA[Some copies of Dragon Age: Origins contain a redemption code for this content. Check your game's packaging before purchasing. Crafted by the ancient dwarves as their first line of defense against the darkspawn, the dread sentinels known as golems dwindled in number after the art of their creation was lost. Shale, one of the few golems remaining, was found in the Deep Roads, reactivated and brought to the surface, and may prove to be the Grey Wardens' most effective weapon against the onslaught of the Blight. Includes: (1) Shale, a unique and powerful golem, as a recruitable party member who is fully integrated into the main Dragon Age: Origins campaign. (2) Brand new plots and adventure areas. (3) Fantastic new items.]]></pseudo>
+            <cs-cz><![CDATA[Obávaní hlídači zvaní golemové byli vyrobeni trpaslíky žijícími v dávných dobách a měli sloužit v první linii obrany proti zplozencům. Jakmile však bylo ztraceno tajemství jejich výroby, začalo golemů ubývat. Shale, jeden z poledních zbývajících golemů, byl nalezen v Hlubokých cestách, znovu aktivován a vyveden na povrch. Mohla by se tak z něj stát nejúčinnější zbraň Šedého strážce v boji s Nákazou.
+
+Některé kopie hry Dragon Age: Prameny obsahují kód pro získání tohoto obsahu. Před nákupem si prohlédněte balení své hry.
+
+Chceš-li najít Shale:
+* Hraj Dragon Age: Prameny až po dokončení úkolů ve vesnici Lothering.
+* Vydej se do Sulcherova průsmyku, který bude přidán do západní části mapy světa.
+* Najdi znepokojeného obchodníka s dohodou, která bude možná až příliš dobrá na to, aby to byla pravda.
+
+Obsahuje:
+* Shale, jedinečného a mocného golema, kterého je možné vzít jako člena výpravy a který je plně integrován do hlavního tažení hry Dragon Age: Prameny.
+* Úplně nové oblasti, v nichž se odehrává děj i dobrodružství.
+* Úžasné nové předměty.]]></cs-cz>
+            <hu-hu><![CDATA[A gólemek rettegett őrök, akiket készítőik, az ősi törpék, az éjfattyak elleni első védvonalnak szántak. Számuk erősen megcsappant, mióta létrehozásuk titka odaveszett. Palát, a fennmaradt gólemek egyikét a mélyutakon találták, s ott is aktiválták újra, mielőtt a felszínre hozták. Kiderülhet, hogy ő a szürke kamarások leghatékonyabb fegyvere a Veszedelem ellen.
+
+A Dragon Age: Vérvonalak egyes példányai beváltható kódokat tartalmaznak ehhez a tartalomhoz. A megvásárlás előtt ellenőrizd a játék csomagolását!
+
+Pala megtalálásához:
+* Játssz a Dragon Age: Vérvonalakkal, míg míg el nem jutsz Lotheringbe.
+* Vedd az irányt a világtérkép nyugati részén megjelenő Sulcher-hágó felé.
+* Keresd meg a zavart kalmárt, aki olyasmit ajánl, ami túl szép ahhoz, hogy igaz legyen.
+
+Tartalma:
+* Pala, az egyedi és nagyhatalmú gólem; felvehető csapattag, akit integráltunk a Dragon Age: Vérvonalak fő hadjáratába.
+* Teljesen új cselekményszálak és kalandterületek.
+* Fantasztikus új tárgyak.]]></hu-hu>
+        </Description>
+        <Image>shl_module</Image>
+        <Rating DefaultText="M for Mature">
+            <en-us><![CDATA[M for Mature]]></en-us>
+            <fr-fr><![CDATA[M pour public mature]]></fr-fr>
+            <it-it><![CDATA[M come Maturo]]></it-it>
+            <de-de><![CDATA[M for Mature]]></de-de>
+            <es-es><![CDATA[M de maduro]]></es-es>
+            <pl-pl><![CDATA[Dla dorosłych]]></pl-pl>
+            <ru-ru><![CDATA[M — для игроков от 17 лет]]></ru-ru>
+            <pseudo><![CDATA[M for Mature]]></pseudo>
+            <cs-cz><![CDATA[M jako Mature (Dospělí)]]></cs-cz>
+            <hu-hu><![CDATA[M (felnőtt)]]></hu-hu>
+        </Rating>
+        <RatingDescription DefaultText="M for Mature">
+            <en-us><![CDATA[M for Mature]]></en-us>
+            <fr-fr><![CDATA[M pour public mature]]></fr-fr>
+            <it-it><![CDATA[M come Maturo]]></it-it>
+            <de-de><![CDATA[M for Mature]]></de-de>
+            <es-es><![CDATA[M de maduro]]></es-es>
+            <pl-pl><![CDATA[Dla dorosłych]]></pl-pl>
+            <ru-ru><![CDATA[M — для игроков от 17 лет]]></ru-ru>
+            <pseudo><![CDATA[M for Mature]]></pseudo>
+            <cs-cz><![CDATA[M jako Mature (Dospělí)]]></cs-cz>
+            <hu-hu><![CDATA[M (felnőtt)]]></hu-hu>
+        </RatingDescription>
+        <URL DefaultText="http://go.bioware.com/dragonage/store/en-us/shale">
+            <en-us><![CDATA[http://go.bioware.com/dragonage/store/en-us/shale]]></en-us>
+            <fr-fr><![CDATA[http://go.bioware.com/dragonage/store/fr-fr/shale]]></fr-fr>
+            <it-it><![CDATA[http://go.bioware.com/dragonage/store/it-it/shale]]></it-it>
+            <de-de><![CDATA[http://go.bioware.com/dragonage/store/de-de/shale]]></de-de>
+            <es-es><![CDATA[http://go.bioware.com/dragonage/store/es-es/shale]]></es-es>
+            <pl-pl><![CDATA[http://go.bioware.com/dragonage/store/pl-pl/shale]]></pl-pl>
+            <ru-ru><![CDATA[http://go.bioware.com/dragonage/store/ru-ru/shale]]></ru-ru>
+            <pseudo><![CDATA[http://go.bioware.com/dragonage/store/en-us/shale]]></pseudo>
+            <cs-cz><![CDATA[http://go.bioware.com/dragonage/store/cs-cz/shale]]></cs-cz>
+            <hu-hu><![CDATA[http://go.bioware.com/dragonage/store/hu-hu/shale]]></hu-hu>
+        </URL>
+        <ReleaseDate>03/11/2009</ReleaseDate>
+        <Version>1.0</Version>
+        <GameVersion>1.0</GameVersion>
+        <Type>1</Type>
+        <Price>1200</Price>
+        <Size>515</Size>
+        <Publisher DefaultText="Electronic Arts">
+            <en-us><![CDATA[Electronic Arts]]></en-us>
+            <fr-fr><![CDATA[Electronic Arts]]></fr-fr>
+            <it-it><![CDATA[Electronic Arts]]></it-it>
+            <de-de><![CDATA[Electronic Arts]]></de-de>
+            <es-es><![CDATA[Electronic Arts]]></es-es>
+            <pl-pl><![CDATA[Electronic Arts]]></pl-pl>
+            <ru-ru><![CDATA[Electronic Arts]]></ru-ru>
+            <pseudo><![CDATA[Electronic Arts]]></pseudo>
+            <cs-cz><![CDATA[Electronic Arts]]></cs-cz>
+            <hu-hu><![CDATA[Electronic Arts]]></hu-hu>
+        </Publisher>
+        <PrereqList/>
+    </AddInItem>
+    <AddInItem UID="DAO_PRC_NRX_1" Name="PRC1 - Grey Warden Base" ExtendedModuleUID="Single Player" Priority="1" Enabled="1" State="2" Format="1" BioWare="1" RequiresAuthorization="1">
+        <Title DefaultText="Warden's Keep">
+            <en-us><![CDATA[Warden's Keep]]></en-us>
+            <fr-fr><![CDATA[La forteresse des Gardes des ombres]]></fr-fr>
+            <it-it><![CDATA[Fortezza dei Custodi]]></it-it>
+            <de-de><![CDATA[Wächter-Festung]]></de-de>
+            <es-es><![CDATA[Castillo de los guardas]]></es-es>
+            <pl-pl><![CDATA[Twierdza Strażnika]]></pl-pl>
+            <ru-ru><![CDATA[Крепость Стражей]]></ru-ru>
+            <pseudo><![CDATA[Warden's Keep]]></pseudo>
+            <cs-cz><![CDATA[Pevnost Strážců]]></cs-cz>
+            <hu-hu><![CDATA[Kamarás erőd]]></hu-hu>
+        </Title>
+        <Description DefaultText="Some copies of Dragon Age: Origins contain a redemption code for this content. Check your game's packaging before purchasing. Two centuries ago, the Grey Wardens were expelled from Ferelden amidst a storm of blood and betrayal. Their fortress remains at remote Soldier's Peak, overgrown and reportedly haunted. Now comes a chance to unearth this lost chapter of Grey Warden history, to unravel the mystery behind its fall, and finally reclaim it for the order! To begin the journey to Soldier's Peak, return to your party camp from the world map and seek out a merchant named Levi Dryden. Includes: (1) A fun dungeon-delving adventure; (2) A set of ancient Grey Warden armor, complete with heraldry; (3) A chance to gain two of six mysterious new abilities. (4) A new base complete with merchants and a party chest to store your hard-earned loot.">
+            <en-us><![CDATA[Some copies of Dragon Age: Origins contain a redemption code for this content. Check your game's packaging before purchasing. Two centuries ago, the Grey Wardens were expelled from Ferelden amidst a storm of blood and betrayal. Their fortress remains at remote Soldier's Peak, overgrown and reportedly haunted. Now comes a chance to unearth this lost chapter of Grey Warden history, to unravel the mystery behind its fall, and finally reclaim it for the order! To begin the journey to Soldier's Peak, return to your party camp from the world map and seek out a merchant named Levi Dryden. Includes: (1) A fun dungeon-delving adventure; (2) A set of ancient Grey Warden armor, complete with heraldry; (3) A chance to gain two of six mysterious new abilities. (4) A new base complete with merchants and a party chest to store your hard-earned loot.]]></en-us>
+            <fr-fr><![CDATA[Certains exemplaires de Dragon Age: Origins peuvent contenir un code d'accès gratuit pour ce contenu. Vérifiez l'emballage du jeu avant d'acheter. Voilà deux siècles, les Gardes des ombres furent chassés de Férelden au cours d'événements entachés de sang et de trahison. Leur forteresse subsiste au lointain Pic du soldat, un bastion d'histoire à l'abandon et réputé hanté. Aujourd'hui, l'occasion est offerte de rouvrir ce chapitre oublié de l'histoire des Gardes des ombres, de percer les mystères qui ont jadis présidé à sa chute et d'enfin la revendiquer au nom de l'Ordre ! Pour commencer votre périple vers le Pic du soldat : Retournez à votre campement depuis la carte du monde et soyez à l'affût d'un marchand nommé Levi Dryden. Comprend : (1) Une palpitante exploration de donjon. (2) L'opportunité d'acquérir deux parmi six nouvelles mystérieuses capacités.]]></fr-fr>
+            <it-it><![CDATA[Alcune copie di Dragon Age: Origins includono un codice da riscattare gratuito per questo contenuto. Controlla la confezione del gioco prima dell'acquisto. Due secoli fa, i Custodi Grigi furono scacciati dal Ferelden in seguito a una burrascosa vicenda di sangue e tradimento. La loro fortezza restò nel remoto Picco del Soldato, coperta di vegetazione e, secondo alcune voci, infestata. Ecco la possibilità di narrare questo capitolo perduto della storia dei Custodi Grigi, di svelare il mistero dietro la loro caduta e di reclamarlo per l'ordine! Per iniziare il viaggio verso il Picco del Soldato: Torna all'accampamento del tuo gruppo dalla mappa del mondo e cerca un mercante di nome Levi Dryden. Comprende: (1) Una divertente avventura fatta di esplorazioni nei dungeon. (2) La possibilità di guadagnare due fra sei nuove, misteriose abilità.]]></it-it>
+            <de-de><![CDATA[Einige Exemplare von Dragon Age: Origins enthalten einen Gutscheincode für diesen Inhalt. Sieh bitte vor dem Kauf des Spiels auf der Verpackung nach. Die Grauen Wächter wurden vor zwei Jahrhunderten in einem Sturm aus Blut und Verrat aus Ferelden vertrieben. Zurück blieb ihre Festung auf dem abgelegenen Soldatengipfel, die inzwischen überwuchert und angeblich verflucht ist. Nun bietet sich die Möglichkeit, dieses verloren geglaubte Kapitel der Geschichte der Grauen Wächter zu ergründen, das Geheimnis ihres Sturzes zu lüften und die Festung endlich für den Orden zurückzufordern! So beginnst du deine Reise nach Soldatengipfel: Kehre von der Weltkarte zum Lager deiner Gruppe zurück und suche einen Händler namens Levi Dryden auf. Enthält: (1) Ein spannendes Abenteuer in den Tiefen der Festung. (2) Die Möglichkeit, zwei von sechs mysteriösen neuen Fähigkeiten zu erwerben. ]]></de-de>
+            <es-es><![CDATA[Algunas copias de Dragon Age: Origins tienen un código de canje para este contenido. Comprueba el embalaje de tu juego antes de comprar. Hace dos siglos, los guardas grises fueron expulsados de Ferelden en una tormenta de sangre y traición. Su fortaleza aún se eleva en el distante Pico del Soldado, cubierta por la maleza y, según se dice, encantada. Es el momento de recuperar este capítulo perdido de la historia de los guardas grises, de desentrañar el misterio de su caída... ¡y de reclamar la fortaleza para la orden! Para iniciar el viaje al Pico del Soldado: Regresa al campamento del grupo desde el mapa del mundo y busca a un mercader llamado Levi Dryden. Incluye: (1) Una aventura de mazmorras. (2) Una antigua armadura de guarda gris con heráldica. (3) La posibilidad de ganar dos de las seis misteriosas aptitudes nuevas.]]></es-es>
+            <pl-pl><![CDATA[Niektóre egzemplarze gry Dragon Age: Początek zawierają kod do odblokowania tego dodatku. Przed jego zakupem sprawdź opakowanie swojej gry. Dwa stulecia temu, Szara Straż została wygnana z Fereldenu, pośród rozlewu krwi i aktów zdrady. Na niedostępnym Szczycie Wojownika pozostała po niej zarośnięta i rzekomo nawiedzona forteca. Teraz pojawiła się w końcu szansa odkrycia zaginionego rozdziału historii Szarych Strażników, ujawnienia tajemnicy upadku fortecy oraz, przede wszystkim, jej odzyskania dla bractwa! Aby rozpocząć podróż na Szczyt Wojownika: Wróć z mapy świata do obozu drużyny i poszukaj kupca o imieniu Levi Dryden. Zawiera: (1) Wciągającą przygodę związaną z eksploracją podziemi. (2) Zestaw starożytnej zbroi Szarej Straży, łącznie z insygniami. (3) Szansę zdobycia dwóch z sześciu nowych, tajemniczych zdolności.]]></pl-pl>
+            <ru-ru><![CDATA[В вашей копии "Dragon Age: Начало" может оказаться бесплатный код выкупа для этого контента. Проверьте упаковку перед покупкой. Два века назад Серые Стражи были изгнаны из Ферелдена в результате кровавой бури и подлой измены. Их далекая крепость на Солдатском пике заросла бурьяном и стала прибежищем неупокоенных духов. Сейчас настал момент восстановить утерянную главу истории Серых Стражей, раскрыть тайну ее падения и вернуть ее ордену! Отправьтесь в путь на Солдатский пик: Вернитесь с карты мира в лагерь отряда и найдите купца по имени Леви Драйден. Состав: (1) Захватывающее приключение в подземельях. (2) Комплект древней брони Серых Стражей с геральдическими знаками. (3) Шанс получить две из шести новых секретных способностей. (4) Новая база с купцами и сундуком отряда для хранения кровью и потом добытых сокровищ.]]></ru-ru>
+            <pseudo><![CDATA[Some copies of Dragon Age: Origins contain a redemption code for this content. Check your game's packaging before purchasing. Two centuries ago, the Grey Wardens were expelled from Ferelden amidst a storm of blood and betrayal. Their fortress remains at remote Soldier's Peak, overgrown and reportedly haunted. Now comes a chance to unearth this lost chapter of Grey Warden history, to unravel the mystery behind its fall, and finally reclaim it for the order! To begin the journey to Soldier's Peak, return to your party camp from the world map and seek out a merchant named Levi Dryden. Includes: (1) A fun dungeon-delving adventure; (2) A set of ancient Grey Warden armor, complete with heraldry; (3) A chance to gain two of six mysterious new abilities. (4) A new base complete with merchants and a party chest to store your hard-earned loot.]]></pseudo>
+            <cs-cz><![CDATA[Obávaní hlídači zvaní golemové byli vyrobeni trpaslíky žijícími v dávných dobách a měli sloužit v první linii obrany proti zplozencům. Před dvěma stoletími byli Šedí strážci za pomoci zrady a množství prolité krve vyhnáni z Fereldenu. Jejich pevnost se zachovala na odlehlém Vojenském vrcholku - je opuštěná, zarostlá a podle všeho v ní straší. Nyní se naskýtá šance odkrýt tuto ztracenou kapitolu dějin Šedých strážců, odhalit tajemství, které stálo za jejím dobytím, a v neposlední řadě také šance na to, aby byla tato pevnost znovu navrácena do rukou řádu!
+
+Chceš-li zahájit cestu k Vojenskému vrcholku:
+* Vrať se pomocí Mapy světa do tábora své skupiny a vyhledej obchodníka jménem Levi Dryden.
+
+Obsahuje:
+* Zábavné dobrodružství při pátrání v opuštěné pevnosti.
+* Sadu starodávné zbroje Šedých strážců, která obsahuje i vlastní znak.
+* Šanci na získání dvou ze šesti tajemných nových dovedností.
+* Novou základnu, v níž nechybí obchodníci a truhla výpravy, kde se dají uskladnit těžce vydobyté poklady.]]></cs-cz>
+            <hu-hu><![CDATA[Kétszáz esztendővel ezelőtt a Szürke Kamarásokat száműzték Fereldenből - vérzivataros, árulásokkal terhes időszak volt ez. Erődjük mind a mai napig áll még a távoli Harcosbércnél igaz, meghódította a természet, ráadásul azt beszélik, kísértetek járják. Íme, most lehetőség kínálkozik arra, hogy megismerd a Szürke Kamarások történelmének ezen elfeledett fejezetét, hogy felfedd a bukás titkait, s hogy visszaszerezd az erődöt a rend számára!
+
+Ha útra szeretnél kelni a Harcosbérc felé:
+* Térj vissza a csapatod táborába a világtérképről és keresd meg a Levi Dryden nevű kereskedőt.
+
+Tartalma:
+* Egy hamisítatlan labirintus-kaland
+* Egy öltözetnyi ősi Szürke Kamarás páncél, teljes heraldikával.
+* Lehetőség arra, hogy hat új, titokzatos képességből szert tégy kettőre.
+* Egy új tábor kereskedőkkel, továbbá egy csapatláda, amiben a fáradságos munkával megszerzett vagyonod tárolhatod.]]></hu-hu>
+        </Description>
+        <Image>gwb_module</Image>
+        <Rating DefaultText="">
+            <en-us><![CDATA[]]></en-us>
+            <fr-fr><![CDATA[]]></fr-fr>
+            <it-it><![CDATA[]]></it-it>
+            <de-de><![CDATA[]]></de-de>
+            <es-es><![CDATA[]]></es-es>
+            <pl-pl><![CDATA[]]></pl-pl>
+            <ru-ru><![CDATA[]]></ru-ru>
+            <pseudo><![CDATA[]]></pseudo>
+            <cs-cz><![CDATA[]]></cs-cz>
+            <hu-hu><![CDATA[]]></hu-hu>
+        </Rating>
+        <RatingDescription DefaultText="">
+            <en-us><![CDATA[]]></en-us>
+            <fr-fr><![CDATA[]]></fr-fr>
+            <it-it><![CDATA[]]></it-it>
+            <de-de><![CDATA[]]></de-de>
+            <es-es><![CDATA[]]></es-es>
+            <pl-pl><![CDATA[]]></pl-pl>
+            <ru-ru><![CDATA[]]></ru-ru>
+            <pseudo><![CDATA[]]></pseudo>
+            <cs-cz><![CDATA[]]></cs-cz>
+            <hu-hu><![CDATA[]]></hu-hu>
+        </RatingDescription>
+        <URL DefaultText="http://go.bioware.com/dragonage/store/en-us/soldierspeak">
+            <en-us><![CDATA[http://go.bioware.com/dragonage/store/en-us/soldierspeak]]></en-us>
+            <fr-fr><![CDATA[http://go.bioware.com/dragonage/store/fr-fr/soldierspeak]]></fr-fr>
+            <it-it><![CDATA[http://go.bioware.com/dragonage/store/it-it/soldierspeak]]></it-it>
+            <de-de><![CDATA[http://go.bioware.com/dragonage/store/de-de/soldierspeak]]></de-de>
+            <es-es><![CDATA[http://go.bioware.com/dragonage/store/es-es/soldierspeak]]></es-es>
+            <pl-pl><![CDATA[http://go.bioware.com/dragonage/store/pl-pl/soldierspeak]]></pl-pl>
+            <ru-ru><![CDATA[http://go.bioware.com/dragonage/store/ru-ru/soldierspeak]]></ru-ru>
+            <pseudo><![CDATA[http://go.bioware.com/dragonage/store/en-us/soldierspeak]]></pseudo>
+            <cs-cz><![CDATA[http://go.bioware.com/dragonage/store/cs-cz/soldierspeak]]></cs-cz>
+            <hu-hu><![CDATA[http://go.bioware.com/dragonage/store/hu-hu/soldierspeak]]></hu-hu>
+        </URL>
+        <ReleaseDate>03/11/2009</ReleaseDate>
+        <Version>1.0</Version>
+        <GameVersion>1.0</GameVersion>
+        <Type>1</Type>
+        <Price>560</Price>
+        <Size>330</Size>
+        <Publisher DefaultText="Electronic Arts">
+            <en-us><![CDATA[Electronic Arts]]></en-us>
+            <fr-fr><![CDATA[Electronic Arts]]></fr-fr>
+            <it-it><![CDATA[Electronic Arts]]></it-it>
+            <de-de><![CDATA[Electronic Arts]]></de-de>
+            <es-es><![CDATA[Electronic Arts]]></es-es>
+            <pl-pl><![CDATA[Electronic Arts]]></pl-pl>
+            <ru-ru><![CDATA[Electronic Arts]]></ru-ru>
+            <pseudo><![CDATA[Electronic Arts]]></pseudo>
+            <cs-cz><![CDATA[Electronic Arts]]></cs-cz>
+            <hu-hu><![CDATA[Electronic Arts]]></hu-hu>
+        </Publisher>
+        <PrereqList/>
+    </AddInItem>
+</AddInsList>
