@@ -40,7 +40,11 @@
 			[doc showWindows];
 		else
 		{
-			doc = [[AddInsList alloc] initWithContentsOfURL:addins ofType:@"Dragon Age AddIns List" error:&err];
+			doc = [AddInsList sharedAddInsList];
+			if (!doc)
+				doc = [[AddInsList alloc] initWithContentsOfURL:addins
+														 ofType:@"Dragon Age AddIns List"
+														  error:&err];
 			
 			if (doc)
 			{

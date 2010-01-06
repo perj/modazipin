@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+typedef id (^loadNodeBlock)(NSMutableDictionary *data, NSString *entityName);
 
 @interface DataStore : NSAtomicStore {
 	NSString *identifier;
@@ -22,10 +23,20 @@
 {
 }
 
+- (BOOL)insertAddInNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context;
+
 @end
 
 @interface AddInStore : DataStore
 {
 }
+
+@end
+
+@interface DataStoreObject : NSManagedObject {
+	NSXMLNode *node;
+}
+
+@property(retain) NSXMLNode *node;
 
 @end

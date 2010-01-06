@@ -11,4 +11,8 @@
 @interface AddInsList : NSPersistentDocument {
 }
 
++ (AddInsList*)sharedAddInsList;
+
+- (BOOL)installAddInItem:(NSXMLElement *)node error:(NSError**)error;
+
 @end

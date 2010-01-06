@@ -13,4 +13,6 @@
 
 }
 
+- (IBAction)install:(id)sender;
+
 @end

@@ -11,6 +11,22 @@
 #include <archive.h>
 #include <archive_entry.h>
 
+@implementation DataStoreObject
+
+@synthesize node;
+
+- (void)awakeFromFetch
+{
+	[super awakeFromFetch];
+	
+	DataStore *store = [[[[self managedObjectContext] persistentStoreCoordinator] persistentStores] objectAtIndex:0];
+	
+	self.node = [[store referenceObjectForObjectID:[self objectID]] objectForKey:@"node"];
+}
+
+@end
+
+
 @implementation DataStore
 
 @synthesize identifier;
@@ -43,11 +59,11 @@
 /*
  * Load a text node with DefaultText and language codes.
  */
-- (NSArray*)loadText:(NSXMLElement*)node error:(NSError **)error
+- (id)loadText:(NSXMLElement*)node error:(NSError **)error usingBlock:(loadNodeBlock)block
 {
 	NSMutableDictionary *data = [NSMutableDictionary dictionary];
-	NSMutableSet *res = [NSMutableSet set];
 	
+	[data setObject:node forKey:@"node"];
 	for (NSXMLNode *attr in [node attributes])
 	{
 		if ([[attr name] isEqualToString:@"DefaultText"])
@@ -57,37 +73,33 @@
 		}
 	}
 	
+	NSMutableSet *langset = [NSMutableSet set];
 	for (NSXMLElement *subnode in [node children])
 	{
 		NSMutableDictionary *subdata = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 										[subnode name], @"langcode",
 										[subnode stringValue], @"value",
+										subnode, @"node",
 										nil];
-		NSEntityDescription *entity = [[[[self persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:@"LocalizedText"];
-		NSManagedObjectID *objid = [self objectIDForEntity:entity referenceObject:subdata];
-		NSAtomicStoreCacheNode *cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:objid];
+		id lnode = block(subdata, @"LocalizedText");
 		
-		[cnode setPropertyCache:subdata];
-		[res addObject:cnode];
+		if (!lnode)
+			return nil;
+
+		[langset addObject:lnode];
 	}
+	if ([langset count])
+		[data setObject:langset forKey:@"languages"];
 	
-	NSEntityDescription *entity = [[[[self persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:@"Text"];
-	NSManagedObjectID *objid = [self objectIDForEntity:entity referenceObject:data];
-	NSAtomicStoreCacheNode *cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:objid];
-	
-	[cnode setPropertyCache:data];
-	[res addObject:cnode];
-	
-	return [NSArray arrayWithObjects:cnode, res, nil];
+	return block(data, @"Text");
 }
 
 /*
  * Load a single AddInItem node.
  */
-- (NSMutableSet*)loadAddInItem:(NSXMLElement *)node error:(NSError **)error
+- (BOOL)loadAddInItem:(NSXMLElement *)node error:(NSError **)error usingBlock:(loadNodeBlock)block
 {
 	NSMutableDictionary *data;
-	NSMutableSet *res = [NSMutableSet set];
 	
 	if (![[node name] isEqualToString:@"AddInItem"])
 		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Node is not an AddInItem"
@@ -127,17 +139,12 @@
 			|| [[subnode name] isEqualToString:@"URL"]
 			|| [[subnode name] isEqualToString:@"Publisher"])
 		{
-			NSArray *arr = [self loadText:subnode error:error];
+			id tnode = [self loadText:subnode error:error usingBlock:block];
 			
-			if (!arr)
-				return nil;
+			if (!tnode)
+				return NO;
 			
-			NSAtomicStoreCacheNode *cnode = [arr objectAtIndex:0];
-			NSMutableSet *subset = [arr objectAtIndex:1];
-			
-			[res unionSet:subset];
-			
-			[data setObject:cnode forKey:[subnode name]];
+			[data setObject:tnode forKey:[subnode name]];
 			continue;
 		}
 		
@@ -164,38 +171,38 @@
 		}
 	}
 	
-	NSEntityDescription *entity = [[[[self persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:@"AddInItem"];
-	NSManagedObjectID *objid = [self objectIDForEntity:entity referenceObject:data];
-	NSAtomicStoreCacheNode *cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:objid];
-
-	[cnode setPropertyCache:data];
-	[res addObject:cnode];
-	
-	return res;
+	return block(data, @"AddInItem") != nil;
 }
 
 /*
  * Load an AddInsList node
  */
-- (NSMutableSet*)loadAddInsList:(NSXMLElement *)node error:(NSError **)error
+- (BOOL)loadAddInsList:(NSXMLElement *)node error:(NSError **)error usingBlock:(loadNodeBlock)block
 {
-	NSMutableSet *res = [NSMutableSet set];
-	
 	/* XXX should probably return error instead of exception */
 	if (![[node name] isEqualToString:@"AddInsList"])
 		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Node is not an AddInsList"
 							   userInfo:[NSDictionary dictionaryWithObject:node forKey:@"node"]] raise];
 	
 	for (NSXMLElement *subnode in [node children]) {
-		NSMutableSet *subset = [self loadAddInItem:subnode error:error];
+		BOOL res = [self loadAddInItem:subnode error:error usingBlock:block];
 		
-		if (!subset)
-			return nil;
-		
-		[res unionSet:subset];
+		if (!res)
+			return NO;
 	}
 	
-	return res;
+	return YES;
+}
+
+- (id)makeCacheNode:(NSMutableDictionary*)data forEntityName:(NSString*)name
+{
+	NSEntityDescription *entity = [[[[self persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:name];
+	NSManagedObjectID *objid = [self objectIDForEntity:entity referenceObject:data];
+	NSAtomicStoreCacheNode *cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:objid];
+	
+	[cnode setPropertyCache:data];
+	
+	return cnode;
 }
 
 - (void)updateCacheNode:(NSAtomicStoreCacheNode *)node fromManagedObject:(NSManagedObject *)managedObject
@@ -214,6 +221,56 @@
 		[attr setStringValue:@"1"];
 	else
 		[attr setStringValue:@"0"];
+}
+
+- (id)newReferenceObjectForManagedObject:(NSManagedObject *)managedObject
+{
+	NSMutableDictionary *data = [NSMutableDictionary dictionary];
+	DataStoreObject *obj = (DataStoreObject*)managedObject;
+	
+	for (NSPropertyDescription *prop in [managedObject entity])
+	{
+		NSString *key = [prop name];
+		id value = [managedObject valueForKey:key];
+		
+		if ([[prop class] isSubclassOfClass:[NSRelationshipDescription class]])
+		{
+			NSRelationshipDescription *rel = (NSRelationshipDescription*)prop;
+			
+			if ([rel isToMany])
+			{
+				NSMutableSet *set = [NSMutableSet set];
+				
+				for (DataStoreObject *o in value)
+				{
+					NSAtomicStoreCacheNode *cnode = [self cacheNodeForObjectID:[o objectID]];
+					if (cnode)
+						[set addObject:cnode];
+				}
+				if ([set count])
+					[data setObject:set forKey:key];
+			}
+			else
+			{
+				NSAtomicStoreCacheNode *cnode = [self cacheNodeForObjectID:[value objectID]];
+				if (cnode)
+					[data setObject:cnode forKey:key];
+			}
+		}
+		else
+			[data setObject:[value copy] forKey:key];
+	}
+	[data setObject:obj.node forKey:@"node"];
+	return data;
+}
+
+- (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject
+{
+	NSMutableDictionary *data = [self referenceObjectForObjectID:[managedObject objectID]];
+	
+	if (!data)
+		data = [self newReferenceObjectForManagedObject:managedObject];
+	return [self makeCacheNode:data forEntityName:[[managedObject entity] name]];
 }
 
 @end
@@ -258,8 +315,16 @@
 {
 	if (!xmldoc)
 		return YES;
-	NSMutableSet *set = [self loadAddInsList:[xmldoc rootElement] error:error];
-	if (!set)
+	
+	NSMutableSet *set = [NSMutableSet set];
+	BOOL res = [self loadAddInsList:[xmldoc rootElement] error:error usingBlock:^(NSMutableDictionary *data, NSString *entityName)
+	{
+		id cnode = [self makeCacheNode:data forEntityName:entityName];
+		
+		[set addObject:cnode];
+		return cnode;
+	}];
+	if (!res)
 		return NO;
 	
 	[self addCacheNodes:set];
@@ -268,7 +333,34 @@
 
 - (BOOL)save:(NSError **)error
 {
-	return [[xmldoc XMLData] writeToURL:[self URL] atomically:YES];
+	BOOL res = [[xmldoc XMLDataWithOptions:NSXMLNodePrettyPrint] writeToURL:[self URL] options:0 error:error];
+	
+	return res;
+}
+
+- (BOOL)insertAddInNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context
+{
+	node = [node copy];
+	
+	BOOL res = [self loadAddInItem:node error:error usingBlock:^(NSMutableDictionary *data, NSString *entityName)
+	{
+		DataStoreObject *obj = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
+		
+		for (NSString *key in data) {
+			if ([key isEqualToString:@"node"])
+				obj.node = [data objectForKey:key];
+			else
+				[obj setValue:[data objectForKey:key] forKey:key];
+		}
+		
+		return obj;
+	}];
+	
+	if (!res)
+		return NO;
+																
+	[[xmldoc rootElement] addChild:node];
+	return YES;
 }
 
 @end
@@ -356,8 +448,16 @@
 		return NO;
 	}
 	
-	NSMutableSet *set = [self loadAddInsList:(NSXMLElement*)[rootelem childAtIndex:0] error:error];
-	if (!set)
+	NSMutableSet *set = [NSMutableSet set];
+	BOOL res = [self loadAddInsList:(NSXMLElement*)[rootelem childAtIndex:0] error:error usingBlock:^(NSMutableDictionary *data, NSString *entityName)
+	{
+		id cnode = [self makeCacheNode:data forEntityName:entityName];
+		
+		[set addObject:cnode];
+		return cnode;
+	}];
+	
+	if (!res)
 		return NO;
 	
 	[self addCacheNodes:set];

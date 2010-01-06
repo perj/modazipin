@@ -7,15 +7,26 @@
 //
 
 #import "AddInsList.h"
+#import "DataStore.h"
 
 @implementation AddInsList
 
+static AddInsList *sharedAddInsList;
+
++ (AddInsList*)sharedAddInsList
+{
+	return sharedAddInsList;
+}
+
 - (id)init 
 {
+	NSAssert(sharedAddInsList == nil, "Already a shared AddInsList");
+	
     self = [super init];
     if (self != nil) {
         // initialization code
     }
+	sharedAddInsList = self;
     return self;
 }
 
@@ -33,6 +44,13 @@
 - (NSString *)persistentStoreTypeForFileType:(NSString *)fileType
 {
 	return @"AddInsListStore";
+}
+
+- (BOOL)installAddInItem:(NSXMLElement *)node error:(NSError**)error
+{
+	AddInsListStore *store = [[[[self managedObjectContext] persistentStoreCoordinator] persistentStores] objectAtIndex:0];
+	
+	return [store insertAddInNode:node error:error intoContext:[self managedObjectContext]];
 }
 
 @end
