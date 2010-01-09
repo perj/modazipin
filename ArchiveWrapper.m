@@ -293,9 +293,15 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		if ((r = archive_read_open_filename (archive, [[url path] cStringUsingEncoding:NSUTF8StringEncoding],
 											10 * 1024) != ARCHIVE_OK))
 		{
-			*error = [Archive archiveError:archive code:r];
-			if (r != ARCHIVE_WARN)
-				return nil;
+			if (error)
+			{
+				*error = [Archive archiveError:archive code:r];
+				
+				if (r != ARCHIVE_WARN)
+					return nil;
+			}
+			else if (r != ARCHIVE_WARN)
+				[Archive raiseReadException:[Archive archiveError:archive code:r]];
 		}
 		
 		encoding = enc;
