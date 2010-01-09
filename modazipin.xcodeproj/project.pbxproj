@@ -16,6 +16,7 @@
 		66581F0C10F3B0400088EC73 /* AddIn.m in Sources */ = {isa = PBXBuildFile; fileRef = 66581F0B10F3B0400088EC73 /* AddIn.m */; };
 		66D0F66210F677F400C5B31A /* erf.c in Sources */ = {isa = PBXBuildFile; fileRef = 66D0F66110F677F400C5B31A /* erf.c */; };
 		66D0F6A810F681C400C5B31A /* libpcre.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D0F6A710F681C400C5B31A /* libpcre.dylib */; };
+		66D0F76A10F8F54100C5B31A /* ArchiveWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 66D0F76910F8F54100C5B31A /* ArchiveWrapper.m */; };
 		775BDEF1067A8BF0009058FE /* modazipin.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 775BDEF0067A8BF0009058FE /* modazipin.xcdatamodel */; };
 		775DFF38067A968500C5B868 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A7FEA54F5311CA2CBB /* Cocoa.framework */; };
 		8D15AC2C0486D014006FF6A4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */; };
@@ -50,6 +51,8 @@
 		66D0F66110F677F400C5B31A /* erf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = erf.c; sourceTree = "<group>"; };
 		66D0F68110F67C6700C5B31A /* pcre.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pcre.h; path = include/pcre.h; sourceTree = MacPorts; };
 		66D0F6A710F681C400C5B31A /* libpcre.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcre.dylib; path = /usr/lib/libpcre.dylib; sourceTree = "<absolute>"; };
+		66D0F76810F8F54100C5B31A /* ArchiveWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveWrapper.h; sourceTree = "<group>"; };
+		66D0F76910F8F54100C5B31A /* ArchiveWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveWrapper.m; sourceTree = "<group>"; };
 		775BDEF0067A8BF0009058FE /* modazipin.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = modazipin.xcdatamodel; sourceTree = "<group>"; };
 		7788DA0506752A1600599AAD /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		8D15AC360486D014006FF6A4 /* modazipin-Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; fileEncoding = 4; path = "modazipin-Info.plist"; sourceTree = "<group>"; };
@@ -112,6 +115,8 @@
 		2A37F4ABFDCFA73011CA2CEA /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				66D0F76810F8F54100C5B31A /* ArchiveWrapper.h */,
+				66D0F76910F8F54100C5B31A /* ArchiveWrapper.m */,
 				66581F0A10F3B0400088EC73 /* AddIn.h */,
 				66581F0B10F3B0400088EC73 /* AddIn.m */,
 				665295ED10F2AC3D0095E65F /* DataStore.h */,
@@ -235,6 +240,7 @@
 				6652961E10F2AF300095E65F /* AppDelegate.m in Sources */,
 				66581F0C10F3B0400088EC73 /* AddIn.m in Sources */,
 				66D0F66210F677F400C5B31A /* erf.c in Sources */,
+				66D0F76A10F8F54100C5B31A /* ArchiveWrapper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,11 +346,13 @@
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
 				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_SHADOW = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
+				WARNING_CFLAGS = "-Wreturn-type";
 			};
 			name = Debug;
 		};
@@ -361,10 +369,12 @@
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
 				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_SHADOW = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
+				WARNING_CFLAGS = "-Wreturn-type";
 			};
 			name = Release;
 		};

@@ -7,11 +7,10 @@
 //
 
 #import "DataStore.h"
+#import "ArchiveWrapper.h"
 
 #include "erf.h"
 
-#include <archive.h>
-#include <archive_entry.h>
 #include <pcre.h>
 
 @implementation DataStoreObject
@@ -418,31 +417,10 @@
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self && url)
 	{
-		NSError *error = nil;
-		NSData *data;
-		
-		if (![url isFileURL])
-		{
-			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not open URL %@", url] userInfo:nil] raise];
-		}
-		
-		/* Make sure the file exists. */
-		//[[NSFileManager defaultManager] createFileAtPath:[url path] contents:nil attributes:nil];
-		
-		struct archive *a = archive_read_new();
-		struct archive_entry *entry;
-		NSMutableData *xmldata = nil;
-		int err;
-		
-		/* Used to do archive_read_open_memory, but couldn't get it to work. */
-		archive_read_support_compression_all(a);
-		archive_read_support_format_all(a);
-		if (archive_read_open_filename(a, [[url path] cStringUsingEncoding:NSUTF8StringEncoding],
-									   10 * 1024) != ARCHIVE_OK)
-		{
-			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not read URL %@", url] userInfo:nil] raise];
-		}
-		
+		/* XXX guessing encoding. */
+		Archive *archive = [Archive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:nil];
+		NSData *xmldata = nil;
+
 		NSPredicate *isERF = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i)^Contents/(Addins/[^/]+|packages)/[^/]+/[^/]+/[^/]+\\.erf$'"];
 		//NSPredicate *isDirectory = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i)^Contents/(Addins/[^/]+|packages)/[^/]+/[^/]+/[^/]+/'"];
 		/* NSPredicate does not support extraction, so have to do it manually. */
@@ -460,29 +438,18 @@
 		NSMutableSet *dirs = [NSMutableSet set];
 		NSMutableSet *contents = [NSMutableSet set];
 		
-		while ((err = archive_read_next_header(a, &entry)) == ARCHIVE_OK)
+		for (ArchiveMember *entry in archive)
 		{
-			const char *path = archive_entry_pathname(entry);
-			NSString *pathstr = [NSString stringWithCString:path encoding:NSWindowsCP1252StringEncoding]; /* XXX guessing encoding. */
+			NSString *pathstr = [entry pathname];
+			const char *path = [entry cPathname];
 			
-			if (strcasecmp(path, "Manifest.xml") == 0)
+			if ([pathstr caseInsensitiveCompare:@"Manifest.xml"] == NSOrderedSame)
 			{
-				xmldata = [NSMutableData dataWithLength:archive_entry_size(entry)];
-				
-				if (archive_read_data(a, [xmldata mutableBytes], [xmldata length]) < [xmldata length])
-				{
-					archive_read_finish(a);
-					[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not read Manifest.xml from URL %@", url] userInfo:nil] raise];
-				}
+				xmldata = [entry data];
 			}
 			else if ([isERF evaluateWithObject:pathstr])
 			{
-				NSMutableData *erfdata = [NSMutableData dataWithLength:archive_entry_size(entry)];
-				if (archive_read_data(a, [erfdata mutableBytes], [erfdata length]) < [erfdata length])
-				{
-					archive_read_finish(a);
-					[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not read %@ data from URL %@", pathstr, url] userInfo:nil] raise];
-				}
+				NSData *erfdata = [entry data];
 				
 				[files addObject:[pathstr substringFromIndex:sizeof("Contents/") - 1]];
 				
@@ -521,22 +488,10 @@
 					
 					[contents addObject:[pathstr substringFromIndex:coff + 1]];
 				}
-				archive_read_data_skip(a);
 			}
-			else
-				archive_read_data_skip(a);
 		}
 		
 		pcre_free(is_dir_or_file_re);
-		
-		if (!xmldata && err != 1)
-		{
-			NSException *except = [NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Archive error: %s", archive_error_string(a)] userInfo:nil];
-			archive_read_finish(a);
-			[except raise];
-		}
-		
-		archive_read_finish(a);
 		
 		if (!xmldata)
 			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not find Manifest.xml in URL %@", url] userInfo:nil] raise];
