@@ -8,8 +8,11 @@
 
 #import "DataStore.h"
 
+#include "erf.h"
+
 #include <archive.h>
 #include <archive_entry.h>
+#include <pcre.h>
 
 @implementation DataStoreObject
 
@@ -40,7 +43,7 @@
 			nil];
 }
 
-- (void)loadXML:(NSData *)data
+- (void)loadXML:(NSData *)data ofType:(NSString*)rootType
 {
 	NSInteger xmlopt = NSXMLNodePreserveCharacterReferences | NSXMLNodePreserveWhitespace;
 	NSError *error;
@@ -54,6 +57,12 @@
 		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not read XML"] userInfo:nil] raise];
 	}
 	
+	NSXMLElement *rootelem = [xmldoc rootElement];
+	
+	if (![[rootelem name] isEqualToString:rootType])
+	{
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"XML is not of type '%@'", rootType] userInfo:nil] raise];
+	}
 }
 
 /*
@@ -273,6 +282,44 @@
 	return [self makeCacheNode:data forEntityName:[[managedObject entity] name]];
 }
 
+- (NSXMLElement*)makeModazipinNodeForContents:(NSSet*)contents files:(NSSet*)files dirs:(NSSet*)dirs
+{
+	NSXMLElement *res = [NSXMLElement elementWithName:@"modazipin"];
+	
+	NSXMLElement *paths = [NSXMLElement elementWithName:@"paths"];
+	
+	for (NSString *file in files)
+	{
+		NSXMLElement *fileNode = [NSXMLElement elementWithName:@"file"];
+		
+		[fileNode addAttribute:[NSXMLNode attributeWithName:@"path" stringValue:file]];
+		[paths addChild:fileNode];
+	}
+	
+	for (NSString *dir in dirs)
+	{
+		NSXMLElement *dirNode = [NSXMLElement elementWithName:@"dir"];
+		
+		[dirNode addAttribute:[NSXMLNode attributeWithName:@"path" stringValue:dir]];
+		[paths addChild:dirNode];
+	}
+	
+	[res addChild:paths];
+	
+	NSXMLElement *contentsNode = [NSXMLElement elementWithName:@"contents"];
+	
+	for (NSString *content in contents)
+	{
+		NSXMLElement *contentNode = [NSXMLElement elementWithName:@"content"];
+		
+		[contentNode addAttribute:[NSXMLNode attributeWithName:@"name" stringValue:content]];
+		[contentsNode addChild:contentNode];
+	}
+	
+	[res addChild:contentsNode];
+	return res;
+}
+
 @end
 
 @implementation AddInsListStore
@@ -300,7 +347,7 @@
 			xmldoc = nil;
 		}
 		else
-			[self loadXML:xmldata];
+			[self loadXML:xmldata ofType:@"AddInsList"];
 		
 		self.identifier = @"AddInsList";
 	}
@@ -396,9 +443,27 @@
 			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not read URL %@", url] userInfo:nil] raise];
 		}
 		
+		NSPredicate *isERF = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i)^Contents/(Addins/[^/]+|packages)/[^/]+/[^/]+/[^/]+\\.erf$'"];
+		//NSPredicate *isDirectory = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i)^Contents/(Addins/[^/]+|packages)/[^/]+/[^/]+/[^/]+/'"];
+		/* NSPredicate does not support extraction, so have to do it manually. */
+		const char *errptr;
+		int erroff;
+		pcre *is_dir_or_file_re = pcre_compile("^Contents/(Addins/[^/]+|packages)/[^/]+/[^/]+/[^/]+/?", PCRE_CASELESS, &errptr, &erroff, NULL);
+		int match[3];
+		
+		if (!is_dir_or_file_re)
+		{
+			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Failed to compile regex: %s @ %d", errptr, erroff] userInfo:nil] raise];
+		}
+		
+		NSMutableSet *files = [NSMutableSet set];
+		NSMutableSet *dirs = [NSMutableSet set];
+		NSMutableSet *contents = [NSMutableSet set];
+		
 		while ((err = archive_read_next_header(a, &entry)) == ARCHIVE_OK)
 		{
 			const char *path = archive_entry_pathname(entry);
+			NSString *pathstr = [NSString stringWithCString:path encoding:NSWindowsCP1252StringEncoding]; /* XXX guessing encoding. */
 			
 			if (strcasecmp(path, "Manifest.xml") == 0)
 			{
@@ -409,10 +474,60 @@
 					archive_read_finish(a);
 					[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not read Manifest.xml from URL %@", url] userInfo:nil] raise];
 				}
-				break;
 			}
-			archive_read_data_skip(a);
+			else if ([isERF evaluateWithObject:pathstr])
+			{
+				NSMutableData *erfdata = [NSMutableData dataWithLength:archive_entry_size(entry)];
+				if (archive_read_data(a, [erfdata mutableBytes], [erfdata length]) < [erfdata length])
+				{
+					archive_read_finish(a);
+					[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not read %@ data from URL %@", pathstr, url] userInfo:nil] raise];
+				}
+				
+				[files addObject:[pathstr substringFromIndex:sizeof("Contents/") - 1]];
+				
+				parse_erf_data([erfdata bytes], [erfdata length],
+							   ^(struct erf_header *header, struct erf_file *file)
+				{
+					int len = 0;
+					
+					while (len < ERF_FILENAME_MAXLEN && file->entry->name[len] != 0)
+						len++;
+					
+					[contents addObject:[[NSString alloc] initWithBytes:file->entry->name
+																 length:len * 2
+															   encoding:NSUTF16LittleEndianStringEncoding]];
+				});
+			}
+			else if (pcre_exec(is_dir_or_file_re, NULL, path, strlen(path), 0, PCRE_ANCHORED, match, 3) >= 0)
+			{
+				if (path[match[1] - 1] == '/')
+				{
+					/* Directory of files */
+					NSString *dirstr = [pathstr substringToIndex:match[1] - 1]; /* Strip trailing / */
+					
+					[dirs addObject:[dirstr substringFromIndex:sizeof("Contents/") - 1]];
+					[contents addObject:[pathstr substringFromIndex:match[1]]];
+				}
+				else
+				{
+					/* Single file */
+					int coff = match[1];
+					
+					[files addObject:[pathstr substringFromIndex:sizeof("Contents/") - 1]];
+					
+					while (path[coff] != '/')
+						coff--;
+					
+					[contents addObject:[pathstr substringFromIndex:coff + 1]];
+				}
+				archive_read_data_skip(a);
+			}
+			else
+				archive_read_data_skip(a);
 		}
+		
+		pcre_free(is_dir_or_file_re);
 		
 		if (!xmldata && err != 1)
 		{
@@ -426,14 +541,56 @@
 		if (!xmldata)
 			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not find Manifest.xml in URL %@", url] userInfo:nil] raise];
 		
-		[self loadXML:xmldata];
-		self.identifier = @"AddIn"; // XXX get a better one.
+		[self loadXML:xmldata ofType:@"Manifest"];
+		
+		NSXMLElement *addinNode = [self verifyManifest];
+		
+		NSXMLElement *modNode = [self makeModazipinNodeForContents:contents files:files dirs:dirs];
+		
+		[addinNode addChild:modNode];
+		
+		self.identifier = [[addinNode attributeForName:@"UID"] stringValue];
 	}
 	return self;
 }
 
 - (NSString *)type {
     return @"AddInStore";
+}
+
+- (NSXMLElement *)verifyManifest
+{
+	NSXMLElement *root = [xmldoc rootElement];
+	
+	if (![[[root attributeForName:@"Type"] stringValue] isEqualToString:@"AddIn"])
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Manifest type is not AddIn"] userInfo:nil] raise];
+	
+	if ([root childCount] < 1)
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"No contents in manifest"] userInfo:nil] raise];
+
+	if ([root childCount] > 1)
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Unexpected contents in manifest"] userInfo:nil] raise];
+	
+	NSXMLElement *addinslistNode = (NSXMLElement*)[root childAtIndex:0];
+	
+	if (![[addinslistNode name] isEqualToString:@"AddInsList"])
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Manifest contents is not AddInsList"] userInfo:nil] raise];
+
+	if ([addinslistNode childCount] < 1)
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"No addins listed"] userInfo:nil] raise];
+	
+	if ([addinslistNode childCount] > 1)
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"More than one addin listed"] userInfo:nil] raise];
+	
+	NSXMLElement *addinNode = (NSXMLElement*)[addinslistNode childAtIndex:0];
+	
+	if (![[addinNode name] isEqualToString:@"AddInItem"])
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Unexpected AddIn kind"] userInfo:nil] raise];
+	
+	if (![[[addinNode attributeForName:@"UID"] stringValue] length])
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"No UID for AddIn"] userInfo:nil] raise];
+	
+	return addinNode;
 }
 
 - (BOOL)load:(NSError **)error
@@ -449,7 +606,8 @@
 	}
 	
 	NSMutableSet *set = [NSMutableSet set];
-	BOOL res = [self loadAddInsList:(NSXMLElement*)[rootelem childAtIndex:0] error:error usingBlock:^(NSMutableDictionary *data, NSString *entityName)
+	BOOL res = [self loadAddInsList:(NSXMLElement*)[rootelem childAtIndex:0] error:error
+						 usingBlock:^(NSMutableDictionary *data, NSString *entityName)
 	{
 		id cnode = [self makeCacheNode:data forEntityName:entityName];
 		

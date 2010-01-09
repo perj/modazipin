@@ -31,6 +31,8 @@ typedef id (^loadNodeBlock)(NSMutableDictionary *data, NSString *entityName);
 {
 }
 
+- (NSXMLElement *)verifyManifest;
+
 @end
 
 @interface DataStoreObject : NSManagedObject {
