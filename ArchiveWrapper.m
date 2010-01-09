@@ -325,6 +325,8 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 									   reason:@"Archive read error"
 									 userInfo:[NSDictionary dictionaryWithObject:err
 																		  forKey:NSUnderlyingErrorKey]];
+	if (!lastMember)
+		archive_read_close (archive);
 	
 	return lastMember;
 }
