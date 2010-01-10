@@ -8,6 +8,7 @@
 
 #import "AddInsList.h"
 #import "DataStore.h"
+#import "ArchiveWrapper.h"
 
 @implementation AddInsList
 
@@ -46,10 +47,48 @@ static AddInsList *sharedAddInsList;
 	return @"AddInsListStore";
 }
 
-- (BOOL)installAddInItem:(NSXMLElement *)node error:(NSError**)error
+- (NSURL *)baseDirectory
+{
+	NSURL *settings = [[self fileURL] URLByDeletingLastPathComponent];
+	
+	if ([[settings lastPathComponent] caseInsensitiveCompare:@"Settings"] != NSOrderedSame)
+		return nil;
+	
+	return [settings URLByDeletingLastPathComponent];
+}
+
+- (BOOL)installAddInItem:(NSXMLElement *)node withArchive:(NSURL*)url error:(NSError**)error
 {
 	AddInsListStore *store = [[[[self managedObjectContext] persistentStoreCoordinator] persistentStores] objectAtIndex:0];
+	Archive *archive = [Archive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
+	NSURL *base = [self baseDirectory];
 	
+	if (!archive)
+		return NO;
+	
+	for (ArchiveMember *entry in archive)
+	{
+		if ([[entry pathname] hasSuffix:@"/"])
+			continue;
+		
+		/* XXX filter entries */
+		NSEnumerator *path = [[[entry pathname] pathComponents] objectEnumerator];
+		
+		if ([[path nextObject] caseInsensitiveCompare:@"Contents"] == NSOrderedSame)
+		{
+			NSURL *dst = base;
+			NSString *part;
+			
+			while ((part = [path nextObject]))
+				dst = [dst URLByAppendingPathComponent:part];
+			
+			/* XXX delete all files on error. */
+			if (![entry extractToURL:dst createDirectories:YES error:error])
+				return NO;
+		}
+	}
+	
+	/* XXX delete all files on error. */
 	return [store insertAddInNode:node error:error intoContext:[self managedObjectContext]];
 }
 

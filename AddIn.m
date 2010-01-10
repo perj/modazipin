@@ -48,7 +48,7 @@
 	
 	for (DataStoreObject *obj in arr)
 	{
-		[list installAddInItem:(NSXMLElement*)[obj node] error:&err];
+		[list installAddInItem:(NSXMLElement*)[obj node] withArchive:[self fileURL] error:&err];
 	}
 	[list saveDocument:self];
 	[list showWindows];

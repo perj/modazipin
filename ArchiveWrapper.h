@@ -100,6 +100,12 @@ extern NSString * const ArchiveErrorDomain;
 @property(readonly) BOOL dataAvailable;
 @property(readonly) NSData *data;
 
+/*
+ * It is invalid to pass a nil error to this function.
+ * If data is not loaded it will be skipped during extraction.
+ */
+- (BOOL)extractToURL:(NSURL *)dst createDirectories:(BOOL)create error:(NSError **)error;
+
 @end
 
 @interface Archive : NSObject <NSFastEnumeration>

@@ -154,6 +154,13 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	off_t offset;
 	int r;
 	
+	if (data)
+	{
+		if (error)
+			*error = nil;
+		return YES;
+	}
+	
 	if (!dataAvailable)
 	{
 		/* XXX should use ARCHIVE_ERRNO_PROGRAMMER_ERROR, but I'm missing archive_platform.h */
@@ -257,6 +264,69 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	}
 	
 	return data;
+}
+
+- (BOOL)extractToURL:(NSURL *)dst createDirectories:(BOOL)create error:(NSError **)error
+{
+	if (!dataAvailable)
+	{
+		/* XXX should use ARCHIVE_ERRNO_PROGRAMMER_ERROR, but I'm missing archive_platform.h */
+		NSError *err = [Archive errorWithCode:ARCHIVE_FAILED eno:EINVAL string:@"Data is not available"];
+		
+		if (error)
+			*error = err;
+		
+		return NO;
+	}
+	
+	if (create)
+	{
+		NSURL *dir = [dst URLByDeletingLastPathComponent];
+		
+		if (![dst checkResourceIsReachableAndReturnError:nil])
+		{
+			if (![[NSFileManager defaultManager] createDirectoryAtPath:[dir path] withIntermediateDirectories:YES attributes:nil error:error])
+				return NO;
+		}
+	}
+	
+	if (data)
+		return [data writeToURL:dst options:NSDataWritingAtomic error:error];
+	
+	[[NSFileManager defaultManager] createFileAtPath:[dst path] contents:nil attributes:nil];
+	NSFileHandle *fh = [NSFileHandle fileHandleForWritingToURL:dst error:error];
+	int r;
+	const void *buf;
+	size_t len;
+	off_t offset;
+		
+	if (!fh)
+		return NO;
+	
+	[self willChangeValueForKey:@"dataAvailable"];
+	dataAvailable = NO;
+	[self didChangeValueForKey:@"dataAvailable"];
+	
+	while ((r = archive_read_data_block (archive, &buf, &len, &offset)) == ARCHIVE_OK)
+	{
+		if (offset > [fh offsetInFile])
+			[fh truncateFileAtOffset:offset];
+		[fh writeData:[NSData dataWithBytesNoCopy:(void*)buf length:len freeWhenDone:NO]];
+	}
+	[fh closeFile];
+	
+	if (r != ARCHIVE_EOF && r != ARCHIVE_WARN)
+	{
+		*error = [Archive archiveError:archive code:r];
+		return NO;
+	}
+		
+	if (r == ARCHIVE_WARN)
+		*error = [Archive archiveError:archive code:r];
+	else
+		*error = nil;
+		
+	return YES;
 }
 
 @end

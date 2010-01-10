@@ -13,6 +13,8 @@
 
 + (AddInsList*)sharedAddInsList;
 
-- (BOOL)installAddInItem:(NSXMLElement *)node error:(NSError**)error;
+- (NSURL *)baseDirectory;
+
+- (BOOL)installAddInItem:(NSXMLElement *)node withArchive:(NSURL*)url error:(NSError**)error;
 
 @end
