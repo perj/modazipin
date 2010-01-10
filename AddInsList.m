@@ -96,4 +96,51 @@ static AddInsList *sharedAddInsList;
 	return [store insertAddInNode:node error:error intoContext:[self managedObjectContext]];
 }
 
+- (BOOL)syncFilesFromContext:(NSError **)error
+{
+	NSURL *base = [self baseDirectory];	
+	NSArray *addins = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"addinsWithPaths"] error:error];
+	
+	if (!addins)
+		return NO;
+	
+	for (DataStoreObject *addin in addins)
+	{
+		NSSet *paths = [[addin valueForKey:@"modazipin"] valueForKey:@"paths"];
+		BOOL isEnabled = [[addin valueForKey:@"Enabled"] boolValue];
+		
+		for (DataStoreObject *path in paths)
+		{
+			NSString *enabledPath = [path valueForKey:@"path"];
+			NSRange slash = [enabledPath rangeOfString:@"/"];
+			NSString *disabledPath = [enabledPath stringByReplacingCharactersInRange:slash withString:@" (disabled)/"];
+			NSURL *expectedURL = [base URLByAppendingPathComponent:isEnabled ? enabledPath : disabledPath];
+			NSURL *otherURL = [base URLByAppendingPathComponent:isEnabled ? disabledPath : enabledPath];
+			
+			if ([expectedURL checkResourceIsReachableAndReturnError:nil])
+				continue;
+			
+			if (![otherURL checkResourceIsReachableAndReturnError:nil])
+				continue; /* XXX more error handling */
+			
+			NSURL *dirURL = [expectedURL URLByDeletingLastPathComponent];
+			
+			[[NSFileManager defaultManager] createDirectoryAtPath:[dirURL path] withIntermediateDirectories:YES attributes:nil error:nil];
+			if (![[NSFileManager defaultManager] moveItemAtURL:otherURL toURL:expectedURL error:error])
+				NULL; /* XXX do something here. */
+		}
+	}
+	return YES;
+}
+
+- (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation originalContentsURL:(NSURL *)absoluteOriginalContentsURL error:(NSError **)error
+{
+	BOOL res = [super writeToURL:absoluteURL ofType:typeName forSaveOperation:saveOperation originalContentsURL:absoluteOriginalContentsURL error:error];
+	
+	if (!res)
+		return NO;
+	
+	return [self syncFilesFromContext:error];
+}
+
 @end

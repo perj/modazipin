@@ -299,6 +299,7 @@
 		[attr setStringValue:@"1"];
 	else
 		[attr setStringValue:@"0"];
+	[node setValue:[managedObject valueForKey:@"Enabled"] forKey:@"Enabled"];
 }
 
 - (id)newReferenceObjectForManagedObject:(NSManagedObject *)managedObject
