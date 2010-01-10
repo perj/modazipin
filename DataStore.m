@@ -102,6 +102,64 @@
 	return block(data, @"Text");
 }
 
+- (id)loadModazipin:(NSXMLElement*)node error:(NSError **)error usingBlock:(loadNodeBlock)block
+{
+	NSXMLElement *pathsNode = nil;
+	NSXMLElement *contentsNode = nil;
+	NSMutableSet *paths = [NSMutableSet set];
+	NSMutableSet *contents = [NSMutableSet set];
+	
+	for (NSXMLElement *elem in [node children])
+	{
+		if ([[elem name] isEqualToString:@"paths"])
+			pathsNode = elem;
+		else if ([[elem name] isEqualToString:@"contents"])
+			contentsNode = elem;
+	}
+	
+	if (pathsNode)
+	{
+		for (NSXMLElement *elem in [pathsNode children])
+		{
+			NSMutableDictionary *data = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+										 [elem name], @"type",
+										 [[elem attributeForName:@"path"] stringValue], @"path",
+										 elem, @"node",
+										 nil];
+			id pnode = block(data, @"Path");
+			
+			if (!pnode)
+				return nil;
+			
+			[paths addObject:pnode];
+		}
+	}
+	
+	if (contentsNode)
+	{
+		for (NSXMLElement *elem in [contentsNode children])
+		{
+			NSMutableDictionary *data = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+										 [[elem attributeForName:@"name"] stringValue], @"name",
+										 elem, @"node",
+										 nil];
+			id cnode = block(data, @"Content");
+			
+			if (!cnode)
+				return nil;
+			
+			[contents addObject:cnode];
+		}
+	}
+	
+	NSMutableDictionary *data = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+								 paths, @"paths",
+								 contents, @"contents",
+								 node, @"node",
+								 nil];
+	return block(data, @"Modazipin");
+}
+
 /*
  * Load a single AddInItem node.
  */
@@ -173,8 +231,20 @@
 			continue;
 		}
 		
-		if ([[subnode name] isEqualToString:@"PrereqList"]) {
+		if ([[subnode name] isEqualToString:@"PrereqList"])
+		{
 			/* Noop, don't know format. */
+			continue;
+		}
+		
+		if ([[subnode name] isEqualToString:@"modazipin"])
+		{
+			id mnode = [self loadModazipin:subnode error:error usingBlock:block];
+			
+			if (!mnode)
+				return NO;
+			
+			[data setObject:mnode forKey:[subnode name]];
 			continue;
 		}
 	}
@@ -499,6 +569,13 @@
 		[self loadXML:xmldata ofType:@"Manifest"];
 		
 		NSXMLElement *addinNode = [self verifyManifest];
+		
+		/* Filter files and dirs to only be those paths outside of the addin main directory. */
+		NSPredicate *notInAddin = [NSPredicate predicateWithFormat:@"NOT (SELF BEGINSWITH[c] %@)",
+								   [NSString stringWithFormat:@"Addins/%@/",
+									[[addinNode attributeForName:@"UID"] stringValue]]];
+		[files filterUsingPredicate:notInAddin];
+		[dirs filterUsingPredicate:notInAddin];
 		
 		NSXMLElement *modNode = [self makeModazipinNodeForContents:contents files:files dirs:dirs];
 		

@@ -80,7 +80,11 @@ static AddInsList *sharedAddInsList;
 			NSString *part;
 			
 			while ((part = [path nextObject]))
+			{
+				if ([part isEqualToString:@".."] || [part isEqualToString:@"."])
+					continue;
 				dst = [dst URLByAppendingPathComponent:part];
+			}
 			
 			/* XXX delete all files on error. */
 			if (![entry extractToURL:dst createDirectories:YES error:error])
