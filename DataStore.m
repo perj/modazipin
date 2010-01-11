@@ -23,7 +23,7 @@
 	
 	DataStore *store = [[[[self managedObjectContext] persistentStoreCoordinator] persistentStores] objectAtIndex:0];
 	
-	self.node = [[store referenceObjectForObjectID:[self objectID]] objectForKey:@"node"];
+	self.node = [[[store cacheNodeForObjectID:[self objectID]] propertyCache] objectForKey:@"node"];
 }
 
 @end
@@ -275,7 +275,7 @@
 - (id)makeCacheNode:(NSMutableDictionary*)data forEntityName:(NSString*)name
 {
 	NSEntityDescription *entity = [[[[self persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:name];
-	NSManagedObjectID *objid = [self objectIDForEntity:entity referenceObject:data];
+	NSManagedObjectID *objid = [self objectIDForEntity:entity referenceObject:[[data objectForKey:@"node"] XPath]];
 	NSAtomicStoreCacheNode *cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:objid];
 	
 	[cnode setPropertyCache:data];
@@ -285,8 +285,8 @@
 
 - (void)updateCacheNode:(NSAtomicStoreCacheNode *)node fromManagedObject:(NSManagedObject *)managedObject
 {
-	NSMutableDictionary *data = [self referenceObjectForObjectID:[managedObject objectID]];
-	NSXMLElement *elem = [data objectForKey:@"node"];
+	DataStoreObject *obj = (DataStoreObject*)managedObject;
+	NSXMLElement *elem = (NSXMLElement*)obj.node;
 	NSXMLNode *attr;
 	
 	/* Only support updating Enabled for now */
@@ -304,13 +304,24 @@
 
 - (id)newReferenceObjectForManagedObject:(NSManagedObject *)managedObject
 {
-	NSMutableDictionary *data = [NSMutableDictionary dictionary];
 	DataStoreObject *obj = (DataStoreObject*)managedObject;
 	
-	for (NSPropertyDescription *prop in [managedObject entity])
+	return [obj.node XPath];
+}
+
+- (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject
+{
+	NSMutableDictionary *data = [NSMutableDictionary dictionary];
+	DataStoreObject *obj = (DataStoreObject*)managedObject;
+	NSAtomicStoreCacheNode *cnode = [self cacheNodeForObjectID:[obj objectID]];
+	
+	if (cnode)
+		return cnode; /* Cache node was created through a relationship already. */
+	
+	for (NSPropertyDescription *prop in [obj entity])
 	{
 		NSString *key = [prop name];
-		id value = [managedObject valueForKey:key];
+		id value = [obj valueForKey:key];
 		
 		if ([[prop class] isSubclassOfClass:[NSRelationshipDescription class]])
 		{
@@ -322,34 +333,38 @@
 				
 				for (DataStoreObject *o in value)
 				{
-					NSAtomicStoreCacheNode *cnode = [self cacheNodeForObjectID:[o objectID]];
-					if (cnode)
-						[set addObject:cnode];
+					cnode = [self cacheNodeForObjectID:[o objectID]];
+					
+					if (!cnode)
+					{
+						/* No risk of recursion since we only have one-way relationships. */
+						cnode = [self newCacheNodeForManagedObject:o];
+						[self addCacheNodes:[NSSet setWithObject:cnode]];
+					}
+					[set addObject:cnode];
 				}
-				if ([set count])
-					[data setObject:set forKey:key];
+				[data setObject:set forKey:key];
 			}
 			else
 			{
-				NSAtomicStoreCacheNode *cnode = [self cacheNodeForObjectID:[value objectID]];
-				if (cnode)
-					[data setObject:cnode forKey:key];
+				DataStoreObject *o = value;
+				
+				cnode = [self cacheNodeForObjectID:[o objectID]];
+				if (!cnode)
+				{
+					/* No risk of recursion since we only have one-way relationships. */
+					cnode = [self newCacheNodeForManagedObject:o];
+					[self addCacheNodes:[NSSet setWithObject:cnode]];
+				}
+				[data setObject:cnode forKey:key];
 			}
 		}
 		else
 			[data setObject:[value copy] forKey:key];
 	}
 	[data setObject:obj.node forKey:@"node"];
-	return data;
-}
-
-- (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject
-{
-	NSMutableDictionary *data = [self referenceObjectForObjectID:[managedObject objectID]];
 	
-	if (!data)
-		data = [self newReferenceObjectForManagedObject:managedObject];
-	return [self makeCacheNode:data forEntityName:[[managedObject entity] name]];
+	return [self makeCacheNode:data forEntityName:[[obj entity] name]];
 }
 
 - (NSXMLElement*)makeModazipinNodeForContents:(NSSet*)contents files:(NSSet*)files dirs:(NSSet*)dirs
