@@ -46,6 +46,50 @@
     // user interface preparation code
 }
 
+- (void)displayUIDConflictFor:(DataStoreObject*)a and:(DataStoreObject*)b
+{
+	NSBeginCriticalAlertSheet (@"Duplicate",
+							   @"OK",
+							   nil,
+							   nil,
+							   [self windowForSheet],
+							   nil,
+							   NULL,
+							   NULL,
+							   NULL,
+							   @"This addin could not be installed because it conflicts with \"%@\"",
+							   [[b valueForKey:@"Title"] valueForKey:@"DefaultText"]);
+}
+
+- (void)displayPathsConflictFor:(DataStoreObject*)a and:(DataStoreObject*)b
+{
+	NSMutableArray *arr = [NSMutableArray array];
+	NSSet *aPaths = [[a valueForKey:@"modazipin"] valueForKey:@"paths"];
+	NSSet *bPaths = [[b valueForKey:@"modazipin"] valueForKey:@"paths"];
+	
+	for (DataStoreObject *apath in aPaths)
+	{
+		for (DataStoreObject *bpath in bPaths)
+		{
+			if ([[apath valueForKey:@"path"] caseInsensitiveCompare:[bpath valueForKey:@"path"]] == NSOrderedSame)
+				[arr addObject:[apath valueForKey:@"path"]];
+		}
+	}
+	
+	NSBeginCriticalAlertSheet (@"Duplicate items",
+							   @"OK",
+							   nil,
+							   nil,
+							   [self windowForSheet],
+							   nil,
+							   NULL,
+							   NULL,
+							   NULL,
+							   @"This addin could not be installed because it contains these items also contained by \"%@\":\n\n%@",
+							   [[b valueForKey:@"Title"] valueForKey:@"DefaultText"],
+							   [arr componentsJoinedByString:@"\n"]);
+}
+
 - (IBAction)install:(id)sender
 {
 	AddInsList *list = [AddInsList sharedAddInsList];
@@ -58,9 +102,37 @@
 	
 	NSError *err;
 	NSArray *arr = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"allAddIns"] error:&err];
+	NSArray *installed = [[list managedObjectContext] executeFetchRequest:[[list managedObjectModel] fetchRequestTemplateForName:@"allAddIns"] error:&err];
 	
 	for (DataStoreObject *obj in arr)
 	{
+		NSSet *objPaths = [[obj valueForKey:@"modazipin"] valueForKey:@"paths"];
+		
+		for (DataStoreObject *item in installed)
+		{
+			if ([[obj valueForKey:@"UID"] caseInsensitiveCompare:[item valueForKey:@"UID"]] == NSOrderedSame)
+			{
+				[self displayUIDConflictFor:obj and:item];
+				return;
+			}
+			
+			NSSet *itemPaths = [[item valueForKey:@"modazipin"] valueForKey:@"paths"];
+			if (objPaths && itemPaths) 
+			{
+				/* XXX Is there a better way to do this? (can't really use LIKE since I don't know if values contain * and ? */
+				for (DataStoreObject *opath in objPaths)
+				{
+					for (DataStoreObject *ipath in itemPaths)
+					{
+						if ([[opath valueForKey:@"path"] caseInsensitiveCompare:[ipath valueForKey:@"path"]] == NSOrderedSame)
+						{
+							[self displayPathsConflictFor:obj and:item];
+							return;
+						}
+					}
+				}
+			}
+		}
 		[list installAddInItem:(NSXMLElement*)[obj node] withArchive:[self fileURL] error:&err];
 	}
 	[list saveDocument:self];
