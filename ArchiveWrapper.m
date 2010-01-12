@@ -83,17 +83,18 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		
 		archive = a;
 		encoding = enc;
-		entry = archive_entry_new();
-		if (!entry)
-			[NSException raise:NSMallocException format:@"archive_read_new returned NULL"];
-		if ((r = archive_read_next_header2(a, entry)) != ARCHIVE_OK)
+		if ((r = archive_read_next_header(a, &entry)) != ARCHIVE_OK)
 		{
+			entry = NULL;
 			if (r == ARCHIVE_EOF)
 				*error = nil;
 			else
 				*error = [Archive archiveError:archive code:r];
 			return nil;
 		}
+		entry = archive_entry_clone(entry);
+		if (!entry)
+			[NSException raise:NSMallocException format:@"archive_entry_clone returned NULL"];
 		dataAvailable = YES;
 		data = nil;
 	}
