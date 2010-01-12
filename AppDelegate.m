@@ -25,6 +25,8 @@
 
 @implementation AppDelegate
 
+static BOOL fatal = NO;
+
 - (void)applicationWillFinishLaunching:(NSNotification *)notice
 {
 	[NSPersistentStoreCoordinator registerStoreClass:[AddInsListStore self] forStoreType:@"AddInsListStore"];
@@ -43,11 +45,21 @@
 	NSError *err = nil;
 	NSURL *documents = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:&err];
 	
+	if (fatal)
+		return;
+	
 	if (documents)
 	{
 		/* Manually open the AddIns.xml file, to avoid registering as opener of all .xml files */
 		NSURL *addins = [[NSURL URLWithString:@"BioWare/Dragon%20Age/Settings/AddIns.xml" relativeToURL:documents] standardizedURL];
 		NSDocument *doc;
+		
+		if (![addins checkResourceIsReachableAndReturnError:&err])
+		{
+			fatal = YES;
+			NSRunCriticalAlertPanel(@"Error", @"Dragon Age addins data was not found. Make sure you have started the game at least once.", @"Quit", nil, nil);
+			[NSApp terminate:self];
+		}
 		
 		if ((doc = [[NSDocumentController sharedDocumentController] documentForURL:addins]))
 			[doc showWindows];
