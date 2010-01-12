@@ -47,6 +47,7 @@
 		66581F0410F3B0110088EC73 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/AddIn.xib; sourceTree = "<group>"; };
 		66581F0A10F3B0400088EC73 /* AddIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddIn.h; sourceTree = "<group>"; };
 		66581F0B10F3B0400088EC73 /* AddIn.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddIn.m; sourceTree = "<group>"; };
+		66893CB210FCF88900A29832 /* dragon_4.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = dragon_4.icns; sourceTree = "<group>"; };
 		66D0F65E10F66F2100C5B31A /* erf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = erf.h; sourceTree = "<group>"; };
 		66D0F66110F677F400C5B31A /* erf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = erf.c; sourceTree = "<group>"; };
 		66D0F68110F67C6700C5B31A /* pcre.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pcre.h; path = include/pcre.h; sourceTree = MacPorts; };
@@ -143,6 +144,7 @@
 		2A37F4B8FDCFA73011CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				66893CB210FCF88900A29832 /* dragon_4.icns */,
 				2F7446A70DB6BCF400F9684A /* MainMenu.xib */,
 				665295FE10F2ADD20095E65F /* AddInsList.xib */,
 				2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */,
@@ -304,10 +306,6 @@
 				GCC_PREFIX_HEADER = modazipin_Prefix.pch;
 				INFOPLIST_FILE = "modazipin-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/opt/local/lib,
-				);
 				PRODUCT_NAME = modazipin;
 				WRAPPER_EXTENSION = app;
 			};
@@ -323,10 +321,6 @@
 				GCC_PREFIX_HEADER = modazipin_Prefix.pch;
 				INFOPLIST_FILE = "modazipin-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/opt/local/lib,
-				);
 				PRODUCT_NAME = modazipin;
 				WRAPPER_EXTENSION = app;
 			};
