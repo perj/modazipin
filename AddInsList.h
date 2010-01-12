@@ -20,6 +20,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import "DataStore.h"
 
 @interface AddInsList : NSPersistentDocument {
 }
@@ -29,5 +30,9 @@
 - (NSURL *)baseDirectory;
 
 - (BOOL)installAddInItem:(NSXMLElement *)node withArchive:(NSURL*)url error:(NSError**)error;
+
+- (IBAction)askUninstall:(DataStoreObject*)addin;
+
+- (BOOL)uninstall:(DataStoreObject*)addin error:(NSError**)error;
 
 @end

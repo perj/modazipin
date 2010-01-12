@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="5"/>
+			<integer value="6"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -459,7 +459,7 @@
 						<object class="NSTextField" id="475212116">
 							<reference key="NSNextResponder" ref="317955023"/>
 							<int key="NSvFlags">258</int>
-							<string key="NSFrame">{{36, 20}, {676, 265}}</string>
+							<string key="NSFrame">{{36, 48}, {676, 237}}</string>
 							<reference key="NSSuperview" ref="317955023"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="338975769">
@@ -474,6 +474,26 @@
 									<bytes key="NSWhite">MSAwAA</bytes>
 								</object>
 								<reference key="NSTextColor" ref="109642228"/>
+							</object>
+						</object>
+						<object class="NSButton" id="112232105">
+							<reference key="NSNextResponder" ref="317955023"/>
+							<int key="NSvFlags">292</int>
+							<string key="NSFrame">{{24, 12}, {108, 32}}</string>
+							<reference key="NSSuperview" ref="317955023"/>
+							<bool key="NSEnabled">YES</bool>
+							<object class="NSButtonCell" key="NSCell" id="865766997">
+								<int key="NSCellFlags">67239424</int>
+								<int key="NSCellFlags2">134217728</int>
+								<string key="NSContents">Uninstall…</string>
+								<reference key="NSSupport" ref="1038662578"/>
+								<reference key="NSControlView" ref="112232105"/>
+								<int key="NSButtonFlags">-2038284033</int>
+								<int key="NSButtonFlags2">129</int>
+								<string key="NSAlternateContents"/>
+								<string key="NSKeyEquivalent"/>
+								<int key="NSPeriodicDelay">200</int>
+								<int key="NSPeriodicInterval">25</int>
 							</object>
 						</object>
 					</object>
@@ -500,6 +520,8 @@
 					<string>Description.DefaultText</string>
 					<string>Publisher.DefaultText</string>
 					<string>Title.DefaultText</string>
+					<string>SELF</string>
+					<string>self</string>
 				</object>
 				<bool key="NSEditable">YES</bool>
 				<bool key="NSAutomaticallyPreparesContent">YES</bool>
@@ -763,6 +785,47 @@
 					</object>
 					<int key="connectionID">100251</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">argument: selection.self</string>
+						<reference key="source" ref="112232105"/>
+						<reference key="destination" ref="565607778"/>
+						<object class="NSNibBindingConnector" key="connector" id="633410202">
+							<reference key="NSSource" ref="112232105"/>
+							<reference key="NSDestination" ref="565607778"/>
+							<string key="NSLabel">argument: selection.self</string>
+							<string key="NSBinding">argument</string>
+							<string key="NSKeyPath">selection.self</string>
+							<object class="NSDictionary" key="NSOptions">
+								<string key="NS.key.0">NSSelectorName</string>
+								<string key="NS.object.0">askUninstall:</string>
+							</object>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">100297</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">target: self</string>
+						<reference key="source" ref="112232105"/>
+						<reference key="destination" ref="488872867"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="112232105"/>
+							<reference key="NSDestination" ref="488872867"/>
+							<string key="NSLabel">target: self</string>
+							<string key="NSBinding">target</string>
+							<string key="NSKeyPath">self</string>
+							<object class="NSDictionary" key="NSOptions">
+								<string key="NS.key.0">NSSelectorName</string>
+								<string key="NS.object.0">askUninstall:</string>
+							</object>
+							<reference key="NSPreviousConnector" ref="633410202"/>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">100298</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -802,6 +865,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="929439221"/>
 							<reference ref="475212116"/>
+							<reference ref="112232105"/>
 						</object>
 						<reference key="parent" ref="827802848"/>
 					</object>
@@ -1000,6 +1064,20 @@
 						<reference key="object" ref="338975769"/>
 						<reference key="parent" ref="475212116"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">100252</int>
+						<reference key="object" ref="112232105"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<reference ref="865766997"/>
+						</object>
+						<reference key="parent" ref="317955023"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">100253</int>
+						<reference key="object" ref="865766997"/>
+						<reference key="parent" ref="112232105"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -1033,6 +1111,8 @@
 					<string>100236.IBPluginDependency</string>
 					<string>100237.IBPluginDependency</string>
 					<string>100244.IBPluginDependency</string>
+					<string>100252.IBPluginDependency</string>
+					<string>100253.IBPluginDependency</string>
 					<string>5.IBEditorWindowLastContentRect</string>
 					<string>5.IBPluginDependency</string>
 					<string>5.IBWindowTemplateEditedContentRect</string>
@@ -1044,6 +1124,8 @@
 				</object>
 				<object class="NSMutableArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -1097,7 +1179,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">100251</int>
+			<int key="maxID">100298</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1105,9 +1187,21 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">AddInsList</string>
 					<string key="superclassName">NSPersistentDocument</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">askUninstall:</string>
+						<string key="NS.object.0">DataStoreObject</string>
+					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">AddInsList.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">DataStoreObject</string>
+					<string key="superclassName">NSManagedObject</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">DataStore.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1197,6 +1291,14 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">NSButton</string>
+					<string key="superclassName">NSControl</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBFrameworkSource</string>
+						<string key="minorKey">AppKit.framework/Headers/NSButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">NSButtonCell</string>
 					<string key="superclassName">NSActionCell</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
@@ -1278,6 +1380,14 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">AppKit.framework/Headers/NSImageCell.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">NSManagedObject</string>
+					<string key="superclassName">NSObject</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBFrameworkSource</string>
+						<string key="minorKey">CoreData.framework/Headers/NSManagedObject.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

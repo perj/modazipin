@@ -52,7 +52,10 @@ static AddInsList *sharedAddInsList;
 - (void)windowControllerDidLoadNib:(NSWindowController *)windowController 
 {
     [super windowControllerDidLoadNib:windowController];
-    // user interface preparation code
+	
+	NSWindow *window = [windowController window];
+	[window setRepresentedURL:[self fileURL]];
+	[[window standardWindowButton:NSWindowDocumentIconButton] setImage:[NSImage imageNamed:@"dragon_4"]];
 }
 
 - (NSString *)persistentStoreTypeForFileType:(NSString *)fileType
@@ -154,6 +157,61 @@ static AddInsList *sharedAddInsList;
 		return NO;
 	
 	return [self syncFilesFromContext:error];
+}
+
+- (IBAction)askUninstall:(DataStoreObject*)addin
+{
+	NSBeginAlertSheet(@"Uninstall addin",
+					  @"Delete",
+					  @"Cancel",
+					  nil,
+					  [self windowForSheet],
+					  self,
+					  @selector(answerUninstall:returnCode:contextInfo:),
+					  NULL,
+					  addin,
+					  @"This will completely delete the addin \"%@\". You will not be able to reinstall it without the original file.",
+					  [[addin valueForKey:@"Title"] valueForKey:@"DefaultText"]);	
+}
+								  
+- (void)answerUninstall:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+	if (returnCode != NSOKButton)
+		return;
+	
+	[self uninstall:contextInfo error:NULL];
+}
+
+- (BOOL)uninstall:(DataStoreObject*)addin error:(NSError **)error
+{
+	NSSet *paths = [[addin valueForKey:@"modazipin"] valueForKey:@"paths"];
+	NSURL *base = [self baseDirectory];
+	
+	for (DataStoreObject *path in paths)
+	{
+		NSString *enabledPath = [path valueForKey:@"path"];
+		NSRange slash = [enabledPath rangeOfString:@"/"];
+		NSString *disabledPath = [enabledPath stringByReplacingCharactersInRange:slash withString:@" (disabled)/"];
+		BOOL res;
+		NSError *err = nil;
+		
+		res = [[NSFileManager defaultManager] removeItemAtURL:[base URLByAppendingPathComponent:enabledPath] error:&err];
+		if (!res)
+			res =[[NSFileManager defaultManager] removeItemAtURL:[base URLByAppendingPathComponent:disabledPath] error:&err];
+		
+		if (!res)
+			[self presentError:err];
+	}
+	
+	NSURL *addinURL = [[base URLByAppendingPathComponent:@"Addins"] URLByAppendingPathComponent:[addin valueForKey:@"UID"]];
+	NSError *err = nil;
+	BOOL res = [[NSFileManager defaultManager] removeItemAtURL:addinURL error:&err];
+	if (!res)
+		[self presentError:err];
+
+	[[self managedObjectContext] deleteObject:addin];
+	[self saveDocument:self];
+	return YES;
 }
 
 @end

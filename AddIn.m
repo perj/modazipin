@@ -102,12 +102,12 @@
 	
 	NSError *err;
 	NSArray *arr = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"allAddIns"] error:&err];
-	NSArray *installed = [[list managedObjectContext] executeFetchRequest:[[list managedObjectModel] fetchRequestTemplateForName:@"allAddIns"] error:&err];
 	
 	for (DataStoreObject *obj in arr)
 	{
 		NSSet *objPaths = [[obj valueForKey:@"modazipin"] valueForKey:@"paths"];
 		
+		NSArray *installed = [[list managedObjectContext] executeFetchRequest:[[list managedObjectModel] fetchRequestTemplateForName:@"allAddIns"] error:&err];
 		for (DataStoreObject *item in installed)
 		{
 			if ([[obj valueForKey:@"UID"] caseInsensitiveCompare:[item valueForKey:@"UID"]] == NSOrderedSame)

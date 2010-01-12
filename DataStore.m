@@ -285,10 +285,25 @@
 	return YES;
 }
 
+- (NSString*)uniqueForNode:(NSXMLNode*)node
+{
+	NSXMLNode *parent = [node parent];
+	NSString *me = [node name];
+	
+	/* Only AddInItem need a different identifier. */
+	if ([me isEqualToString:@"AddInItem"])
+		return [[(NSXMLElement *)node attributeForName:@"UID"] stringValue];
+	
+	if ([node level] == 1 || !parent)
+		return me;
+	
+	return [[self uniqueForNode:parent] stringByAppendingFormat:@"/%@", me];
+}
+
 - (id)makeCacheNode:(NSMutableDictionary*)data forEntityName:(NSString*)name
 {
 	NSEntityDescription *entity = [[[[self persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:name];
-	NSManagedObjectID *objid = [self objectIDForEntity:entity referenceObject:[[data objectForKey:@"node"] XPath]];
+	NSManagedObjectID *objid = [self objectIDForEntity:entity referenceObject:[self uniqueForNode:[data objectForKey:@"node"]]];
 	NSAtomicStoreCacheNode *cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:objid];
 	
 	[cnode setPropertyCache:data];
@@ -319,7 +334,7 @@
 {
 	DataStoreObject *obj = (DataStoreObject*)managedObject;
 	
-	return [obj.node XPath];
+	return [self uniqueForNode:obj.node];
 }
 
 - (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject
@@ -378,6 +393,16 @@
 	[data setObject:obj.node forKey:@"node"];
 	
 	return [self makeCacheNode:data forEntityName:[[obj entity] name]];
+}
+
+- (void)willRemoveCacheNodes:(NSSet *)cacheNodes
+{
+	for (NSAtomicStoreCacheNode *cnode in cacheNodes)
+	{
+		NSXMLNode *node = [[cnode propertyCache] objectForKey:@"node"];
+		
+		[node detach];
+	}
 }
 
 - (NSXMLElement*)makeModazipinNodeForContents:(NSSet*)contents files:(NSSet*)files dirs:(NSSet*)dirs
