@@ -22,7 +22,13 @@
 #import <Cocoa/Cocoa.h>
 #import "DataStore.h"
 
-@interface AddInsList : NSPersistentDocument {
+@interface AddInsList : NSPersistentDocument
+{
+	NSMetadataQuery *spotlightQuery;
+	NSMetadataItem *spotlightGameItem;
+	
+	IBOutlet NSButton *launchGameButton;
+	IBOutlet NSArrayController *itemsController;
 }
 
 + (AddInsList*)sharedAddInsList;
@@ -34,5 +40,11 @@
 - (IBAction)askUninstall:(DataStoreObject*)addin;
 
 - (BOOL)uninstall:(DataStoreObject*)addin error:(NSError**)error;
+
+- (NSURL*)gameURL;
+@property NSMetadataItem *spotlightGameItem;
+- (BOOL)searchSpotlightForGame;
+
+- (IBAction)launchGame:(id)sender;
 
 @end

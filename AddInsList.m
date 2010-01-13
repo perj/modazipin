@@ -49,6 +49,25 @@ static AddInsList *sharedAddInsList;
     return @"AddInsList";
 }
 
+- (void)updateLaunchButtonImage
+{
+	NSURL *url = [self gameURL];
+	
+	if (!url)
+	{
+		[self searchSpotlightForGame];
+		return;
+	}
+	
+	NSBundle *gameBundle = [NSBundle bundleWithURL:url];
+	NSDictionary *gameInfo = [gameBundle infoDictionary];
+	NSString *imageName = [gameInfo objectForKey:@"CFBundleIconFile"];
+	NSURL *imageURL = [gameBundle URLForImageResource:imageName];
+	NSImage *img = [[NSImage alloc] initByReferencingURL:imageURL];
+	if (img)
+		[launchGameButton setImage:img];
+}
+
 - (void)windowControllerDidLoadNib:(NSWindowController *)windowController 
 {
     [super windowControllerDidLoadNib:windowController];
@@ -56,6 +75,12 @@ static AddInsList *sharedAddInsList;
 	NSWindow *window = [windowController window];
 	[window setRepresentedURL:[self fileURL]];
 	[[window standardWindowButton:NSWindowDocumentIconButton] setImage:[NSImage imageNamed:@"dragon_4"]];
+	
+	[itemsController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"Title.DefaultText" ascending:YES]]];
+	[itemsController rearrangeObjects];
+	
+	[launchGameButton setKeyEquivalent:@"\r"];
+	[self updateLaunchButtonImage];
 }
 
 - (NSString *)persistentStoreTypeForFileType:(NSString *)fileType
@@ -212,6 +237,107 @@ static AddInsList *sharedAddInsList;
 	[[self managedObjectContext] deleteObject:addin];
 	[self saveDocument:self];
 	return YES;
+}
+
+@synthesize spotlightGameItem;
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if (object == spotlightQuery)
+	{
+		[spotlightQuery disableUpdates];
+		
+		if ([spotlightQuery resultCount] > 0)
+		{
+			self.spotlightGameItem = [spotlightQuery resultAtIndex:0];
+			[self updateLaunchButtonImage];
+		}
+		
+		[spotlightQuery enableUpdates];
+		return;
+	}
+}
+
+- (BOOL)searchSpotlightForGame
+{
+	NSAssert(spotlightGameItem == nil, @"Already have spotlightGameItem!");
+	
+	if (spotlightQuery)
+		return [spotlightQuery isGathering];
+	
+	spotlightQuery = [[NSMetadataQuery alloc] init];
+	[spotlightQuery setPredicate:[NSPredicate predicateWithFormat:@"kMDItemContentType == 'com.apple.application-bundle' AND (kMDItemCFBundleIdentifier == 'com.transgaming.cider.dragonageorigins' OR kMDItemFSName == 'DragonAgeOrigins.app')"]];
+	[spotlightQuery setSearchScopes:[NSArray arrayWithObject:NSMetadataQueryLocalComputerScope]];
+	
+	[spotlightQuery addObserver:self forKeyPath:@"results" options:0 context:nil];
+	
+	if (![spotlightQuery startQuery])
+	{
+		spotlightQuery = nil;
+		return NO;
+	}
+	return YES;
+}
+
+
+- (NSURL*)gameURL
+{
+	NSURL *url;
+	NSArray *maybeRunning = [NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.transgaming.cider.dragonageorigins"];
+	NSRunningApplication *running = nil;
+	NSString *path;
+	
+	if ([maybeRunning count])
+	{
+		running = [maybeRunning objectAtIndex:0];
+		return [running bundleURL];
+	}
+		
+	if ((url = [[NSUserDefaults standardUserDefaults] URLForKey:@"game url"]))
+	{
+		if ([url checkResourceIsReachableAndReturnError:nil])
+			return url;
+	}
+	
+	if ((url = [[NSWorkspace sharedWorkspace] URLForApplicationWithBundleIdentifier:@"com.transgaming.cider.dragonageorigins"]))
+		return url;
+	
+	for (running in [[NSWorkspace sharedWorkspace] runningApplications])
+	{
+		url = [running bundleURL];
+		if ([[url lastPathComponent] isEqualToString:@"DragonAgeOrigins.app"])
+			return url;
+	}
+	
+	if ((path = [[NSWorkspace sharedWorkspace] fullPathForApplication:@"DragonAgeOrigins.app"]))
+		return [NSURL fileURLWithPath:path];
+	
+	if (spotlightGameItem)
+		return [NSURL fileURLWithPath:[spotlightGameItem valueForAttribute:@"kMDItemPath"]];
+	
+	/* Phew, exhausted */
+	return nil;
+}
+
+- (IBAction)launchGame:(id)sender
+{
+	NSURL *url;
+	
+	if ((url = [self gameURL]))
+	{
+		NSError *err;
+		NSRunningApplication *running;
+		
+		running = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:url options:NSWorkspaceLaunchDefault configuration:nil error:&err];
+		
+		if (running)
+		{
+			[[NSUserDefaults standardUserDefaults] setURL:[running bundleURL] forKey:@"game url"];
+			return;
+		}
+	}
+	
+	/* -gameURL works very hard to find the URL, so assume it is not there if it fails. */
 }
 
 @end
