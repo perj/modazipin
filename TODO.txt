@@ -1,0 +1,17 @@
+This is a file with thoughts on what should be implemented and for what version.
+This list is likely to change, no guarantees what so ever.
+
+0.9.1
+Verify erf data bounds.
+Track all paths in dazip.
+
+1.0
+Option to quit modazipin when launching game.
+Scan unknown addins for files/contents.
+Scan and list other unknown files.
+Allow unknown files to be assigned to an addin.
+Allow new addins to be created, empty or with unknown files.
+
+Future
+Recreate dazip from addin (requires a zip writing lib).
+Icons (requires code to read dds data)
