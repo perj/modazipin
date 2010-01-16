@@ -34,7 +34,7 @@ static AddInsList *sharedAddInsList;
 
 - (id)init 
 {
-	NSAssert(sharedAddInsList == nil, "Already a shared AddInsList");
+	NSAssert(sharedAddInsList == nil, @"Already a shared AddInsList");
 	
     self = [super init];
     if (self != nil) {

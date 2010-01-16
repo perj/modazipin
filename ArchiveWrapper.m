@@ -31,6 +31,14 @@ NSString * const ArchiveReadException = @"ArchiveReadException";
 
 NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 
+@interface Archive (Errors)
+
++ (NSError*)archiveError:(struct archive *)archive code:(NSInteger)code;
++ (NSError*)errorWithCode:(NSInteger)code eno:(int)eno string:(NSString*)str;
++ (void)raiseReadException:(NSError *)error;
+
+@end
+
 @implementation Archive (Errors)
 
 + (NSError*)archiveError:(struct archive *)archive code:(NSInteger)code
@@ -104,6 +112,8 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 - (void)finalize
 {
 	archive_entry_free (entry);
+	
+	[super finalize];
 }
 
 @synthesize entry;
@@ -175,10 +185,10 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	
 	if (self.sizeAvailable)
 	{
-		mutableData = [NSMutableData dataWithLength:self.size];
+		mutableData = [NSMutableData dataWithLength:(NSUInteger)self.size];
 		
 		while ((r = archive_read_data_block (archive, &buf, &len, &offset)) == ARCHIVE_OK)
-			[mutableData replaceBytesInRange:(NSRange){offset, len} withBytes:buf];
+			[mutableData replaceBytesInRange:(NSRange){(NSUInteger)offset, (NSUInteger)len} withBytes:buf];
 	}
 	else
 	{
@@ -187,7 +197,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		while ((r = archive_read_data_block (archive, &buf, &len, &offset)) == ARCHIVE_OK)
 		{
 			if (offset > [data length])
-				[mutableData increaseLengthBy:offset - [data length]];
+				[mutableData increaseLengthBy:(NSUInteger)offset - [data length]];
 			[mutableData appendBytes:buf length:len];
 		}
 	}
@@ -386,6 +396,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 {
 	if (archive)
 		archive_read_finish (archive);
+	[super finalize];
 }
 
 - (ArchiveMember *)nextMemberWithError:(NSError**)error
@@ -410,7 +421,6 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id *)stackbuf count:(NSUInteger)len
 {
-	NSError *err = nil;
 	ArchiveMember *res = [self nextMemberWithError:nil];
 	
 	if (!state->state)
@@ -422,7 +432,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	if (!res)
 		return 0;
 	
-	NSAssert(len >= 1, "len < 1!?");
+	NSAssert(len >= 1, @"len < 1!?");
 	stackbuf[0] = res;
 	state->itemsPtr = stackbuf;
 	return 1;

@@ -523,7 +523,7 @@
 				[obj setValue:[data objectForKey:key] forKey:key];
 		}
 		
-		return obj;
+		return (id)obj;
 	}];
 	
 	if (!res)
