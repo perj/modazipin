@@ -7,16 +7,16 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		66B2D8771102647F00997830 /* modazipin.zip */ = {
+		66B2D8771102647F00997830 /* Modazipin.zip */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 66B2D87C110264A400997830 /* Build configuration list for PBXAggregateTarget "modazipin.zip" */;
+			buildConfigurationList = 66B2D87C110264A400997830 /* Build configuration list for PBXAggregateTarget "Modazipin.zip" */;
 			buildPhases = (
 				66B2D8761102647F00997830 /* ShellScript */,
 			);
 			dependencies = (
 				66B2D87B1102648600997830 /* PBXTargetDependency */,
 			);
-			name = modazipin.zip;
+			name = Modazipin.zip;
 			productName = Zip;
 		};
 /* End PBXAggregateTarget section */
@@ -87,7 +87,7 @@
 		775BDEF0067A8BF0009058FE /* modazipin.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = modazipin.xcdatamodel; sourceTree = "<group>"; };
 		7788DA0506752A1600599AAD /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		8D15AC360486D014006FF6A4 /* modazipin-Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; fileEncoding = 4; path = "modazipin-Info.plist"; sourceTree = "<group>"; };
-		8D15AC370486D014006FF6A4 /* modazipin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = modazipin.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D15AC370486D014006FF6A4 /* Modazipin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Modazipin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,7 +125,7 @@
 		19C28FB0FE9D524F11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D15AC370486D014006FF6A4 /* modazipin.app */,
+				8D15AC370486D014006FF6A4 /* Modazipin.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -213,9 +213,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D15AC270486D014006FF6A4 /* modazipin */ = {
+		8D15AC270486D014006FF6A4 /* Modazipin */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 26FC0AA50875C8B900E6366F /* Build configuration list for PBXNativeTarget "modazipin" */;
+			buildConfigurationList = 26FC0AA50875C8B900E6366F /* Build configuration list for PBXNativeTarget "Modazipin" */;
 			buildPhases = (
 				8D15AC2B0486D014006FF6A4 /* Resources */,
 				8D15AC300486D014006FF6A4 /* Sources */,
@@ -225,10 +225,10 @@
 			);
 			dependencies = (
 			);
-			name = modazipin;
+			name = Modazipin;
 			productInstallPath = "$(HOME)/Applications";
 			productName = modazipin;
-			productReference = 8D15AC370486D014006FF6A4 /* modazipin.app */;
+			productReference = 8D15AC370486D014006FF6A4 /* Modazipin.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -243,8 +243,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D15AC270486D014006FF6A4 /* modazipin */,
-				66B2D8771102647F00997830 /* modazipin.zip */,
+				8D15AC270486D014006FF6A4 /* Modazipin */,
+				66B2D8771102647F00997830 /* Modazipin.zip */,
 			);
 		};
 /* End PBXProject section */
@@ -278,7 +278,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# shell script goes here\nif [ \"$CONFIGURATION\" != \"Release\" ]; then\n\texit 1\nfi\ncd \"$TARGET_BUILD_DIR\"\nrm -f \"$PRODUCT_NAME\"\nzip -r \"$PRODUCT_NAME\" modazipin.app\nzip -j \"$PRODUCT_NAME\" \"$SRCROOT/README.rtf\"";
+			shellScript = "# shell script goes here\nif [ \"$CONFIGURATION\" != \"Release\" ]; then\n\texit 1\nfi\ncd \"$TARGET_BUILD_DIR\"\nrm -f \"$PRODUCT_NAME\"\nzip -r \"$PRODUCT_NAME\" Modazipin.app\nzip -j \"$PRODUCT_NAME\" \"$SRCROOT/README.rtf\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -303,7 +303,7 @@
 /* Begin PBXTargetDependency section */
 		66B2D87B1102648600997830 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8D15AC270486D014006FF6A4 /* modazipin */;
+			target = 8D15AC270486D014006FF6A4 /* Modazipin */;
 			targetProxy = 66B2D87A1102648600997830 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -366,7 +366,7 @@
 				GCC_PREFIX_HEADER = modazipin_Prefix.pch;
 				INFOPLIST_FILE = "modazipin-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_NAME = modazipin;
+				PRODUCT_NAME = Modazipin;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -381,7 +381,7 @@
 				GCC_PREFIX_HEADER = modazipin_Prefix.pch;
 				INFOPLIST_FILE = "modazipin-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_NAME = modazipin;
+				PRODUCT_NAME = Modazipin;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -449,7 +449,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = modazipin.zip;
+				PRODUCT_NAME = Modazipin.zip;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -457,7 +457,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		26FC0AA50875C8B900E6366F /* Build configuration list for PBXNativeTarget "modazipin" */ = {
+		26FC0AA50875C8B900E6366F /* Build configuration list for PBXNativeTarget "Modazipin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				26FC0AA60875C8B900E6366F /* Debug */,
@@ -475,7 +475,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		66B2D87C110264A400997830 /* Build configuration list for PBXAggregateTarget "modazipin.zip" */ = {
+		66B2D87C110264A400997830 /* Build configuration list for PBXAggregateTarget "Modazipin.zip" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				66B2D8781102647F00997830 /* Debug */,

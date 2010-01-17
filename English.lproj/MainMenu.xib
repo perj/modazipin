@@ -46,7 +46,7 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<object class="NSMenuItem" id="781593131">
 						<reference key="NSMenu" ref="964684496"/>
-						<string key="NSTitle">modazipin</string>
+						<string key="NSTitle">Modazipin</string>
 						<string key="NSKeyEquiv"/>
 						<int key="NSKeyEquivModMask">1048576</int>
 						<int key="NSMnemonicLoc">2147483647</int>
@@ -60,12 +60,12 @@
 						</object>
 						<string key="NSAction">submenuAction:</string>
 						<object class="NSMenu" key="NSSubmenu" id="272824431">
-							<string key="NSTitle">modazipin</string>
+							<string key="NSTitle">Modazipin</string>
 							<object class="NSMutableArray" key="NSMenuItems">
 								<bool key="EncodedWithXMLCoder">YES</bool>
 								<object class="NSMenuItem" id="936684323">
 									<reference key="NSMenu" ref="272824431"/>
-									<string key="NSTitle">About modazipin</string>
+									<string key="NSTitle">About Modazipin</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="385016679"/>
@@ -1043,7 +1043,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<integer value="1"/>
-					<string>{{75, 792}, {245, 183}}</string>
+					<string>{{384, 569}, {207, 183}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<integer value="1"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
