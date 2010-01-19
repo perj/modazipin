@@ -243,6 +243,8 @@ static AddInsList *sharedAddInsList;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
+	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
 	if (object == spotlightQuery)
 	{
 		[spotlightQuery disableUpdates];
