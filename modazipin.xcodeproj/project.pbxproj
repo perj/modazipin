@@ -273,8 +273,11 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/README.rtf",
+				"$(TARGET_BUILD_DIR)/Modazipin.app",
 			);
 			outputPaths = (
+				"$(TARGET_BUILD_DIR)/${PRODUCT_NAME}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -390,6 +393,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				BUNDLE_VERSION = 1;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_ENABLE_OBJC_GC = required;
@@ -408,6 +412,7 @@
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx10.6;
 				SKIP_INSTALL = YES;
+				VERSION = 0.9.1;
 				WARNING_CFLAGS = "-Wreturn-type";
 			};
 			name = Debug;
@@ -416,6 +421,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				BUNDLE_VERSION = 1;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_GC = required;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -429,7 +435,9 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				PREBINDING = NO;
+				RUN_CLANG_STATIC_ANALYZER = NO;
 				SDKROOT = macosx10.6;
+				VERSION = 0.9.1;
 				WARNING_CFLAGS = "-Wreturn-type";
 			};
 			name = Release;
@@ -437,20 +445,13 @@
 		66B2D8781102647F00997830 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
 			};
 			name = Debug;
 		};
 		66B2D8791102647F00997830 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = Modazipin.zip;
-				ZERO_LINK = NO;
+				PRODUCT_NAME = "Modazipin-${VERSION}.zip";
 			};
 			name = Release;
 		};
