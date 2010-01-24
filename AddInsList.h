@@ -21,6 +21,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "DataStore.h"
+#import "DataStoreObject.h"
 
 @interface AddInsList : NSPersistentDocument
 {

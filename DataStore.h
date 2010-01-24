@@ -23,7 +23,8 @@
 
 typedef id (^loadNodeBlock)(NSMutableDictionary *data, NSString *entityName);
 
-@interface DataStore : NSAtomicStore {
+@interface DataStore : NSAtomicStore
+{
 	NSString *identifier;
 	NSXMLDocument *xmldoc;
 }
@@ -31,6 +32,7 @@ typedef id (^loadNodeBlock)(NSMutableDictionary *data, NSString *entityName);
 @property(copy) NSString *identifier;
 
 @end
+
 
 @interface AddInsListStore : DataStore
 {
@@ -45,13 +47,5 @@ typedef id (^loadNodeBlock)(NSMutableDictionary *data, NSString *entityName);
 }
 
 - (NSXMLElement *)verifyManifest;
-
-@end
-
-@interface DataStoreObject : NSManagedObject {
-	NSXMLNode *node;
-}
-
-@property(retain) NSXMLNode *node;
 
 @end

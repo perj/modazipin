@@ -145,14 +145,14 @@ static AddInsList *sharedAddInsList;
 	if (!addins)
 		return NO;
 	
-	for (DataStoreObject *addin in addins)
+	for (AddInItem *addin in addins)
 	{
-		NSSet *paths = [[addin valueForKey:@"modazipin"] valueForKey:@"paths"];
-		BOOL isEnabled = [[addin valueForKey:@"Enabled"] boolValue];
+		NSSet *paths = addin.modazipin.paths;
+		BOOL isEnabled = [addin.Enabled boolValue];
 		
-		for (DataStoreObject *path in paths)
+		for (Path *path in paths)
 		{
-			NSString *enabledPath = [path valueForKey:@"path"];
+			NSString *enabledPath = path.path;
 			NSRange slash = [enabledPath rangeOfString:@"/"];
 			NSString *disabledPath = [enabledPath stringByReplacingCharactersInRange:slash withString:@" (disabled)/"];
 			NSURL *expectedURL = [base URLByAppendingPathComponent:isEnabled ? enabledPath : disabledPath];
@@ -184,7 +184,7 @@ static AddInsList *sharedAddInsList;
 	return [self syncFilesFromContext:error];
 }
 
-- (IBAction)askUninstall:(DataStoreObject*)addin
+- (IBAction)askUninstall:(AddInItem*)addin
 {
 	NSBeginAlertSheet(@"Uninstall addin",
 					  @"Delete",
@@ -196,7 +196,7 @@ static AddInsList *sharedAddInsList;
 					  NULL,
 					  addin,
 					  @"This will completely delete the addin \"%@\". You will not be able to reinstall it without the original file.",
-					  [[addin valueForKey:@"Title"] valueForKey:@"DefaultText"]);	
+					  addin.Title.DefaultText);
 }
 								  
 - (void)answerUninstall:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
@@ -207,14 +207,14 @@ static AddInsList *sharedAddInsList;
 	[self uninstall:contextInfo error:NULL];
 }
 
-- (BOOL)uninstall:(DataStoreObject*)addin error:(NSError **)error
+- (BOOL)uninstall:(AddInItem*)addin error:(NSError **)error
 {
-	NSSet *paths = [[addin valueForKey:@"modazipin"] valueForKey:@"paths"];
+	NSSet *paths = addin.modazipin.paths;
 	NSURL *base = [self baseDirectory];
 	
-	for (DataStoreObject *path in paths)
+	for (Path *path in paths)
 	{
-		NSString *enabledPath = [path valueForKey:@"path"];
+		NSString *enabledPath = path.path;
 		NSRange slash = [enabledPath rangeOfString:@"/"];
 		NSString *disabledPath = [enabledPath stringByReplacingCharactersInRange:slash withString:@" (disabled)/"];
 		BOOL res;
@@ -228,7 +228,7 @@ static AddInsList *sharedAddInsList;
 			[self presentError:err];
 	}
 	
-	NSURL *addinURL = [[base URLByAppendingPathComponent:@"Addins"] URLByAppendingPathComponent:[addin valueForKey:@"UID"]];
+	NSURL *addinURL = [[base URLByAppendingPathComponent:@"Addins"] URLByAppendingPathComponent:addin.UID];
 	NSError *err = nil;
 	BOOL res = [[NSFileManager defaultManager] removeItemAtURL:addinURL error:&err];
 	if (!res)

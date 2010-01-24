@@ -20,26 +20,12 @@
  */
 
 #import "DataStore.h"
+#import "DataStoreObject.h"
 #import "ArchiveWrapper.h"
 
 #include "erf.h"
 
 #include <pcre.h>
-
-@implementation DataStoreObject
-
-@synthesize node;
-
-- (void)awakeFromFetch
-{
-	[super awakeFromFetch];
-	
-	DataStore *store = [[[[self managedObjectContext] persistentStoreCoordinator] persistentStores] objectAtIndex:0];
-	
-	self.node = [[[store cacheNodeForObjectID:[self objectID]] propertyCache] objectForKey:@"node"];
-}
-
-@end
 
 
 @implementation DataStore
@@ -316,18 +302,20 @@
 	DataStoreObject *obj = (DataStoreObject*)managedObject;
 	NSXMLElement *elem = (NSXMLElement*)obj.node;
 	NSXMLNode *attr;
+	AddInItem *item;
 	
 	/* Only support updating Enabled for now */
 	
 	if (![[elem name] isEqualToString:@"AddInItem"])
 		return;
 	
+	item = (AddInItem*)obj;
 	attr = [elem attributeForName:@"Enabled"];
-	if ([[managedObject valueForKey:@"Enabled"] intValue])
+	if ([item.Enabled intValue])
 		[attr setStringValue:@"1"];
 	else
 		[attr setStringValue:@"0"];
-	[node setValue:[managedObject valueForKey:@"Enabled"] forKey:@"Enabled"];
+	[node setValue:item.Enabled forKey:@"Enabled"];
 }
 
 - (id)newReferenceObjectForManagedObject:(NSManagedObject *)managedObject
