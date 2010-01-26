@@ -248,8 +248,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D15AC270486D014006FF6A4 /* Modazipin */,
 				66B2D8771102647F00997830 /* Modazipin.zip */,
+				8D15AC270486D014006FF6A4 /* Modazipin */,
 			);
 		};
 /* End PBXProject section */

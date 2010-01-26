@@ -530,7 +530,7 @@
 	if (self && url)
 	{
 		/* XXX guessing encoding. */
-		Archive *archive = [Archive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:nil];
+		ArchiveWrapper *archive = [ArchiveWrapper archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:nil];
 		NSData *xmldata = nil;
 
 		NSPredicate *isERF = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i)^Contents/(Addins/[^/]+|packages)/[^/]+/[^/]+/[^/]+\\.erf$'"];

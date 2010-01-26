@@ -27,19 +27,16 @@
 NSString * const ArchiveMemberInfoNotAvailableException = @"ArchiveMemberInfoNotAvailableException";
 NSString * const ArchiveMemberDataNotAvailableException = @"ArchiveMemberDataNotAvailableException";
 
-NSString * const ArchiveReadException = @"ArchiveReadException";
-
 NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 
-@interface Archive (Errors)
+@interface ArchiveWrapper (Errors)
 
 + (NSError*)archiveError:(struct archive *)archive code:(NSInteger)code;
 + (NSError*)errorWithCode:(NSInteger)code eno:(int)eno string:(NSString*)str;
-+ (void)raiseReadException:(NSError *)error;
 
 @end
 
-@implementation Archive (Errors)
+@implementation ArchiveWrapper (Errors)
 
 + (NSError*)archiveError:(struct archive *)archive code:(NSInteger)code
 {
@@ -68,14 +65,6 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 									 nil]];
 }
 
-+ (void)raiseReadException:(NSError *)error
-{
-	@throw [NSException exceptionWithName:ArchiveReadException
-								   reason:@"Archive read error"
-								 userInfo:[NSDictionary dictionaryWithObject:error
-																	  forKey:NSUnderlyingErrorKey]];
-}
-
 @end
 
 
@@ -94,15 +83,22 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		if ((r = archive_read_next_header(a, &entry)) != ARCHIVE_OK)
 		{
 			entry = NULL;
-			if (r == ARCHIVE_EOF)
-				*error = nil;
-			else
-				*error = [Archive archiveError:archive code:r];
+			if (error)
+			{
+				if (r == ARCHIVE_EOF)
+					*error = nil;
+				else
+					*error = [ArchiveWrapper archiveError:archive code:r];
+			}
 			return nil;
 		}
 		entry = archive_entry_clone(entry);
 		if (!entry)
-			[NSException raise:NSMallocException format:@"archive_entry_clone returned NULL"];
+		{
+			if (error)
+				*error = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno userInfo:nil];
+			return nil;
+		}
 		dataAvailable = YES;
 		data = nil;
 	}
@@ -174,11 +170,8 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	
 	if (!dataAvailable)
 	{
-		/* XXX should use ARCHIVE_ERRNO_PROGRAMMER_ERROR, but I'm missing archive_platform.h */
-		NSError *err = [Archive errorWithCode:ARCHIVE_FAILED eno:EINVAL string:@"Data is not available"];
-		
 		if (error)
-			*error = err;
+			*error = nil;
 
 		return NO;
 	}
@@ -205,9 +198,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	if (r != ARCHIVE_EOF && r != ARCHIVE_WARN)
 	{
 		if (error)
-			*error = [Archive archiveError:archive code:r];
-		else
-			[Archive raiseReadException:[Archive archiveError:archive code:r]];
+			*error = [ArchiveWrapper archiveError:archive code:r];
 		
 		return NO;
 	}
@@ -215,7 +206,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	if (error)
 	{
 		if (r == ARCHIVE_WARN)
-			*error = [Archive archiveError:archive code:r];
+			*error = [ArchiveWrapper archiveError:archive code:r];
 		else
 			*error = nil;
 	}
@@ -246,15 +237,13 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	if (r != ARCHIVE_OK && r != ARCHIVE_WARN)
 	{
 		if (error)
-			*error = [Archive archiveError:archive code:r];
-		else
-			[Archive raiseReadException:[Archive archiveError:archive code:r]];
+			*error = [ArchiveWrapper archiveError:archive code:r];
 		
 		return NO;
 	}
 	
 	if (r == ARCHIVE_WARN && error)
-		*error = [Archive archiveError:archive code:r];
+		*error = [ArchiveWrapper archiveError:archive code:r];
 		
 	return YES;
 }
@@ -268,10 +257,14 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		NSError *err = nil;
 		
 		if (![self fetchDataWithError:&err])
-			@throw [NSException exceptionWithName:ArchiveMemberDataNotAvailableException
-										   reason:@"loadData failed"
-										 userInfo:[NSDictionary dictionaryWithObject:err
-																			  forKey:NSUnderlyingErrorKey]];
+		{
+			if (!err)
+				@throw [NSException exceptionWithName:ArchiveMemberDataNotAvailableException
+											   reason:@"loadData failed"
+											 userInfo:[NSDictionary dictionaryWithObject:err
+																				  forKey:NSUnderlyingErrorKey]];
+			return nil;
+		}
 	}
 	
 	return data;
@@ -281,11 +274,9 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 {
 	if (!dataAvailable)
 	{
-		/* XXX should use ARCHIVE_ERRNO_PROGRAMMER_ERROR, but I'm missing archive_platform.h */
-		NSError *err = [Archive errorWithCode:ARCHIVE_FAILED eno:EINVAL string:@"Data is not available"];
-		
+		/* XXX Should probably use exception here. */
 		if (error)
-			*error = err;
+			*error = nil;
 		
 		return NO;
 	}
@@ -328,14 +319,18 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	
 	if (r != ARCHIVE_EOF && r != ARCHIVE_WARN)
 	{
-		*error = [Archive archiveError:archive code:r];
+		if (error)
+			*error = [ArchiveWrapper archiveError:archive code:r];
 		return NO;
 	}
-		
-	if (r == ARCHIVE_WARN)
-		*error = [Archive archiveError:archive code:r];
-	else
-		*error = nil;
+	
+	if (error)
+	{
+		if (r == ARCHIVE_WARN)
+			*error = [ArchiveWrapper archiveError:archive code:r];
+		else
+			*error = nil;
+	}
 		
 	return YES;
 }
@@ -343,9 +338,9 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 @end
 
 
-@implementation Archive
+@implementation ArchiveWrapper
 
-+ (Archive*)archiveForReadingFromURL:(NSURL *)url encoding:(NSStringEncoding)enc error:(NSError **)error
++ (ArchiveWrapper*)archiveForReadingFromURL:(NSURL *)url encoding:(NSStringEncoding)enc error:(NSError **)error
 {
 	return [[self alloc] initForReadingFromURL:url encoding:enc error:error];
 }
@@ -359,12 +354,9 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		
 		if (![url isFileURL])
 		{
-			NSError *err = [Archive errorWithCode:ARCHIVE_FATAL eno:EINVAL string:@"Only file URLs supported for now"];
-			
+			/* XXX maybe use exception here. */
 			if (error)
-				*error = err;
-			else
-				[Archive raiseReadException:err];
+				*error = [ArchiveWrapper errorWithCode:ARCHIVE_FATAL eno:EINVAL string:@"Only file URLs supported for now"];
 			return nil;
 		}
 		
@@ -375,14 +367,10 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 											10 * 1024) != ARCHIVE_OK))
 		{
 			if (error)
-			{
-				*error = [Archive archiveError:archive code:r];
+				*error = [ArchiveWrapper archiveError:archive code:r];
 				
-				if (r != ARCHIVE_WARN)
-					return nil;
-			}
-			else if (r != ARCHIVE_WARN)
-				[Archive raiseReadException:[Archive archiveError:archive code:r]];
+			if (r != ARCHIVE_WARN)
+				return nil;
 		}
 		
 		encoding = enc;
@@ -401,18 +389,11 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 
 - (ArchiveMember *)nextMemberWithError:(NSError**)error
 {
-	NSError *err = nil;
-	
 	if (lastMember)
 		[lastMember skipDataWithError:error];
 	
-	lastMember = [[ArchiveMember alloc] initWithArchive:archive encoding:encoding error:error ?: &err];
+	lastMember = [[ArchiveMember alloc] initWithArchive:archive encoding:encoding error:error];
 
-	if (!lastMember && err)
-		@throw [NSException exceptionWithName:ArchiveReadException
-									   reason:@"Archive read error"
-									 userInfo:[NSDictionary dictionaryWithObject:err
-																		  forKey:NSUnderlyingErrorKey]];
 	if (!lastMember)
 		archive_read_close (archive);
 	

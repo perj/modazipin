@@ -41,16 +41,9 @@ struct archive_entry;
 extern NSString * const ArchiveMemberInfoNotAvailableException;
 
 /*
- * Raised by -data if data was skipped, or loaded by -data but load failed.
+ * Raised by -data if data was skipped.
  */
 extern NSString * const ArchiveMemberDataNotAvailableException;
-
-/*
- * Raised by read functions that take error pointers if error occurs and the pointer is nil.
- * Also raised by fast enumerations on read errors.
- * Contains the underlying NSError.
- */
-extern NSString * const ArchiveReadException;
 
 /**********************************************************************
  * Errors
@@ -96,19 +89,18 @@ extern NSString * const ArchiveErrorDomain;
 - (BOOL)fetchDataWithError:(NSError**)error;
 - (BOOL)skipDataWithError:(NSError**)error;
 
-/* -data will do fetchData if needed. */
+/* -data will do fetchData if needed. It returns nil if there was an error loading the data */
 @property(readonly) BOOL dataAvailable;
 @property(readonly) NSData *data;
 
 /*
- * It is invalid to pass a nil error to this function.
- * If data is not loaded it will be skipped during extraction.
+ * If data is not loaded it will be skipped during extraction, to avoid loading it into memory.
  */
 - (BOOL)extractToURL:(NSURL *)dst createDirectories:(BOOL)create error:(NSError **)error;
 
 @end
 
-@interface Archive : NSObject <NSFastEnumeration>
+@interface ArchiveWrapper : NSObject <NSFastEnumeration>
 {
 	struct archive *archive;
 	NSStringEncoding encoding;
@@ -117,7 +109,7 @@ extern NSString * const ArchiveErrorDomain;
 }
 
 /* Only file URLs are supported for now. */
-+ (Archive*)archiveForReadingFromURL:(NSURL *)url encoding:(NSStringEncoding)encoding error:(NSError **)error;
++ (ArchiveWrapper*)archiveForReadingFromURL:(NSURL *)url encoding:(NSStringEncoding)encoding error:(NSError **)error;
 
 - (id)initForReadingFromURL:(NSURL *)url encoding:(NSStringEncoding)enc error:(NSError **)error;
 

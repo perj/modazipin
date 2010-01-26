@@ -101,7 +101,7 @@ static AddInsList *sharedAddInsList;
 - (BOOL)installAddInItem:(NSXMLElement *)node withArchive:(NSURL*)url error:(NSError**)error
 {
 	AddInsListStore *store = [[[[self managedObjectContext] persistentStoreCoordinator] persistentStores] objectAtIndex:0];
-	Archive *archive = [Archive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
+	ArchiveWrapper *archive = [ArchiveWrapper archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
 	NSURL *base = [self baseDirectory];
 	
 	if (!archive)
