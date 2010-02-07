@@ -34,7 +34,7 @@
 #define le32toh(x) (((x) >> 24 & 0xFF) | ((x) >> 8 & 0xFF00) | ((x) << 8 & 0xFF0000) | ((x) << 24 & 0xFF000000))
 #endif
 
-/* All data is in little endian, use above macros to access. */
+/* All data (except pointers) is in little endian, use above macros to access. */
 
 #define ERF_FILENAME_MAXLEN 32
 
@@ -79,6 +79,6 @@ struct erf_file
 
 typedef void (^erf_entry_block)(struct erf_header *header, struct erf_file *file);
 
-void parse_erf_data(const void *data, size_t length, erf_entry_block block);
+int parse_erf_data(const void *data, size_t length, erf_entry_block block);
 
 #endif /*ERF_H*/

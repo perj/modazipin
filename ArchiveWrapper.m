@@ -347,7 +347,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 
 - (id)initForReadingFromURL:(NSURL *)url encoding:(NSStringEncoding)enc error:(NSError **)error
 {
-	self = [super init];
+	self = [self init];
 	if (self)
 	{
 		int r;
@@ -387,12 +387,17 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	[super finalize];
 }
 
+- (Class)memberClass
+{
+	return [ArchiveMember class];
+}
+
 - (ArchiveMember *)nextMemberWithError:(NSError**)error
 {
 	if (lastMember)
 		[lastMember skipDataWithError:error];
 	
-	lastMember = [[ArchiveMember alloc] initWithArchive:archive encoding:encoding error:error];
+	lastMember = [[[self memberClass] alloc] initWithArchive:archive encoding:encoding error:error];
 
 	if (!lastMember)
 		archive_read_close (archive);

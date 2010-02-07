@@ -21,7 +21,7 @@
 
 #import "DataStore.h"
 #import "DataStoreObject.h"
-#import "ArchiveWrapper.h"
+#import "DazipArchive.h"
 
 #include "erf.h"
 
@@ -530,80 +530,55 @@
 	if (self && url)
 	{
 		/* XXX guessing encoding. */
-		ArchiveWrapper *archive = [ArchiveWrapper archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:nil];
+		DazipArchive *archive = [ArchiveWrapper archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:nil];
 		NSData *xmldata = nil;
 
-		NSPredicate *isERF = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i)^Contents/(Addins/[^/]+|packages)/[^/]+/[^/]+/[^/]+\\.erf$'"];
-		//NSPredicate *isDirectory = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i)^Contents/(Addins/[^/]+|packages)/[^/]+/[^/]+/[^/]+/'"];
-		/* NSPredicate does not support extraction, so have to do it manually. */
-		const char *errptr;
-		int erroff;
-		pcre *is_dir_or_file_re = pcre_compile("^Contents/(Addins/[^/]+|packages)/[^/]+/[^/]+/[^/]+/?", PCRE_CASELESS, &errptr, &erroff, NULL);
-		int match[3];
-		
-		if (!is_dir_or_file_re)
-		{
-			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Failed to compile regex: %s @ %d", errptr, erroff] userInfo:nil] raise];
-		}
-		
 		NSMutableSet *files = [NSMutableSet set];
 		NSMutableSet *dirs = [NSMutableSet set];
 		NSMutableSet *contents = [NSMutableSet set];
 		
-		for (ArchiveMember *entry in archive)
+		for (DazipArchiveMember *entry in archive)
 		{
-			NSString *pathstr = [entry pathname];
-			const char *path = [entry cPathname];
-			
-			if ([pathstr caseInsensitiveCompare:@"Manifest.xml"] == NSOrderedSame)
+			switch (entry.type)
 			{
+			case dmtManifest:
 				xmldata = [entry data];
-			}
-			else if ([isERF evaluateWithObject:pathstr])
-			{
-				NSData *erfdata = [entry data];
-				
-				[files addObject:[pathstr substringFromIndex:sizeof("Contents/") - 1]];
-				
-				parse_erf_data([erfdata bytes], [erfdata length],
-							   ^(struct erf_header *header, struct erf_file *file)
+				break;
+			case dmtERF:
 				{
-					int len = 0;
+					NSData *erfdata = entry.data;
 					
-					while (len < ERF_FILENAME_MAXLEN && file->entry->name[len] != 0)
-						len++;
-					
-					[contents addObject:[[NSString alloc] initWithBytes:file->entry->name
-																 length:len * 2
-															   encoding:NSUTF16LittleEndianStringEncoding]];
-				});
-			}
-			else if (pcre_exec(is_dir_or_file_re, NULL, path, strlen(path), 0, PCRE_ANCHORED, match, 3) >= 0)
-			{
-				if (path[match[1] - 1] == '/')
-				{
-					/* Directory of files */
-					NSString *dirstr = [pathstr substringToIndex:match[1] - 1]; /* Strip trailing / */
-					
-					[dirs addObject:[dirstr substringFromIndex:sizeof("Contents/") - 1]];
-					[contents addObject:[pathstr substringFromIndex:match[1]]];
+					parse_erf_data([erfdata bytes], [erfdata length],
+								^(struct erf_header *header, struct erf_file *file)
+					{
+						int len = 0;
+						
+						while (len < ERF_FILENAME_MAXLEN && file->entry->name[len] != 0)
+							len++;
+						
+						[contents addObject:[[NSString alloc] initWithBytes:file->entry->name
+																	 length:len * 2
+																   encoding:NSUTF16LittleEndianStringEncoding]];
+					});
 				}
-				else
+				/* Fall through */
+				if (0)
 				{
-					/* Single file */
-					int coff = match[1];
-					
-					[files addObject:[pathstr substringFromIndex:sizeof("Contents/") - 1]];
-					
-					while (path[coff] != '/')
-						coff--;
-					
-					[contents addObject:[pathstr substringFromIndex:coff + 1]];
+			case dmtFile:
+					[contents addObject:entry.contentName];
 				}
+				switch (entry.contentType)
+				{
+				case dmctFile:
+					[files addObject:entry.contentPath];
+					break;
+				case dmctDirectory:
+					[dirs addObject:entry.contentPath];
+					break;
+				}
+				break;
 			}
 		}
-		
-		pcre_free(is_dir_or_file_re);
 		
 		if (!xmldata)
 			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not find Manifest.xml in URL %@", url] userInfo:nil] raise];
@@ -613,8 +588,8 @@
 		NSXMLElement *addinNode = [self verifyManifest];
 		
 		/* Filter files and dirs to only be those paths outside of the addin main directory. */
-		NSPredicate *notInAddin = [NSPredicate predicateWithFormat:@"NOT (SELF BEGINSWITH[c] %@)",
-								   [NSString stringWithFormat:@"Addins/%@/",
+		NSPredicate *notInAddin = [NSPredicate predicateWithFormat:@"NOT (SELF ==[c] %@)",
+								   [NSString stringWithFormat:@"Addins/%@",
 									[[addinNode attributeForName:@"UID"] stringValue]]];
 		[files filterUsingPredicate:notInAddin];
 		[dirs filterUsingPredicate:notInAddin];
