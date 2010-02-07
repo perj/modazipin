@@ -90,6 +90,7 @@
 
 @property (nonatomic, retain) NSString * DefaultText;
 @property (nonatomic, retain) NSSet* languages;
+@property (nonatomic, retain) NSString * localizedValue;
 
 @end
 

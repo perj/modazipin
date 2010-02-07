@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="6"/>
+			<integer value="100225"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -547,6 +547,9 @@
 					<string>Title.DefaultText</string>
 					<string>SELF</string>
 					<string>self</string>
+					<string>Title.localizedValue</string>
+					<string>Publisher.localizedValue</string>
+					<string>Description.localizedValue</string>
 				</object>
 				<bool key="NSEditable">YES</bool>
 				<bool key="NSAutomaticallyPreparesContent">YES</bool>
@@ -659,54 +662,6 @@
 						</object>
 					</object>
 					<int key="connectionID">100232</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: selection.Description.DefaultText</string>
-						<reference key="source" ref="475212116"/>
-						<reference key="destination" ref="565607778"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="475212116"/>
-							<reference key="NSDestination" ref="565607778"/>
-							<string key="NSLabel">value: selection.Description.DefaultText</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">selection.Description.DefaultText</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">100233</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: arrangedObjects.Publisher.DefaultText</string>
-						<reference key="source" ref="872437137"/>
-						<reference key="destination" ref="565607778"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="872437137"/>
-							<reference key="NSDestination" ref="565607778"/>
-							<string key="NSLabel">value: arrangedObjects.Publisher.DefaultText</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">arrangedObjects.Publisher.DefaultText</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">100243</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: arrangedObjects.Title.DefaultText</string>
-						<reference key="source" ref="733259730"/>
-						<reference key="destination" ref="565607778"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="733259730"/>
-							<reference key="NSDestination" ref="565607778"/>
-							<string key="NSLabel">value: arrangedObjects.Title.DefaultText</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">arrangedObjects.Title.DefaultText</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">100248</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -835,6 +790,54 @@
 						</object>
 					</object>
 					<int key="connectionID">100312</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: arrangedObjects.Title.localizedValue</string>
+						<reference key="source" ref="733259730"/>
+						<reference key="destination" ref="565607778"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="733259730"/>
+							<reference key="NSDestination" ref="565607778"/>
+							<string key="NSLabel">value: arrangedObjects.Title.localizedValue</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">arrangedObjects.Title.localizedValue</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">100313</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.Description.localizedValue</string>
+						<reference key="source" ref="475212116"/>
+						<reference key="destination" ref="565607778"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="475212116"/>
+							<reference key="NSDestination" ref="565607778"/>
+							<string key="NSLabel">value: selection.Description.localizedValue</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.Description.localizedValue</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">100315</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: arrangedObjects.Publisher.localizedValue</string>
+						<reference key="source" ref="872437137"/>
+						<reference key="destination" ref="565607778"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="872437137"/>
+							<reference key="NSDestination" ref="565607778"/>
+							<string key="NSLabel">value: arrangedObjects.Publisher.localizedValue</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">arrangedObjects.Publisher.localizedValue</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">100317</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -1208,7 +1211,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">100312</int>
+			<int key="maxID">100317</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

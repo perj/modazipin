@@ -76,6 +76,96 @@
 @dynamic DefaultText;
 @dynamic languages;
 
+@synthesize localizedValue;
+
+- (void)updateLocalizedValue:(NSNotification*)notice
+{
+	/* XXX I should probably use a fetch request, but it is a bit of a bother right now. */
+	NSPredicate *equalTmpl = [NSPredicate predicateWithFormat:@"langcode == $code"];
+	NSPredicate *beginTmpl = [NSPredicate predicateWithFormat:@"langcode beginswith[c] $code"];
+	NSString *value = nil;
+	NSSet *available = [self languages];
+	
+	for (NSString *lang in [NSLocale preferredLanguages])
+	{
+		NSSet *found = [available filteredSetUsingPredicate:[equalTmpl predicateWithSubstitutionVariables:[NSDictionary dictionaryWithObject:lang forKey:@"code"]]];
+		if ([found count])
+		{
+			value = [[found anyObject] valueForKey:@"value"];
+			break;
+		}
+		
+		found = [available filteredSetUsingPredicate:[beginTmpl predicateWithSubstitutionVariables:[NSDictionary dictionaryWithObject:lang forKey:@"code"]]];
+		if ([found count])
+		{
+			value = [[found anyObject] valueForKey:@"value"];
+			break;
+		}
+		
+		NSRange usc = [lang rangeOfString:@"_"];
+		if (usc.location == NSNotFound)
+			continue;
+		NSString *prefix = [lang substringToIndex:usc.location];
+		
+		found = [available filteredSetUsingPredicate:[equalTmpl predicateWithSubstitutionVariables:[NSDictionary dictionaryWithObject:prefix forKey:@"code"]]];
+		if ([found count])
+		{
+			value = [[found anyObject] valueForKey:@"value"];
+			break;
+		}
+		
+		found = [available filteredSetUsingPredicate:[beginTmpl predicateWithSubstitutionVariables:[NSDictionary dictionaryWithObject:prefix forKey:@"code"]]];
+		if ([found count])
+		{
+			value = [[found anyObject] valueForKey:@"value"];
+			break;
+		}
+	}
+	
+	if (!value)
+		value = self.DefaultText;
+	
+	if (![value isEqualToString:localizedValue])
+	{
+		self.localizedValue = value;
+	}
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if ([keyPath isEqualToString:@"languages"])
+		[self updateLocalizedValue:nil];
+}
+
+- (void)listenForLocalizedValue
+{
+	[self updateLocalizedValue:nil];
+	
+	[self addObserver:self forKeyPath:@"languages" options:NSKeyValueChangeSetting | NSKeyValueChangeInsertion | NSKeyValueChangeRemoval | NSKeyValueChangeReplacement context:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateLocalizedValue:) name:NSCurrentLocaleDidChangeNotification object:nil];
+}
+
+- (void)didTurnIntoFault
+{
+	[self removeObserver:self forKeyPath:@"languages"];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSCurrentLocaleDidChangeNotification object:nil];
+}
+
+- (void)awakeFromInsert
+{
+	[super awakeFromInsert];
+	
+	[self listenForLocalizedValue];
+}
+
+- (void)awakeFromFetch
+{
+	[super awakeFromFetch];
+	
+	[self listenForLocalizedValue];	
+}
+
+
 @end
 
 

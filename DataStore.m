@@ -85,7 +85,7 @@
 	{
 		NSMutableDictionary *subdata = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 										[subnode name], @"langcode",
-										[subnode stringValue], @"value",
+										[[subnode stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]], @"value",
 										subnode, @"node",
 										nil];
 		id lnode = block(subdata, @"LocalizedText");
