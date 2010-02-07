@@ -21,7 +21,7 @@
 
 #import "AddInsList.h"
 #import "DataStore.h"
-#import "ArchiveWrapper.h"
+#import "DazipArchive.h"
 
 @implementation AddInsList
 
@@ -101,36 +101,21 @@ static AddInsList *sharedAddInsList;
 - (BOOL)installAddInItem:(NSXMLElement *)node withArchive:(NSURL*)url error:(NSError**)error
 {
 	AddInsListStore *store = [[[[self managedObjectContext] persistentStoreCoordinator] persistentStores] objectAtIndex:0];
-	Archive *archive = [Archive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
+	DazipArchive *archive = [DazipArchive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
 	NSURL *base = [self baseDirectory];
 	
 	if (!archive)
 		return NO;
 	
-	for (ArchiveMember *entry in archive)
+	for (DazipArchiveMember *entry in archive)
 	{
-		if ([[entry pathname] hasSuffix:@"/"])
+		if (entry.type == dmtManifest)
 			continue;
 		
-		/* XXX filter entries */
-		NSEnumerator *path = [[[entry pathname] pathComponents] objectEnumerator];
-		
-		if ([[path nextObject] caseInsensitiveCompare:@"Contents"] == NSOrderedSame)
-		{
-			NSURL *dst = base;
-			NSString *part;
-			
-			while ((part = [path nextObject]))
-			{
-				if ([part isEqualToString:@".."] || [part isEqualToString:@"."])
-					continue;
-				dst = [dst URLByAppendingPathComponent:part];
-			}
-			
-			/* XXX delete all files on error. */
-			if (![entry extractToURL:dst createDirectories:YES error:error])
-				return NO;
-		}
+		NSURL *dst = [base URLByAppendingPathComponent:[entry.pathname substringFromIndex:sizeof("Contents/") - 1]];
+		/* XXX delete all files on error. */
+		if (![entry extractToURL:dst createDirectories:YES error:error])
+			return NO;
 	}
 	
 	/* XXX delete all files on error. */

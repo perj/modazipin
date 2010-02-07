@@ -117,9 +117,11 @@ extern NSString * const ArchiveErrorDomain;
 }
 
 /* Only file URLs are supported for now. */
-+ (Archive*)archiveForReadingFromURL:(NSURL *)url encoding:(NSStringEncoding)encoding error:(NSError **)error;
++ (id)archiveForReadingFromURL:(NSURL *)url encoding:(NSStringEncoding)encoding error:(NSError **)error;
 
 - (id)initForReadingFromURL:(NSURL *)url encoding:(NSStringEncoding)enc error:(NSError **)error;
+
+- (Class)memberClass;
 
 - (ArchiveMember *)nextMemberWithError:(NSError**)error;
 

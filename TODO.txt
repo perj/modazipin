@@ -1,9 +1,6 @@
 This is a file with thoughts on what should be implemented and for what version.
 This list is likely to change, no guarantees what so ever.
 
-0.9.1
-Track all paths in dazip.
-
 1.0
 Option to quit modazipin when launching game.
 Scan unknown addins for files/contents.

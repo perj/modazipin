@@ -31,6 +31,7 @@
 		66581F0C10F3B0400088EC73 /* AddIn.m in Sources */ = {isa = PBXBuildFile; fileRef = 66581F0B10F3B0400088EC73 /* AddIn.m */; };
 		66726AED10FD26EB001EB75C /* dragon_4_doc.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66726AEC10FD26EB001EB75C /* dragon_4_doc.icns */; };
 		66B2D8611102644900997830 /* dragon_4.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66893CB210FCF88900A29832 /* dragon_4.icns */; };
+		66C74A0E111F0BEF0084E7AC /* DazipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C749EF111EFB360084E7AC /* DazipArchive.m */; };
 		66D0F66210F677F400C5B31A /* erf.c in Sources */ = {isa = PBXBuildFile; fileRef = 66D0F66110F677F400C5B31A /* erf.c */; };
 		66D0F6A810F681C400C5B31A /* libpcre.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D0F6A710F681C400C5B31A /* libpcre.dylib */; };
 		66D0F76A10F8F54100C5B31A /* ArchiveWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 66D0F76910F8F54100C5B31A /* ArchiveWrapper.m */; };
@@ -78,6 +79,8 @@
 		66716B6E10FFB5CF009F0009 /* README.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = README.rtf; sourceTree = "<group>"; };
 		66726AEC10FD26EB001EB75C /* dragon_4_doc.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = dragon_4_doc.icns; sourceTree = "<group>"; };
 		66893CB210FCF88900A29832 /* dragon_4.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = dragon_4.icns; sourceTree = "<group>"; };
+		66C749EE111EFB360084E7AC /* DazipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DazipArchive.h; sourceTree = "<group>"; };
+		66C749EF111EFB360084E7AC /* DazipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DazipArchive.m; sourceTree = "<group>"; };
 		66D0F65E10F66F2100C5B31A /* erf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = erf.h; sourceTree = "<group>"; };
 		66D0F66110F677F400C5B31A /* erf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = erf.c; sourceTree = "<group>"; };
 		66D0F68110F67C6700C5B31A /* pcre.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pcre.h; path = include/pcre.h; sourceTree = MacPorts; };
@@ -147,6 +150,8 @@
 		2A37F4ABFDCFA73011CA2CEA /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				66C749EE111EFB360084E7AC /* DazipArchive.h */,
+				66C749EF111EFB360084E7AC /* DazipArchive.m */,
 				66D0F76810F8F54100C5B31A /* ArchiveWrapper.h */,
 				66D0F76910F8F54100C5B31A /* ArchiveWrapper.m */,
 				66581F0A10F3B0400088EC73 /* AddIn.h */,
@@ -243,8 +248,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D15AC270486D014006FF6A4 /* Modazipin */,
 				66B2D8771102647F00997830 /* Modazipin.zip */,
+				8D15AC270486D014006FF6A4 /* Modazipin */,
 			);
 		};
 /* End PBXProject section */
@@ -282,6 +287,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# shell script goes here\nif [ \"$CONFIGURATION\" != \"Release\" ]; then\n\texit 1\nfi\ncd \"$TARGET_BUILD_DIR\"\nrm -f \"$PRODUCT_NAME\"\nzip -r \"$PRODUCT_NAME\" Modazipin.app\nzip -j \"$PRODUCT_NAME\" \"$SRCROOT/README.rtf\"";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -298,6 +304,7 @@
 				66581F0C10F3B0400088EC73 /* AddIn.m in Sources */,
 				66D0F66210F677F400C5B31A /* erf.c in Sources */,
 				66D0F76A10F8F54100C5B31A /* ArchiveWrapper.m in Sources */,
+				66C74A0E111F0BEF0084E7AC /* DazipArchive.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
