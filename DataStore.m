@@ -25,8 +25,6 @@
 
 #include "erf.h"
 
-#include <pcre.h>
-
 
 @implementation DataStore
 

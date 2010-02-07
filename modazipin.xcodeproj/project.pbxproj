@@ -34,7 +34,6 @@
 		66BBE8F4110C704100F4B94A /* DataStoreObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 66BBE8F3110C704100F4B94A /* DataStoreObject.m */; };
 		66C74A0E111F0BEF0084E7AC /* DazipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C749EF111EFB360084E7AC /* DazipArchive.m */; };
 		66D0F66210F677F400C5B31A /* erf.c in Sources */ = {isa = PBXBuildFile; fileRef = 66D0F66110F677F400C5B31A /* erf.c */; };
-		66D0F6A810F681C400C5B31A /* libpcre.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D0F6A710F681C400C5B31A /* libpcre.dylib */; };
 		66D0F76A10F8F54100C5B31A /* ArchiveWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 66D0F76910F8F54100C5B31A /* ArchiveWrapper.m */; };
 		775BDEF1067A8BF0009058FE /* modazipin.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 775BDEF0067A8BF0009058FE /* modazipin.xcdatamodel */; };
 		775DFF38067A968500C5B868 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A7FEA54F5311CA2CBB /* Cocoa.framework */; };
@@ -86,8 +85,6 @@
 		66C749EF111EFB360084E7AC /* DazipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DazipArchive.m; sourceTree = "<group>"; };
 		66D0F65E10F66F2100C5B31A /* erf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = erf.h; sourceTree = "<group>"; };
 		66D0F66110F677F400C5B31A /* erf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = erf.c; sourceTree = "<group>"; };
-		66D0F68110F67C6700C5B31A /* pcre.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pcre.h; path = include/pcre.h; sourceTree = MacPorts; };
-		66D0F6A710F681C400C5B31A /* libpcre.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcre.dylib; path = /usr/lib/libpcre.dylib; sourceTree = "<absolute>"; };
 		66D0F76810F8F54100C5B31A /* ArchiveWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveWrapper.h; sourceTree = "<group>"; };
 		66D0F76910F8F54100C5B31A /* ArchiveWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveWrapper.m; sourceTree = "<group>"; };
 		775BDEF0067A8BF0009058FE /* modazipin.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = modazipin.xcdatamodel; sourceTree = "<group>"; };
@@ -103,7 +100,6 @@
 			files = (
 				775DFF38067A968500C5B868 /* Cocoa.framework in Frameworks */,
 				66581ED610F3A7C00088EC73 /* libarchive.dylib in Frameworks */,
-				66D0F6A810F681C400C5B31A /* libpcre.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,8 +197,6 @@
 		2A37F4C3FDCFA73011CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				66D0F6A710F681C400C5B31A /* libpcre.dylib */,
-				66D0F68110F67C6700C5B31A /* pcre.h */,
 				66581EE610F3AAFC0088EC73 /* archive_entry.h */,
 				66581ED510F3A7C00088EC73 /* libarchive.dylib */,
 				66581ECD10F3A7840088EC73 /* archive.h */,
