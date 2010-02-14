@@ -64,11 +64,17 @@
 /*
  * Load a text node with DefaultText and language codes.
  */
-- (id)loadText:(NSXMLElement*)node error:(NSError **)error usingBlock:(loadNodeBlock)block
+- (id)loadText:(NSXMLElement*)node forItem:(id)addinitem error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
 	NSMutableDictionary *data = [NSMutableDictionary dictionary];
+	id res = createBlock(node, @"Text");
+	
+	if (!res)
+		return nil;
 	
 	[data setObject:node forKey:@"node"];
+	[data setObject:addinitem forKey:@"addInItem"];
+	
 	for (NSXMLNode *attr in [node attributes])
 	{
 		if ([[attr name] isEqualToString:@"DefaultText"])
@@ -85,26 +91,31 @@
 										[subnode name], @"langcode",
 										[[subnode stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]], @"value",
 										subnode, @"node",
+										res, @"text",
 										nil];
-		id lnode = block(subdata, @"LocalizedText");
+		id lnode = setBlock(createBlock(subnode, @"LocalizedText"), subdata);
 		
 		if (!lnode)
 			return nil;
-
+		
 		[langset addObject:lnode];
 	}
 	if ([langset count])
 		[data setObject:langset forKey:@"languages"];
 	
-	return block(data, @"Text");
+	return setBlock(res, data);
 }
 
-- (id)loadModazipin:(NSXMLElement*)node error:(NSError **)error usingBlock:(loadNodeBlock)block
+- (id)loadModazipin:(NSXMLElement*)node forItem:(id)addinitem error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
 	NSXMLElement *pathsNode = nil;
 	NSXMLElement *contentsNode = nil;
 	NSMutableSet *paths = [NSMutableSet set];
 	NSMutableSet *contents = [NSMutableSet set];
+	id res = createBlock(node, @"Modazipin");
+	
+	if (!res)
+		return nil;
 	
 	for (NSXMLElement *elem in [node children])
 	{
@@ -122,8 +133,9 @@
 										 [elem name], @"type",
 										 [[elem attributeForName:@"path"] stringValue], @"path",
 										 elem, @"node",
+										 res, @"modazipin",
 										 nil];
-			id pnode = block(data, @"Path");
+			id pnode = setBlock(createBlock(elem, @"Path"), data);
 			
 			if (!pnode)
 				return nil;
@@ -139,8 +151,9 @@
 			NSMutableDictionary *data = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 										 [[elem attributeForName:@"name"] stringValue], @"name",
 										 elem, @"node",
+										 res, @"modazipin",
 										 nil];
-			id cnode = block(data, @"Content");
+			id cnode = setBlock(createBlock(elem, @"Content"), data);
 			
 			if (!cnode)
 				return nil;
@@ -153,24 +166,33 @@
 								 paths, @"paths",
 								 contents, @"contents",
 								 node, @"node",
+								 addinitem, @"addInItem",
 								 nil];
-	return block(data, @"Modazipin");
+	return setBlock(res, data);
 }
 
 /*
  * Load a single AddInItem node.
  */
-- (BOOL)loadAddInItem:(NSXMLElement *)node error:(NSError **)error usingBlock:(loadNodeBlock)block
+- (id)loadAddInItem:(NSXMLElement *)node forManifest:(id)manifest error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
 	NSMutableDictionary *data;
+	id res;
 	
 	if (![[node name] isEqualToString:@"AddInItem"])
 		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Node is not an AddInItem"
 							   userInfo:[NSDictionary dictionaryWithObject:node forKey:@"node"]] raise];
 	
+	res = createBlock(node, @"AddInItem");
+	if (!res)
+		return nil;
+	
 	data = [NSMutableDictionary dictionary];
 	
 	[data setObject:node forKey:@"node"];
+	if (manifest)
+		[data setObject:manifest forKey:@"manifest"];
+	
 	for (NSXMLNode *attr in [node attributes])
 	{
 		if ([[attr name] isEqualToString:@"UID"]
@@ -202,10 +224,10 @@
 			|| [[subnode name] isEqualToString:@"URL"]
 			|| [[subnode name] isEqualToString:@"Publisher"])
 		{
-			id tnode = [self loadText:subnode error:error usingBlock:block];
+			id tnode = [self loadText:subnode forItem:res error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
 			
 			if (!tnode)
-				return NO;
+				return nil;
 			
 			[data setObject:tnode forKey:[subnode name]];
 			continue;
@@ -236,23 +258,23 @@
 		
 		if ([[subnode name] isEqualToString:@"modazipin"])
 		{
-			id mnode = [self loadModazipin:subnode error:error usingBlock:block];
+			id mnode = [self loadModazipin:subnode forItem:res error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
 			
 			if (!mnode)
-				return NO;
+				return nil;
 			
 			[data setObject:mnode forKey:[subnode name]];
 			continue;
 		}
 	}
 	
-	return block(data, @"AddInItem") != nil;
+	return setBlock(res, data);
 }
 
 /*
  * Load an AddInsList node
  */
-- (BOOL)loadAddInsList:(NSXMLElement *)node error:(NSError **)error usingBlock:(loadNodeBlock)block
+- (BOOL)loadAddInsList:(NSXMLElement *)node error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
 	/* XXX should probably return error instead of exception */
 	if (![[node name] isEqualToString:@"AddInsList"])
@@ -260,7 +282,7 @@
 							   userInfo:[NSDictionary dictionaryWithObject:node forKey:@"node"]] raise];
 	
 	for (NSXMLElement *subnode in [node children]) {
-		BOOL res = [self loadAddInItem:subnode error:error usingBlock:block];
+		id res = [self loadAddInItem:subnode forManifest:nil error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
 		
 		if (!res)
 			return NO;
@@ -274,9 +296,13 @@
 	NSXMLNode *parent = [node parent];
 	NSString *me = [node name];
 	
-	/* Only AddInItem need a different identifier. */
 	if ([me isEqualToString:@"AddInItem"])
 		return [[(NSXMLElement *)node attributeForName:@"UID"] stringValue];
+	
+	if ([me isEqualToString:@"file"] || [me isEqualToString:@"dir"])
+		me = [NSString stringWithFormat:@"%@:%@", me, [[(NSXMLElement*)node attributeForName:@"path"] stringValue]];
+	else if ([me isEqualToString:@"content"])
+		me = [NSString stringWithFormat:@"content:%@", [[(NSXMLElement*)node attributeForName:@"name"] stringValue]];
 	
 	if ([node level] == 1 || !parent)
 		return me;
@@ -284,111 +310,13 @@
 	return [[self uniqueForNode:parent] stringByAppendingFormat:@"/%@", me];
 }
 
-- (id)makeCacheNode:(NSMutableDictionary*)data forEntityName:(NSString*)name
+- (id)makeCacheNode:(NSXMLElement*)elem forEntityName:(NSString*)name
 {
 	NSEntityDescription *entity = [[[[self persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:name];
-	NSManagedObjectID *objid = [self objectIDForEntity:entity referenceObject:[self uniqueForNode:[data objectForKey:@"node"]]];
+	NSManagedObjectID *objid = [self objectIDForEntity:entity referenceObject:[self uniqueForNode:elem]];
 	NSAtomicStoreCacheNode *cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:objid];
 	
-	[cnode setPropertyCache:data];
-	
 	return cnode;
-}
-
-- (void)updateCacheNode:(NSAtomicStoreCacheNode *)node fromManagedObject:(NSManagedObject *)managedObject
-{
-	DataStoreObject *obj = (DataStoreObject*)managedObject;
-	NSXMLElement *elem = (NSXMLElement*)obj.node;
-	NSXMLNode *attr;
-	AddInItem *item;
-	
-	/* Only support updating Enabled for now */
-	
-	if (![[elem name] isEqualToString:@"AddInItem"])
-		return;
-	
-	item = (AddInItem*)obj;
-	attr = [elem attributeForName:@"Enabled"];
-	if ([item.Enabled intValue])
-		[attr setStringValue:@"1"];
-	else
-		[attr setStringValue:@"0"];
-	[node setValue:item.Enabled forKey:@"Enabled"];
-}
-
-- (id)newReferenceObjectForManagedObject:(NSManagedObject *)managedObject
-{
-	DataStoreObject *obj = (DataStoreObject*)managedObject;
-	
-	return [self uniqueForNode:obj.node];
-}
-
-- (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject
-{
-	NSMutableDictionary *data = [NSMutableDictionary dictionary];
-	DataStoreObject *obj = (DataStoreObject*)managedObject;
-	NSAtomicStoreCacheNode *cnode = [self cacheNodeForObjectID:[obj objectID]];
-	
-	if (cnode)
-		return cnode; /* Cache node was created through a relationship already. */
-	
-	for (NSPropertyDescription *prop in [obj entity])
-	{
-		NSString *key = [prop name];
-		id value = [obj valueForKey:key];
-		
-		if ([[prop class] isSubclassOfClass:[NSRelationshipDescription class]])
-		{
-			NSRelationshipDescription *rel = (NSRelationshipDescription*)prop;
-			
-			if ([rel isToMany])
-			{
-				NSMutableSet *set = [NSMutableSet set];
-				
-				for (DataStoreObject *o in value)
-				{
-					cnode = [self cacheNodeForObjectID:[o objectID]];
-					
-					if (!cnode)
-					{
-						/* No risk of recursion since we only have one-way relationships. */
-						cnode = [self newCacheNodeForManagedObject:o];
-						[self addCacheNodes:[NSSet setWithObject:cnode]];
-					}
-					[set addObject:cnode];
-				}
-				[data setObject:set forKey:key];
-			}
-			else
-			{
-				DataStoreObject *o = value;
-				
-				cnode = [self cacheNodeForObjectID:[o objectID]];
-				if (!cnode)
-				{
-					/* No risk of recursion since we only have one-way relationships. */
-					cnode = [self newCacheNodeForManagedObject:o];
-					[self addCacheNodes:[NSSet setWithObject:cnode]];
-				}
-				[data setObject:cnode forKey:key];
-			}
-		}
-		else
-			[data setObject:[value copy] forKey:key];
-	}
-	[data setObject:obj.node forKey:@"node"];
-	
-	return [self makeCacheNode:data forEntityName:[[obj entity] name]];
-}
-
-- (void)willRemoveCacheNodes:(NSSet *)cacheNodes
-{
-	for (NSAtomicStoreCacheNode *cnode in cacheNodes)
-	{
-		NSXMLNode *node = [[cnode propertyCache] objectForKey:@"node"];
-		
-		[node detach];
-	}
 }
 
 - (NSXMLElement*)makeModazipinNodeForContents:(NSSet*)contents files:(NSSet*)files dirs:(NSSet*)dirs
@@ -427,6 +355,108 @@
 	
 	[res addChild:contentsNode];
 	return res;
+}
+
+@end
+
+
+@implementation DataStore (AtomicStoreCallbacks)
+
+- (void)updateCacheNode:(NSAtomicStoreCacheNode *)node fromManagedObject:(NSManagedObject *)managedObject
+{
+	DataStoreObject *obj = (DataStoreObject*)managedObject;
+	NSXMLElement *elem = (NSXMLElement*)obj.node;
+	NSXMLNode *attr;
+	AddInItem *item;
+	
+	/* Only support updating Enabled for now */
+	
+	if (![[elem name] isEqualToString:@"AddInItem"])
+		return;
+	
+	item = (AddInItem*)obj;
+	attr = [elem attributeForName:@"Enabled"];
+	if ([item.Enabled intValue])
+		[attr setStringValue:@"1"];
+	else
+		[attr setStringValue:@"0"];
+	[node setValue:item.Enabled forKey:@"Enabled"];
+}
+
+- (id)newReferenceObjectForManagedObject:(NSManagedObject *)managedObject
+{
+	DataStoreObject *obj = (DataStoreObject*)managedObject;
+	
+	return [self uniqueForNode:obj.node];
+}
+
+- (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject
+{
+	/* This function is completely generic. */
+	NSMutableDictionary *data = [NSMutableDictionary dictionary];
+	NSAtomicStoreCacheNode *cnode;
+	
+	for (NSPropertyDescription *prop in [managedObject entity])
+	{
+		NSString *key = [prop name];
+		id value = [managedObject valueForKey:key];
+		
+		if (!value)
+			continue;
+		
+		if ([[prop class] isSubclassOfClass:[NSRelationshipDescription class]])
+		{
+			NSRelationshipDescription *rel = (NSRelationshipDescription*)prop;
+			
+			if ([rel isToMany])
+			{
+				NSMutableSet *set = [NSMutableSet set];
+				
+				for (NSManagedObject *o in value)
+				{
+					cnode = [self cacheNodeForObjectID:[o objectID]];
+					
+					if (!cnode)
+					{
+						cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[o objectID]];
+						[self addCacheNodes:[NSSet setWithObject:cnode]];
+					}
+					[set addObject:cnode];
+				}
+				[data setObject:set forKey:key];
+			}
+			else
+			{
+				NSManagedObject *o = value;
+				
+				cnode = [self cacheNodeForObjectID:[o objectID]];
+				if (!cnode)
+				{
+					cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[o objectID]];
+					[self addCacheNodes:[NSSet setWithObject:cnode]];
+				}
+				[data setObject:cnode forKey:key];
+			}
+		}
+		else
+			[data setObject:[value copy] forKey:key];
+	}
+	
+	cnode = [self cacheNodeForObjectID:[managedObject objectID]];
+	if (!cnode)
+		cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[managedObject objectID]];
+	[cnode setPropertyCache:data];
+	return cnode;
+}
+
+- (void)willRemoveCacheNodes:(NSSet *)cacheNodes
+{
+	for (NSAtomicStoreCacheNode *cnode in cacheNodes)
+	{
+		NSXMLNode *node = [[cnode propertyCache] objectForKey:@"node"];
+		
+		[node detach];
+	}
 }
 
 @end
@@ -473,12 +503,18 @@
 		return YES;
 	
 	NSMutableSet *set = [NSMutableSet set];
-	BOOL res = [self loadAddInsList:[xmldoc rootElement] error:error usingBlock:^(NSMutableDictionary *data, NSString *entityName)
+	BOOL res = [self loadAddInsList:[xmldoc rootElement] error:error
+				   usingCreateBlock:^(NSXMLElement *elem, NSString *entityName)
 	{
-		id cnode = [self makeCacheNode:data forEntityName:entityName];
+		id cnode = [self makeCacheNode:elem forEntityName:entityName];
 		
 		[set addObject:cnode];
 		return cnode;
+	} usingSetBlock:^(id obj, NSMutableDictionary *data)
+	{
+		[obj setPropertyCache:data];
+		
+		return obj;
 	}];
 	if (!res)
 		return NO;
@@ -498,18 +534,15 @@
 {
 	node = [node copy];
 	
-	BOOL res = [self loadAddInItem:node error:error usingBlock:^(NSMutableDictionary *data, NSString *entityName)
+	id res = [self loadAddInItem:node forManifest:nil error:error usingCreateBlock:^(NSXMLElement *elem, NSString *entityName)
 	{
-		DataStoreObject *obj = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
-		
+		return [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
+	} usingSetBlock:^(id obj, NSMutableDictionary *data)
+	{
 		for (NSString *key in data) {
-			if ([key isEqualToString:@"node"])
-				obj.node = [data objectForKey:key];
-			else
-				[obj setValue:[data objectForKey:key] forKey:key];
+			[obj setValue:[data objectForKey:key] forKey:key];
 		}
-		
-		return (id)obj;
+		return obj;
 	}];
 	
 	if (!res)
@@ -654,12 +687,17 @@
 	
 	NSMutableSet *set = [NSMutableSet set];
 	BOOL res = [self loadAddInsList:(NSXMLElement*)[rootelem childAtIndex:0] error:error
-						 usingBlock:^(NSMutableDictionary *data, NSString *entityName)
+						 usingCreateBlock:^(NSXMLElement *elem, NSString *entityName)
 	{
-		id cnode = [self makeCacheNode:data forEntityName:entityName];
+		id cnode = [self makeCacheNode:elem forEntityName:entityName];
 		
 		[set addObject:cnode];
 		return cnode;
+	} usingSetBlock:^(id obj, NSMutableDictionary *data)
+	{
+		[obj setPropertyCache:data];
+		
+		return obj;
 	}];
 	
 	if (!res)

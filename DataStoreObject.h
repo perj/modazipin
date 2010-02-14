@@ -23,10 +23,9 @@
 
 
 @interface DataStoreObject : NSManagedObject {
-	NSXMLNode *node;
 }
 
-@property(retain) NSXMLNode *node;
+@property(nonatomic, retain) NSXMLNode *node;
 
 @end
 

@@ -25,7 +25,7 @@
 
 @implementation DataStoreObject
 
-@synthesize node;
+@dynamic node;
 
 - (void)awakeFromFetch
 {

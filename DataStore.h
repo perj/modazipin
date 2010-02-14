@@ -21,7 +21,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-typedef id (^loadNodeBlock)(NSMutableDictionary *data, NSString *entityName);
+typedef id (^createObjBlock)(NSXMLElement *elem, NSString *entityName);
+typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 
 @interface DataStore : NSAtomicStore
 {
