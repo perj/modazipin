@@ -528,7 +528,7 @@
 	if (self && url)
 	{
 		/* XXX guessing encoding. */
-		DazipArchive *archive = [ArchiveWrapper archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:nil];
+		DazipArchive *archive = [DazipArchive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:nil];
 		NSData *xmldata = nil;
 
 		NSMutableSet *files = [NSMutableSet set];
