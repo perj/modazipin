@@ -59,7 +59,7 @@ static AddInsList *sharedAddInsList;
 	[window setRepresentedURL:[self fileURL]];
 	[[window standardWindowButton:NSWindowDocumentIconButton] setImage:[NSImage imageNamed:@"dragon_4"]];
 	
-	[itemsController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"Title.DefaultText" ascending:YES]]];
+	[itemsController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"Title.localizedValue" ascending:YES]]];
 	[itemsController rearrangeObjects];
 	
 	[launchGameButton setKeyEquivalent:@"\r"];
@@ -164,7 +164,7 @@ static AddInsList *sharedAddInsList;
 					  NULL,
 					  addin,
 					  @"This will completely delete the addin \"%@\". You will not be able to reinstall it without the original file.",
-					  addin.Title.DefaultText);
+					  addin.Title.localizedValue);
 }
 								  
 - (void)answerUninstall:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo

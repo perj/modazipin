@@ -58,7 +58,7 @@
 							   NULL,
 							   NULL,
 							   @"This addin could not be installed because it conflicts with \"%@\"",
-							   b.Title.DefaultText);
+							   b.Title.localizedValue);
 }
 
 - (void)displayPathsConflictFor:(AddInItem*)a and:(AddInItem*)b
@@ -86,7 +86,7 @@
 							   NULL,
 							   NULL,
 							   @"This addin could not be installed because it contains these items also contained by \"%@\":\n\n%@",
-							   b.Title.DefaultText,
+							   b.Title.localizedValue,
 							   [arr componentsJoinedByString:@"\n"]);
 }
 

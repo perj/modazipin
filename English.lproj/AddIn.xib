@@ -329,6 +329,12 @@
 					<string>Rating.DefaultText</string>
 					<string>RatingDescription.DefaultText</string>
 					<string>URL.DefaultText</string>
+					<string>Title.localizedValue</string>
+					<string>Publisher.localizedValue</string>
+					<string>RatingDescription.localizedValue</string>
+					<string>Rating.localizedValue</string>
+					<string>URL.localizedValue</string>
+					<string>Description.localizedValue</string>
 				</array>
 				<bool key="NSEditable">YES</bool>
 				<bool key="NSAutomaticallyPreparesContent">YES</bool>
@@ -437,126 +443,6 @@
 					<int key="connectionID">88</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: selection.Title.DefaultText</string>
-						<reference key="source" ref="197488880"/>
-						<reference key="destination" ref="514782376"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="197488880"/>
-							<reference key="NSDestination" ref="514782376"/>
-							<string key="NSLabel">value: selection.Title.DefaultText</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">selection.Title.DefaultText</string>
-							<object class="NSDictionary" key="NSOptions">
-								<string key="NS.key.0">NSConditionallySetsEditable</string>
-								<boolean value="NO" key="NS.object.0"/>
-							</object>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">149</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: selection.Publisher.DefaultText</string>
-						<reference key="source" ref="609853323"/>
-						<reference key="destination" ref="514782376"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="609853323"/>
-							<reference key="NSDestination" ref="514782376"/>
-							<string key="NSLabel">value: selection.Publisher.DefaultText</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">selection.Publisher.DefaultText</string>
-							<object class="NSDictionary" key="NSOptions">
-								<string key="NS.key.0">NSConditionallySetsEditable</string>
-								<boolean value="NO" key="NS.object.0"/>
-							</object>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">153</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: selection.Description.DefaultText</string>
-						<reference key="source" ref="373919572"/>
-						<reference key="destination" ref="514782376"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="373919572"/>
-							<reference key="NSDestination" ref="514782376"/>
-							<string key="NSLabel">value: selection.Description.DefaultText</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">selection.Description.DefaultText</string>
-							<object class="NSDictionary" key="NSOptions">
-								<string key="NS.key.0">NSConditionallySetsEditable</string>
-								<boolean value="NO" key="NS.object.0"/>
-							</object>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">167</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: selection.Rating.DefaultText</string>
-						<reference key="source" ref="561015434"/>
-						<reference key="destination" ref="514782376"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="561015434"/>
-							<reference key="NSDestination" ref="514782376"/>
-							<string key="NSLabel">value: selection.Rating.DefaultText</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">selection.Rating.DefaultText</string>
-							<object class="NSDictionary" key="NSOptions">
-								<string key="NS.key.0">NSConditionallySetsEditable</string>
-								<boolean value="NO" key="NS.object.0"/>
-							</object>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">171</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: selection.RatingDescription.DefaultText</string>
-						<reference key="source" ref="183252664"/>
-						<reference key="destination" ref="514782376"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="183252664"/>
-							<reference key="NSDestination" ref="514782376"/>
-							<string key="NSLabel">value: selection.RatingDescription.DefaultText</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">selection.RatingDescription.DefaultText</string>
-							<object class="NSDictionary" key="NSOptions">
-								<string key="NS.key.0">NSConditionallySetsEditable</string>
-								<boolean value="NO" key="NS.object.0"/>
-							</object>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">175</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: selection.URL.DefaultText</string>
-						<reference key="source" ref="854680856"/>
-						<reference key="destination" ref="514782376"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="854680856"/>
-							<reference key="NSDestination" ref="514782376"/>
-							<string key="NSLabel">value: selection.URL.DefaultText</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">selection.URL.DefaultText</string>
-							<object class="NSDictionary" key="NSOptions">
-								<string key="NS.key.0">NSConditionallySetsEditable</string>
-								<boolean value="NO" key="NS.object.0"/>
-							</object>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">179</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="897028704"/>
@@ -579,6 +465,102 @@
 						<reference key="destination" ref="273555136"/>
 					</object>
 					<int key="connectionID">186</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.Title.localizedValue</string>
+						<reference key="source" ref="197488880"/>
+						<reference key="destination" ref="514782376"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="197488880"/>
+							<reference key="NSDestination" ref="514782376"/>
+							<string key="NSLabel">value: selection.Title.localizedValue</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.Title.localizedValue</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">187</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.Publisher.localizedValue</string>
+						<reference key="source" ref="609853323"/>
+						<reference key="destination" ref="514782376"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="609853323"/>
+							<reference key="NSDestination" ref="514782376"/>
+							<string key="NSLabel">value: selection.Publisher.localizedValue</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.Publisher.localizedValue</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">188</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.RatingDescription.localizedValue</string>
+						<reference key="source" ref="183252664"/>
+						<reference key="destination" ref="514782376"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="183252664"/>
+							<reference key="NSDestination" ref="514782376"/>
+							<string key="NSLabel">value: selection.RatingDescription.localizedValue</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.RatingDescription.localizedValue</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">189</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.Rating.localizedValue</string>
+						<reference key="source" ref="561015434"/>
+						<reference key="destination" ref="514782376"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="561015434"/>
+							<reference key="NSDestination" ref="514782376"/>
+							<string key="NSLabel">value: selection.Rating.localizedValue</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.Rating.localizedValue</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">190</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.URL.localizedValue</string>
+						<reference key="source" ref="854680856"/>
+						<reference key="destination" ref="514782376"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="854680856"/>
+							<reference key="NSDestination" ref="514782376"/>
+							<string key="NSLabel">value: selection.URL.localizedValue</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.URL.localizedValue</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">191</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.Description.localizedValue</string>
+						<reference key="source" ref="373919572"/>
+						<reference key="destination" ref="514782376"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="373919572"/>
+							<reference key="NSDestination" ref="514782376"/>
+							<string key="NSLabel">value: selection.Description.localizedValue</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.Description.localizedValue</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">192</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -814,7 +796,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">186</int>
+			<int key="maxID">192</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
