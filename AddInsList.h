@@ -38,13 +38,23 @@
 
 - (BOOL)installAddInItem:(NSXMLElement *)node withArchive:(NSURL*)url error:(NSError**)error;
 
-- (IBAction)askUninstall:(DataStoreObject*)addin;
+- (IBAction)askUninstall:(AddInItem*)addin;
 
-- (BOOL)uninstall:(DataStoreObject*)addin error:(NSError**)error;
+- (BOOL)uninstall:(AddInItem*)addin error:(NSError**)error;
+
+- (void)selectItemWithUid:(NSString*)uid;
+
+@end
+
+@interface AddInsList (GameLaunching)
+
+@property NSMetadataItem *spotlightGameItem;
+
+- (void)updateLaunchButtonImage;
+
+- (BOOL)searchSpotlightForGame;
 
 - (NSURL*)gameURL;
-@property NSMetadataItem *spotlightGameItem;
-- (BOOL)searchSpotlightForGame;
 
 - (IBAction)launchGame:(id)sender;
 

@@ -32,6 +32,8 @@ static AddInsList *sharedAddInsList;
 	return sharedAddInsList;
 }
 
+@synthesize spotlightGameItem;
+
 - (id)init 
 {
 	NSAssert(sharedAddInsList == nil, @"Already a shared AddInsList");
@@ -47,25 +49,6 @@ static AddInsList *sharedAddInsList;
 - (NSString *)windowNibName 
 {
     return @"AddInsList";
-}
-
-- (void)updateLaunchButtonImage
-{
-	NSURL *url = [self gameURL];
-	
-	if (!url)
-	{
-		[self searchSpotlightForGame];
-		return;
-	}
-	
-	NSBundle *gameBundle = [NSBundle bundleWithURL:url];
-	NSDictionary *gameInfo = [gameBundle infoDictionary];
-	NSString *imageName = [gameInfo objectForKey:@"CFBundleIconFile"];
-	NSURL *imageURL = [gameBundle URLForImageResource:imageName];
-	NSImage *img = [[NSImage alloc] initByReferencingURL:imageURL];
-	if (img)
-		[launchGameButton setImage:img];
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)windowController 
@@ -224,7 +207,37 @@ static AddInsList *sharedAddInsList;
 	return YES;
 }
 
-@synthesize spotlightGameItem;
+- (void)selectItemWithUid:(NSString *)uid
+{
+	NSFetchRequest *req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"addInWithUID" substitutionVariables:[NSDictionary dictionaryWithObject:uid forKey:@"UID"]];
+	NSArray *arr = [[self managedObjectContext] executeFetchRequest:req error:nil];
+	
+	if ([arr count])
+		[itemsController setSelectedObjects:arr];
+}
+
+@end
+
+@implementation AddInsList (GameLaunching)
+
+- (void)updateLaunchButtonImage
+{
+	NSURL *url = [self gameURL];
+	
+	if (!url)
+	{
+		[self searchSpotlightForGame];
+		return;
+	}
+	
+	NSBundle *gameBundle = [NSBundle bundleWithURL:url];
+	NSDictionary *gameInfo = [gameBundle infoDictionary];
+	NSString *imageName = [gameInfo objectForKey:@"CFBundleIconFile"];
+	NSURL *imageURL = [gameBundle URLForImageResource:imageName];
+	NSImage *img = [[NSImage alloc] initByReferencingURL:imageURL];
+	if (img)
+		[launchGameButton setImage:img];
+}
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {

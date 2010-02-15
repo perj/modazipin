@@ -135,6 +135,7 @@
 		}
 		[list installAddInItem:(NSXMLElement*)[obj node] withArchive:[self fileURL] error:&err];
 	}
+	[list selectItemWithUid:[[arr objectAtIndex:0] UID]];
 	[list saveDocument:self];
 	[list showWindows];
 	[self close];
