@@ -28,6 +28,8 @@ typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 {
 	NSString *identifier;
 	NSXMLDocument *xmldoc;
+	
+	NSError *loadError;
 }
 
 @property(copy) NSString *identifier;

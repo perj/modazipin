@@ -53,10 +53,16 @@ static AddInsList *sharedAddInsList;
 	
 	if (![self configurePersistentStoreCoordinatorForURL:addinsURL ofType:@"AddInsListStore" 
 									  modelConfiguration:@"addins" storeOptions:nil error:error])
+	{
+		sharedAddInsList = nil;
 		return NO;
+	}
 	if (![self configurePersistentStoreCoordinatorForURL:offersURL ofType:@"OfferListStore" 
 									  modelConfiguration:@"offers" storeOptions:nil error:error])
+	{
+		sharedAddInsList = nil;
 		return NO;
+	}
 	
 	return YES;
 }

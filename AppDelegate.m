@@ -55,13 +55,6 @@ static BOOL fatal = NO;
 		NSURL *addins = [[NSURL URLWithString:@"BioWare/Dragon%20Age" relativeToURL:documents] standardizedURL];
 		NSDocument *doc;
 		
-		if (![addins checkResourceIsReachableAndReturnError:&err])
-		{
-			fatal = YES;
-			NSRunCriticalAlertPanel(@"Error", @"Dragon Age addins data was not found. Make sure you have started the game at least once.", @"Quit", nil, nil);
-			[NSApp terminate:self];
-		}
-		
 		if ((doc = [[NSDocumentController sharedDocumentController] documentForURL:addins]))
 			[doc showWindows];
 		else
@@ -77,6 +70,12 @@ static BOOL fatal = NO;
 				[[NSDocumentController sharedDocumentController] addDocument:doc];
 				[doc makeWindowControllers];
 				[doc showWindows];
+			}
+			else
+			{
+				fatal = YES;
+				NSRunCriticalAlertPanel(@"Error", @"Dragon Age addins data was not found. Make sure you have started the game at least once.", @"Quit", nil, nil);
+				[NSApp terminate:self];
 			}
 		}
 	}

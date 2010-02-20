@@ -25,6 +25,24 @@
 
 #include "erf.h"
 
+@implementation DataStore (Errors)
+
+- (NSError*)dataStoreError:(NSInteger)code msg:(NSString*)fmt, ... NS_FORMAT_FUNCTION(2,3)
+{
+	va_list ap;
+	
+	va_start(ap, fmt);
+	NSString *msg = [[NSString alloc] initWithFormat:fmt arguments:ap];
+	va_end(ap);
+	
+	return [NSError errorWithDomain:@"DataStoreError" code:code userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+																		  msg, NSLocalizedDescriptionKey,
+																		  [self URL], NSURLErrorKey,
+																		  nil]];
+}
+
+@end
+
 
 @implementation DataStore
 
@@ -39,26 +57,27 @@
 			nil];
 }
 
-- (void)loadXML:(NSData *)data ofType:(NSString*)rootType
+- (BOOL)loadXML:(NSData *)data ofType:(NSString*)rootType error:(NSError**)error
 {
 	NSInteger xmlopt = NSXMLNodePreserveCharacterReferences | NSXMLNodePreserveWhitespace;
-	NSError *error;
 	
 	NSAssert(xmldoc == nil, @"xmldoc != nil");
 	
-	xmldoc = [[NSXMLDocument alloc] initWithData:data options:xmlopt error:&error];
+	xmldoc = [[NSXMLDocument alloc] initWithData:data options:xmlopt error:error];
 	
 	if (!xmldoc)
-	{
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not read XML"] userInfo:nil] raise];
-	}
+		return NO;
 	
 	NSXMLElement *rootelem = [xmldoc rootElement];
 	
 	if (![[rootelem name] isEqualToString:rootType])
 	{
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"XML is not of type '%@'", rootType] userInfo:nil] raise];
+		if (error)
+			*error = [self dataStoreError:4 msg:@"XML is not of type '%@'", rootType];
+		return NO;
 	}
+	
+	return YES;
 }
 
 
@@ -267,8 +286,11 @@
 	id res;
 	
 	if (![[node name] isEqualToString:@"AddInItem"])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Node is not an AddInItem"
-							   userInfo:[NSDictionary dictionaryWithObject:node forKey:@"node"]] raise];
+	{
+		if (error)
+			*error = [self dataStoreError:5 msg:@"Node is not an AddInItem"];
+		return nil;
+	}
 	
 	res = createBlock(node, @"AddInItem");
 	if (!res)
@@ -297,10 +319,12 @@
  */
 - (BOOL)loadAddInsList:(NSXMLElement *)node error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
-	/* XXX should probably return error instead of exception */
 	if (![[node name] isEqualToString:@"AddInsList"])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Node is not an AddInsList"
-							   userInfo:[NSDictionary dictionaryWithObject:node forKey:@"node"]] raise];
+	{
+		if (error)
+			*error = [self dataStoreError:5 msg:@"Node is not an AddInsList"];
+		return NO;
+	}
 	
 	for (NSXMLElement *subnode in [node children]) {
 		id res = [self loadAddInItem:subnode forManifest:nil error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
@@ -381,8 +405,11 @@
 	id res;
 	
 	if (![[node name] isEqualToString:@"OfferItem"])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Node is not an AddInItem"
-							   userInfo:[NSDictionary dictionaryWithObject:node forKey:@"node"]] raise];
+	{
+		if (error)
+			*error = [self dataStoreError:5 msg:@"Node is not an OfferItem"];
+		return nil;
+	}
 	
 	res = createBlock(node, @"OfferItem");
 	if (!res)
@@ -423,10 +450,12 @@
  */
 - (BOOL)loadOfferList:(NSXMLElement *)node error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
-	/* XXX should probably return error instead of exception */
 	if (![[node name] isEqualToString:@"OfferList"])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Node is not an OfferList"
-							   userInfo:[NSDictionary dictionaryWithObject:node forKey:@"node"]] raise];
+	{
+		if (error)
+			*error = [self dataStoreError:5 msg:@"Node is not an OfferList"];
+		return NO;
+	}
 	
 	for (NSXMLElement *subnode in [node children]) {
 		id res = [self loadOfferItem:subnode forManifest:nil error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
@@ -513,37 +542,69 @@
 	return res;
 }
 
-- (NSXMLElement *)verifyManifestOfType:(NSString*)manifestType listNodeType:(NSString*)listNodeType
+- (NSXMLElement *)verifyManifestOfType:(NSString*)manifestType listNodeType:(NSString*)listNodeType error:(NSError**)error
 {
 	NSXMLElement *root = [xmldoc rootElement];
 	
 	if (![[[root attributeForName:@"Type"] stringValue] isEqualToString:manifestType])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Manifest type is not %@", manifestType] userInfo:nil] raise];
+	{
+		if (error)
+			[self dataStoreError:6 msg:@"Manifest type is not %@", manifestType];
+		return nil;
+	}
 	
 	if ([root childCount] < 1)
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"No contents in manifest"] userInfo:nil] raise];
+	{
+		if (error)
+			[self dataStoreError:7 msg:@"No contents in manifest"];
+		return nil;
+	}
 	
 	if ([root childCount] > 1)
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Unexpected contents in manifest"] userInfo:nil] raise];
+	{
+		if (error)
+			[self dataStoreError:8 msg:@"Unexpected contents in manifest"];
+		return nil;
+	}
 	
 	NSXMLElement *listNode = (NSXMLElement*)[root childAtIndex:0];
 	
 	if (![[listNode name] isEqualToString:listNodeType])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Manifest contents is not %@", listNodeType] userInfo:nil] raise];
+	{
+		if (error)
+			[self dataStoreError:9 msg:@"Manifest contents is not %@", listNodeType];
+		return nil;
+	}
 	
 	if ([listNode childCount] < 1)
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"No contents in list"] userInfo:nil] raise];
+	{
+		if (error)
+			[self dataStoreError:10 msg:@"No contents in list"];
+		return nil;
+	}
 	
 	if ([listNode childCount] > 1)
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"More than one item listed"] userInfo:nil] raise];
+	{
+		if (error)
+			[self dataStoreError:11 msg:@"More than one item listed"];
+		return nil;
+	}
 	
 	NSXMLElement *itemNode = (NSXMLElement*)[listNode childAtIndex:0];
 	
 	if (![[itemNode name] isEqualToString:[NSString stringWithFormat:@"%@Item", manifestType]])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Unexpected item kind"] userInfo:nil] raise];
+	{
+		if (error)
+			[self dataStoreError:12 msg:@"Unexpected item kind"];
+		return nil;
+	}
 	
 	if (![[[itemNode attributeForName:@"UID"] stringValue] length])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"No UID for item"] userInfo:nil] raise];
+	{
+		if (error)
+			[self dataStoreError:13 msg:@"No UID for item"];
+		return nil;
+	}
 	
 	return itemNode;
 }
@@ -658,26 +719,10 @@
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self && url)
 	{
-		NSError *error = nil;
-		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&error];
-		
-		if (!xmldata)
-		{
-			if ([url isFileURL] && [[error domain] isEqualToString:NSURLErrorDomain])
-			{
-				NSInteger code = [error code];
-				
-				if ((code == NSURLErrorCannotOpenFile) || (code == NSURLErrorZeroByteResource))
-				{
-					[[NSFileManager defaultManager] createFileAtPath:[url path] contents:nil attributes:nil];
-				}
-			}
-			else
-				[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not open URL %@", url] userInfo:nil] raise];
-			xmldoc = nil;
-		}
-		else
-			[self loadXML:xmldata ofType:@"AddInsList"];
+		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&loadError];
+
+		if (xmldata)
+			[self loadXML:xmldata ofType:@"AddInsList" error:&loadError];
 		
 		self.identifier = @"AddInsList";
 	}
@@ -686,6 +731,14 @@
 
 - (BOOL)load:(NSError **)error
 {
+	if (loadError)
+	{
+		if (error)
+			*error = loadError;
+		loadError = nil;
+		return NO;
+	}
+	
 	if (!xmldoc)
 		return YES;
 	
@@ -753,26 +806,10 @@
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self && url)
 	{
-		NSError *error = nil;
-		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&error];
+		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&loadError];
 		
-		if (!xmldata)
-		{
-			if ([url isFileURL] && [[error domain] isEqualToString:NSURLErrorDomain])
-			{
-				NSInteger code = [error code];
-				
-				if ((code == NSURLErrorCannotOpenFile) || (code == NSURLErrorZeroByteResource))
-				{
-					[[NSFileManager defaultManager] createFileAtPath:[url path] contents:nil attributes:nil];
-				}
-			}
-			else
-				[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not open URL %@", url] userInfo:nil] raise];
-			xmldoc = nil;
-		}
-		else
-			[self loadXML:xmldata ofType:@"OfferList"];
+		if (xmldata)
+			[self loadXML:xmldata ofType:@"OfferList" error:&loadError];
 		
 		self.identifier = @"OfferList";
 	}
@@ -781,6 +818,14 @@
 
 - (BOOL)load:(NSError **)error
 {
+	if (loadError)
+	{
+		if (error)
+			*error = loadError;
+		loadError = nil;
+		return NO;
+	}
+	
 	if (!xmldoc)
 		return YES;
 	
@@ -846,16 +891,20 @@
 
 - (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator configurationName:(NSString *)configurationName URL:(NSURL *)url options:(NSDictionary *)options {
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
-	if (self && url)
+	if (self)
 	{
-		NSDictionary *dazipData = [self loadDazip:url error:nil];
+		NSDictionary *dazipData = [self loadDazip:url error:&loadError];
+		
+		if (!dazipData)
+			return self;
 		
 		NSData *xmldata = [dazipData objectForKey:@"manifest"];
 		NSMutableSet *files = [dazipData objectForKey:@"files"];
 		NSMutableSet *dirs = [dazipData objectForKey:@"directories"];
 		NSMutableSet *contents = [dazipData objectForKey:@"contents"];
 		
-		[self loadXML:xmldata ofType:@"Manifest"];
+		if (![self loadXML:xmldata ofType:@"Manifest" error:&loadError])
+			return self;
 		
 		NSString *manifestType = [[[xmldoc rootElement] attributeForName:@"Type"] stringValue];
 		NSString *listNodeType = nil;
@@ -872,9 +921,14 @@
 			mainDirectory = @"Offers";
 		}
 		else
-			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Unknown manifest type"] userInfo:nil] raise];
+		{
+			loadError = [self dataStoreError:1 msg:@"Unknown manifest type"];
+			return self;
+		}
 			
-		NSXMLElement *itemNode = [self verifyManifestOfType:manifestType listNodeType:listNodeType];
+		NSXMLElement *itemNode = [self verifyManifestOfType:manifestType listNodeType:listNodeType error:&loadError];
+		if (!itemNode)
+			return self;
 		
 		/* Filter files and dirs to only be those paths outside of the addin main directory. */
 		NSPredicate *notInItem = [NSPredicate predicateWithFormat:@"NOT (SELF ==[c] %@)",
@@ -909,10 +963,10 @@
 	{
 		switch (entry.type)
 		{
-			case dmtManifest:
-				xmldata = [entry data];
-				break;
-			case dmtERF:
+		case dmtManifest:
+			xmldata = [entry data];
+			break;
+		case dmtERF:
 			{
 				NSData *erfdata = entry.data;
 				
@@ -929,27 +983,31 @@
 																			  encoding:NSUTF16LittleEndianStringEncoding]];
 							   });
 			}
-				/* Fall through */
-				if (0)
-				{
-				case dmtFile:
-					[contents addObject:entry.contentName];
-				}
-				switch (entry.contentType)
+			/* Fall through */
+			if (0)
 			{
-				case dmctFile:
-					[files addObject:entry.contentPath];
-					break;
-				case dmctDirectory:
-					[dirs addObject:entry.contentPath];
-					break;
+		case dmtFile:
+				[contents addObject:entry.contentName];
 			}
+			switch (entry.contentType)
+			{
+			case dmctFile:
+				[files addObject:entry.contentPath];
 				break;
+			case dmctDirectory:
+				[dirs addObject:entry.contentPath];
+				break;
+			}
+			break;
 		}
 	}
 	
 	if (!xmldata)
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not find Manifest.xml in URL %@", url] userInfo:nil] raise];
+	{
+		if (error)
+			*error = [self dataStoreError:2 msg:@"Could not find manifest"];
+		return nil;
+	}
 	
 	return [NSDictionary dictionaryWithObjectsAndKeys:
 			xmldata, @"manifest",
@@ -961,6 +1019,14 @@
 
 - (BOOL)load:(NSError **)error
 {
+	if (loadError)
+	{
+		if (error)
+			*error = loadError;
+		loadError = nil;
+		return NO;
+	}
+	
 	if (!xmldoc)
 		return YES;
 	
