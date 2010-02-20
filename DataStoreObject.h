@@ -21,6 +21,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class Item;
+@class Modazipin;
 
 @interface DataStoreObject : NSManagedObject {
 }
@@ -34,6 +36,7 @@
 {
 }
 
+@property (nonatomic, retain) Modazipin * modazipin;
 @property (nonatomic, retain) NSString * name;
 
 @end
@@ -43,6 +46,7 @@
 {
 }
 
+@property (nonatomic, retain) Modazipin * modazipin;
 @property (nonatomic, retain) NSString * path;
 @property (nonatomic, retain) NSString * type;
 
@@ -54,11 +58,11 @@
 }
 
 @property (nonatomic, retain) NSSet* contents;
+@property (nonatomic, retain) Item * item;
 @property (nonatomic, retain) NSSet* paths;
 
 @end
 
-// coalesce these into one @interface Modazipin (CoreDataGeneratedAccessors) section
 @interface Modazipin (CoreDataGeneratedAccessors)
 - (void)addContentsObject:(Content *)value;
 - (void)removeContentsObject:(Content *)value;
@@ -93,7 +97,6 @@
 
 @end
 
-// coalesce these into one @interface Text (CoreDataGeneratedAccessors) section
 @interface Text (CoreDataGeneratedAccessors)
 - (void)addLanguagesObject:(LocalizedText *)value;
 - (void)removeLanguagesObject:(LocalizedText *)value;
@@ -103,12 +106,11 @@
 @end
 
 
-@interface AddInItem : DataStoreObject
+@interface Item : DataStoreObject
 {
 }
 
 @property (nonatomic, retain) NSDecimalNumber * BioWare;
-@property (nonatomic, retain) NSDecimalNumber * Enabled;
 @property (nonatomic, retain) NSString * ExtendedModuleUID;
 @property (nonatomic, retain) NSDecimalNumber * Format;
 @property (nonatomic, retain) NSString * GameVersion;
@@ -117,9 +119,7 @@
 @property (nonatomic, retain) NSDecimalNumber * Price;
 @property (nonatomic, retain) NSDecimalNumber * Priority;
 @property (nonatomic, retain) NSString * ReleaseDate;
-@property (nonatomic, retain) NSDecimalNumber * RequiresAuthorization;
 @property (nonatomic, retain) NSDecimalNumber * Size;
-@property (nonatomic, retain) NSDecimalNumber * State;
 @property (nonatomic, retain) NSDecimalNumber * Type;
 @property (nonatomic, retain) NSString * UID;
 @property (nonatomic, retain) NSString * Version;
@@ -132,6 +132,55 @@
 @property (nonatomic, retain) Text * URL;
 
 @end
+
+
+@interface AddInItem : Item
+{
+}
+
+@property (nonatomic, retain) NSDecimalNumber * Enabled;
+@property (nonatomic, retain) NSDecimalNumber * RequiresAuthorization;
+@property (nonatomic, retain) NSDecimalNumber * State;
+
+@property (readonly) BOOL canToggleEnabled;
+
+@end
+
+
+/* Probably could inherit Item here but it complicates validation. */
+@interface PRCItem : DataStoreObject
+{
+}
+
+@property (nonatomic, retain) NSString * microContentID;
+@property (nonatomic, retain) NSString * ProductID;
+@property (nonatomic, retain) Text * Title;
+@property (nonatomic, retain) NSString * Version;
+
+
+@end
+
+
+@interface OfferItem : Item
+{
+}
+
+@property (nonatomic, retain) NSDecimalNumber * Presentation;
+@property (nonatomic, retain) NSSet* PRCList;
+
+@property (readonly) BOOL Enabled;
+@property (readonly) BOOL canToggleEnabled;
+
+@end
+
+@interface OfferItem (CoreDataGeneratedAccessors)
+- (void)addPRCListObject:(PRCItem *)value;
+- (void)removePRCListObject:(PRCItem *)value;
+- (void)addPRCList:(NSSet *)value;
+- (void)removePRCList:(NSSet *)value;
+
+@end
+
 
 
 @interface Manifest : DataStoreObject
@@ -149,11 +198,27 @@
 
 @end
 
-// coalesce these into one @interface AddInManifest (CoreDataGeneratedAccessors) section
 @interface AddInManifest (CoreDataGeneratedAccessors)
 - (void)addAddInsListObject:(AddInItem *)value;
 - (void)removeAddInsListObject:(AddInItem *)value;
 - (void)addAddInsList:(NSSet *)value;
 - (void)removeAddInsList:(NSSet *)value;
+
+@end
+
+
+@interface OfferManifest : Manifest
+{
+}
+
+@property (nonatomic, retain) NSSet* OfferList;
+
+@end
+
+@interface OfferManifest (CoreDataGeneratedAccessors)
+- (void)addOfferListObject:(OfferItem *)value;
+- (void)removeOfferListObject:(OfferItem *)value;
+- (void)addOfferList:(NSSet *)value;
+- (void)removeOfferList:(NSSet *)value;
 
 @end

@@ -46,9 +46,34 @@ static AddInsList *sharedAddInsList;
     return self;
 }
 
+- (BOOL)readFromURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)error
+{
+	NSURL *addinsURL = [absoluteURL URLByAppendingPathComponent:@"Settings/AddIns.xml"];
+	NSURL *offersURL = [absoluteURL URLByAppendingPathComponent:@"Settings/Offers.xml"];
+	
+	if (![self configurePersistentStoreCoordinatorForURL:addinsURL ofType:@"AddInsListStore" 
+									  modelConfiguration:@"addins" storeOptions:nil error:error])
+		return NO;
+	if (![self configurePersistentStoreCoordinatorForURL:offersURL ofType:@"OfferListStore" 
+									  modelConfiguration:@"offers" storeOptions:nil error:error])
+		return NO;
+	
+	return YES;
+}
+
+- (BOOL)writeSafelyToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation error:(NSError **)outError
+{
+	return [[self managedObjectContext] save:outError];
+}
+
 - (NSString *)windowNibName 
 {
     return @"AddInsList";
+}
+
+- (NSString *)persistentStoreTypeForFileType:(NSString *)fileType
+{
+	return fileType;
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)windowController 
@@ -66,29 +91,24 @@ static AddInsList *sharedAddInsList;
 	[self updateLaunchButtonImage];
 }
 
-- (NSString *)persistentStoreTypeForFileType:(NSString *)fileType
+- (BOOL)installItems:(NSArray*)items withArchive:(NSURL*)url error:(NSError**)error
 {
-	return @"AddInsListStore";
-}
-
-- (NSURL *)baseDirectory
-{
-	NSURL *settings = [[self fileURL] URLByDeletingLastPathComponent];
-	
-	if ([[settings lastPathComponent] caseInsensitiveCompare:@"Settings"] != NSOrderedSame)
-		return nil;
-	
-	return [settings URLByDeletingLastPathComponent];
-}
-
-- (BOOL)installAddInItem:(NSXMLElement *)node withArchive:(NSURL*)url error:(NSError**)error
-{
-	AddInsListStore *store = [[[[self managedObjectContext] persistentStoreCoordinator] persistentStores] objectAtIndex:0];
 	DazipArchive *archive = [DazipArchive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
-	NSURL *base = [self baseDirectory];
+	NSURL *base = [self fileURL];
+	AddInsListStore *addinsStore = nil;
+	OfferListStore *offersStore = nil;
 	
 	if (!archive)
 		return NO;
+	
+	/* Could use persistentStoreForURL:, but this works as well. */
+	for (id store in [[[self managedObjectContext] persistentStoreCoordinator] persistentStores])
+	{
+		if ([store class] == [AddInsListStore self])
+			addinsStore = store;
+		else if ([store class] == [OfferListStore self])
+			offersStore = store;
+	}
 	
 	for (DazipArchiveMember *entry in archive)
 	{
@@ -101,14 +121,26 @@ static AddInsList *sharedAddInsList;
 			return NO;
 	}
 	
-	/* XXX delete all files on error. */
-	return [store insertAddInNode:node error:error intoContext:[self managedObjectContext]];
+	/* XXX delete all files and items on error. */
+	for (NSXMLElement *node in items)
+	{
+		BOOL b = NO;
+		
+		if ([[node name] isEqualToString:@"AddInItem"])
+			b = [addinsStore insertAddInNode:node error:error intoContext:[self managedObjectContext]];
+		else if ([[node name] isEqualToString:@"OfferItem"])
+			b = [offersStore insertOfferNode:node error:error intoContext:[self managedObjectContext]];
+		
+		if (!b)
+			return NO;
+	}
+	return YES;
 }
 
 - (BOOL)syncFilesFromContext:(NSError **)error
 {
-	NSURL *base = [self baseDirectory];	
-	NSArray *addins = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"addinsWithPaths"] error:error];
+	NSURL *base = [self fileURL];	
+	NSArray *addins = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"addinsWithAnyPath"] error:error];
 	
 	if (!addins)
 		return NO;
@@ -178,7 +210,7 @@ static AddInsList *sharedAddInsList;
 - (BOOL)uninstall:(AddInItem*)addin error:(NSError **)error
 {
 	NSSet *paths = addin.modazipin.paths;
-	NSURL *base = [self baseDirectory];
+	NSURL *base = [self fileURL];
 	
 	for (Path *path in paths)
 	{
@@ -209,7 +241,7 @@ static AddInsList *sharedAddInsList;
 
 - (void)selectItemWithUid:(NSString *)uid
 {
-	NSFetchRequest *req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"addInWithUID" substitutionVariables:[NSDictionary dictionaryWithObject:uid forKey:@"UID"]];
+	NSFetchRequest *req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"itemWithUID" substitutionVariables:[NSDictionary dictionaryWithObject:uid forKey:@"UID"]];
 	NSArray *arr = [[self managedObjectContext] executeFetchRequest:req error:nil];
 	
 	if ([arr count])

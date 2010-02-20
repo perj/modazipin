@@ -339,7 +339,7 @@
 				<bool key="NSEditable">YES</bool>
 				<bool key="NSAutomaticallyPreparesContent">YES</bool>
 				<object class="_NSManagedProxy" key="_NSManagedProxy">
-					<string key="NSEntityName">AddInItem</string>
+					<string key="NSEntityName">Item</string>
 				</object>
 				<bool key="_NSIsUsingManagedProxy">YES</bool>
 			</object>
@@ -601,7 +601,7 @@
 						<int key="objectID">3</int>
 						<reference key="object" ref="514782376"/>
 						<reference key="parent" ref="0"/>
-						<string key="objectName">Add In Item Controller</string>
+						<string key="objectName">Dazip Controller</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">2</int>

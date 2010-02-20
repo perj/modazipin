@@ -19,12 +19,12 @@
  * THE SOFTWARE.
  */
 
-#import "AddIn.h"
+#import "Dazip.h"
 #import "AddInsList.h"
 #import "AppDelegate.h"
 #import "DataStore.h"
 
-@implementation AddIn
+@implementation Dazip
 
 - (id)init 
 {
@@ -37,7 +37,7 @@
 
 - (NSString *)windowNibName 
 {
-    return @"AddIn";
+    return @"Dazip";
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)windowController 
@@ -46,7 +46,7 @@
     // user interface preparation code
 }
 
-- (void)displayUIDConflictFor:(AddInItem*)a and:(AddInItem*)b
+- (void)displayUIDConflictFor:(Item*)a and:(Item*)b
 {
 	NSBeginCriticalAlertSheet (@"Duplicate",
 							   @"OK",
@@ -61,7 +61,7 @@
 							   b.Title.localizedValue);
 }
 
-- (void)displayPathsConflictFor:(AddInItem*)a and:(AddInItem*)b
+- (void)displayPathsConflictFor:(Item*)a and:(Item*)b
 {
 	NSMutableArray *arr = [NSMutableArray array];
 	NSSet *aPaths = a.modazipin.paths;
@@ -101,40 +101,29 @@
 	}
 	
 	NSError *err;
-	NSArray *arr = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"allAddIns"] error:&err];
+	NSArray *arr = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"allItems"] error:&err];
+
+	NSFetchRequest *uidFetch = [[list managedObjectModel] fetchRequestFromTemplateWithName:@"itemsWithUIDs" substitutionVariables:[NSDictionary dictionaryWithObject:[arr valueForKey:@"UID"] forKey:@"UIDs"]];
+	NSArray *uidConflict = [[list managedObjectContext] executeFetchRequest:uidFetch error:&err];
 	
-	for (AddInItem *obj in arr)
+	if ([uidConflict count])
 	{
-		NSSet *objPaths = obj.modazipin.paths;
-		
-		NSArray *installed = [[list managedObjectContext] executeFetchRequest:[[list managedObjectModel] fetchRequestTemplateForName:@"allAddIns"] error:&err];
-		for (AddInItem *item in installed)
-		{
-			if ([obj.UID caseInsensitiveCompare:item.UID] == NSOrderedSame)
-			{
-				[self displayUIDConflictFor:obj and:item];
-				return;
-			}
-			
-			NSSet *itemPaths = item.modazipin.paths;
-			if (objPaths && itemPaths) 
-			{
-				/* XXX Is there a better way to do this? (can't really use LIKE since I don't know if values contain * and ? */
-				for (Path *opath in objPaths)
-				{
-					for (Path *ipath in itemPaths)
-					{
-						if ([opath.path caseInsensitiveCompare:ipath.path] == NSOrderedSame)
-						{
-							[self displayPathsConflictFor:obj and:item];
-							return;
-						}
-					}
-				}
-			}
-		}
-		[list installAddInItem:(NSXMLElement*)[obj node] withArchive:[self fileURL] error:&err];
+		[self displayUIDConflictFor:[arr objectAtIndex:0] and:[uidConflict objectAtIndex:0]];
+		return;
 	}
+	
+	NSArray *paths = [[[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"allPaths"] error:&err] valueForKey:@"path"];
+	NSFetchRequest *pathsFetch = [[list managedObjectModel] fetchRequestFromTemplateWithName:@"itemsWithPaths" substitutionVariables:[NSDictionary dictionaryWithObject:paths forKey:@"paths"]];
+	NSArray *pathsConflict = [[list managedObjectContext] executeFetchRequest:pathsFetch error:&err];
+	
+	if ([pathsConflict count])
+	{
+		[self displayPathsConflictFor:[arr objectAtIndex:0] and:[pathsConflict objectAtIndex:0]];
+		return;
+	}
+	
+	[list installItems:[arr valueForKey:@"node"] withArchive:[self fileURL] error:&err];
+	
 	[list selectItemWithUid:[[arr objectAtIndex:0] UID]];
 	[list saveDocument:self];
 	[list showWindows];

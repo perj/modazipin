@@ -32,6 +32,8 @@ typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 
 @property(copy) NSString *identifier;
 
+- (id)makeCacheNode:(NSXMLElement*)elem forEntityName:(NSString*)name;
+
 @end
 
 
@@ -43,10 +45,18 @@ typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 
 @end
 
-@interface AddInStore : DataStore
+@interface OfferListStore : DataStore
 {
 }
 
-- (NSXMLElement *)verifyManifest;
+- (BOOL)insertOfferNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context;
+
+@end
+
+@interface DazipStore : DataStore
+{
+}
+
+- (NSDictionary*)loadDazip:(NSURL *)url error:(NSError**)error;
 
 @end

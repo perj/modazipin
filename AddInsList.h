@@ -34,13 +34,11 @@
 
 + (AddInsList*)sharedAddInsList;
 
-- (NSURL *)baseDirectory;
+- (BOOL)installItems:(NSArray *)items withArchive:(NSURL*)url error:(NSError**)error;
 
-- (BOOL)installAddInItem:(NSXMLElement *)node withArchive:(NSURL*)url error:(NSError**)error;
+- (IBAction)askUninstall:(Item*)addin;
 
-- (IBAction)askUninstall:(AddInItem*)addin;
-
-- (BOOL)uninstall:(AddInItem*)addin error:(NSError**)error;
+- (BOOL)uninstall:(Item*)addin error:(NSError**)error;
 
 - (void)selectItemWithUid:(NSString*)uid;
 

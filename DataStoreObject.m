@@ -42,6 +42,7 @@
 @implementation Content
 
 @dynamic name;
+@dynamic modazipin;
 
 @end
 
@@ -49,6 +50,7 @@
 
 @implementation Path
 
+@dynamic modazipin;
 @dynamic path;
 @dynamic type;
 
@@ -58,6 +60,7 @@
 @implementation Modazipin
 
 @dynamic contents;
+@dynamic item;
 @dynamic paths;
 
 @end
@@ -169,10 +172,9 @@
 @end
 
 
-@implementation AddInItem
+@implementation Item
 
 @dynamic BioWare;
-@dynamic Enabled;
 @dynamic ExtendedModuleUID;
 @dynamic Format;
 @dynamic GameVersion;
@@ -181,9 +183,7 @@
 @dynamic Price;
 @dynamic Priority;
 @dynamic ReleaseDate;
-@dynamic RequiresAuthorization;
 @dynamic Size;
-@dynamic State;
 @dynamic Type;
 @dynamic UID;
 @dynamic Version;
@@ -194,6 +194,48 @@
 @dynamic RatingDescription;
 @dynamic Title;
 @dynamic URL;
+
+@end
+
+
+@implementation AddInItem
+
+@dynamic Enabled;
+@dynamic RequiresAuthorization;
+@dynamic State;
+
+- (BOOL)canToggleEnabled
+{
+	return YES;
+}
+
+@end
+
+
+@implementation PRCItem
+
+@dynamic microContentID;
+@dynamic ProductID;
+@dynamic Title;
+@dynamic Version;
+
+@end
+
+
+@implementation OfferItem
+
+@dynamic Presentation;
+@dynamic PRCList;
+
+- (BOOL)Enabled
+{
+	return YES;
+}
+
+- (BOOL)canToggleEnabled
+{
+	return NO;
+}
 
 @end
 

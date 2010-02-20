@@ -22,7 +22,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface AddIn : NSPersistentDocument {
+@interface Dazip : NSPersistentDocument {
 
 }
 

@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="100225"/>
+			<integer value="100200"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -550,11 +550,12 @@
 					<string>Title.localizedValue</string>
 					<string>Publisher.localizedValue</string>
 					<string>Description.localizedValue</string>
+					<string>canToggleEnabled</string>
 				</object>
 				<bool key="NSEditable">YES</bool>
 				<bool key="NSAutomaticallyPreparesContent">YES</bool>
 				<object class="_NSManagedProxy" key="_NSManagedProxy">
-					<string key="NSEntityName">AddInItem</string>
+					<string key="NSEntityName">Item</string>
 				</object>
 				<bool key="_NSIsUsingManagedProxy">YES</bool>
 				<bool key="NSAvoidsEmptySelection">YES</bool>
@@ -599,22 +600,6 @@
 						</object>
 					</object>
 					<int key="connectionID">100146</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: arrangedObjects.Enabled</string>
-						<reference key="source" ref="23942345"/>
-						<reference key="destination" ref="565607778"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="23942345"/>
-							<reference key="NSDestination" ref="565607778"/>
-							<string key="NSLabel">value: arrangedObjects.Enabled</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">arrangedObjects.Enabled</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">100205</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -840,6 +825,38 @@
 					</object>
 					<int key="connectionID">100317</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: arrangedObjects.Enabled</string>
+						<reference key="source" ref="23942345"/>
+						<reference key="destination" ref="565607778"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="23942345"/>
+							<reference key="NSDestination" ref="565607778"/>
+							<string key="NSLabel">value: arrangedObjects.Enabled</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">arrangedObjects.Enabled</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">100322</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: arrangedObjects.canToggleEnabled</string>
+						<reference key="source" ref="23942345"/>
+						<reference key="destination" ref="565607778"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="23942345"/>
+							<reference key="NSDestination" ref="565607778"/>
+							<string key="NSLabel">enabled: arrangedObjects.canToggleEnabled</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">arrangedObjects.canToggleEnabled</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">100323</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -900,7 +917,7 @@
 						<int key="objectID">100145</int>
 						<reference key="object" ref="565607778"/>
 						<reference key="parent" ref="0"/>
-						<string key="objectName">Add In Item Array Controller</string>
+						<string key="objectName">AddIns Array Controller</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">100147</int>
@@ -1212,7 +1229,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">100317</int>
+			<int key="maxID">100323</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

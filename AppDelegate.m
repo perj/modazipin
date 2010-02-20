@@ -30,7 +30,8 @@ static BOOL fatal = NO;
 - (void)applicationWillFinishLaunching:(NSNotification *)notice
 {
 	[NSPersistentStoreCoordinator registerStoreClass:[AddInsListStore self] forStoreType:@"AddInsListStore"];
-	[NSPersistentStoreCoordinator registerStoreClass:[AddInStore self] forStoreType:@"AddInStore"];
+	[NSPersistentStoreCoordinator registerStoreClass:[OfferListStore self] forStoreType:@"OfferListStore"];
+	[NSPersistentStoreCoordinator registerStoreClass:[DazipStore self] forStoreType:@"DazipStore"];
 	[self openAddInsList:self];
 }
 
@@ -51,7 +52,7 @@ static BOOL fatal = NO;
 	if (documents)
 	{
 		/* Manually open the AddIns.xml file, to avoid registering as opener of all .xml files */
-		NSURL *addins = [[NSURL URLWithString:@"BioWare/Dragon%20Age/Settings/AddIns.xml" relativeToURL:documents] standardizedURL];
+		NSURL *addins = [[NSURL URLWithString:@"BioWare/Dragon%20Age" relativeToURL:documents] standardizedURL];
 		NSDocument *doc;
 		
 		if (![addins checkResourceIsReachableAndReturnError:&err])

@@ -24,9 +24,9 @@
 			<key>LSTypeIsPackage</key>
 			<false/>
 			<key>NSDocumentClass</key>
-			<string>AddIn</string>
+			<string>Dazip</string>
 			<key>NSPersistentStoreTypeKey</key>
-			<string>AddInStore</string>
+			<string>DazipStore</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>

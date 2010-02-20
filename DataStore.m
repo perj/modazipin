@@ -61,10 +61,11 @@
 	}
 }
 
+
 /*
  * Load a text node with DefaultText and language codes.
  */
-- (id)loadText:(NSXMLElement*)node forItem:(id)addinitem error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+- (id)loadText:(NSXMLElement*)node forItem:(id)item error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
 	NSMutableDictionary *data = [NSMutableDictionary dictionary];
 	id res = createBlock(node, @"Text");
@@ -73,7 +74,7 @@
 		return nil;
 	
 	[data setObject:node forKey:@"node"];
-	[data setObject:addinitem forKey:@"addInItem"];
+	[data setObject:item forKey:@"item"];
 	
 	for (NSXMLNode *attr in [node attributes])
 	{
@@ -106,7 +107,7 @@
 	return setBlock(res, data);
 }
 
-- (id)loadModazipin:(NSXMLElement*)node forItem:(id)addinitem error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+- (id)loadModazipin:(NSXMLElement*)node forItem:(id)item error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
 	NSXMLElement *pathsNode = nil;
 	NSXMLElement *contentsNode = nil;
@@ -166,28 +167,17 @@
 								 paths, @"paths",
 								 contents, @"contents",
 								 node, @"node",
-								 addinitem, @"addInItem",
+								 item, @"item",
 								 nil];
 	return setBlock(res, data);
 }
 
 /*
- * Load a single AddInItem node.
+ * Load data common for AddIns and Offers
  */
-- (id)loadAddInItem:(NSXMLElement *)node forManifest:(id)manifest error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+- (NSMutableDictionary*)loadItem:(id)item node:(NSXMLElement*)node forManifest:(id)manifest error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
-	NSMutableDictionary *data;
-	id res;
-	
-	if (![[node name] isEqualToString:@"AddInItem"])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Node is not an AddInItem"
-							   userInfo:[NSDictionary dictionaryWithObject:node forKey:@"node"]] raise];
-	
-	res = createBlock(node, @"AddInItem");
-	if (!res)
-		return nil;
-	
-	data = [NSMutableDictionary dictionary];
+	NSMutableDictionary *data = [NSMutableDictionary dictionary];
 	
 	[data setObject:node forKey:@"node"];
 	if (manifest)
@@ -204,11 +194,8 @@
 		}
 		
 		if ([[attr name] isEqualToString:@"Priority"]
-			|| [[attr name] isEqualToString:@"Enabled"]
-			|| [[attr name] isEqualToString:@"State"]
 			|| [[attr name] isEqualToString:@"Format"]
-			|| [[attr name] isEqualToString:@"BioWare"]
-			|| [[attr name] isEqualToString:@"RequiresAuthorization"])
+			|| [[attr name] isEqualToString:@"BioWare"])
 		{
 			[data setObject:[NSDecimalNumber decimalNumberWithString:[attr stringValue]] forKey:[attr name]];
 			continue;
@@ -224,7 +211,7 @@
 			|| [[subnode name] isEqualToString:@"URL"]
 			|| [[subnode name] isEqualToString:@"Publisher"])
 		{
-			id tnode = [self loadText:subnode forItem:res error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+			id tnode = [self loadText:subnode forItem:item error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
 			
 			if (!tnode)
 				return nil;
@@ -258,12 +245,46 @@
 		
 		if ([[subnode name] isEqualToString:@"modazipin"])
 		{
-			id mnode = [self loadModazipin:subnode forItem:res error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+			id mnode = [self loadModazipin:subnode forItem:item error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
 			
 			if (!mnode)
 				return nil;
 			
 			[data setObject:mnode forKey:[subnode name]];
+			continue;
+		}
+	}
+	
+	return data;
+}
+
+/*
+ * Load a single AddInItem node.
+ */
+- (id)loadAddInItem:(NSXMLElement *)node forManifest:(id)manifest error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+{
+	NSMutableDictionary *data;
+	id res;
+	
+	if (![[node name] isEqualToString:@"AddInItem"])
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Node is not an AddInItem"
+							   userInfo:[NSDictionary dictionaryWithObject:node forKey:@"node"]] raise];
+	
+	res = createBlock(node, @"AddInItem");
+	if (!res)
+		return nil;
+	
+	data = [self loadItem:res node:node forManifest:manifest error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+	if (!data)
+		return nil;
+	
+	for (NSXMLNode *attr in [node attributes])
+	{
+		if ([[attr name] isEqualToString:@"Enabled"]
+			|| [[attr name] isEqualToString:@"State"]
+			|| [[attr name] isEqualToString:@"RequiresAuthorization"])
+		{
+			[data setObject:[NSDecimalNumber decimalNumberWithString:[attr stringValue]] forKey:[attr name]];
 			continue;
 		}
 	}
@@ -291,12 +312,147 @@
 	return YES;
 }
 
+/*
+ * Load an AddinManifest. Currently just loads the list.
+ */
+- (BOOL)loadAddInManifest:(NSXMLElement *)node error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+{
+	return [self loadAddInsList:(NSXMLElement*)[node childAtIndex:0] error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+}
+
+/*
+ * Load a PRCList node with PRCItem subnodes.
+ */
+- (id)loadPRCList:(NSXMLElement*)node forOfferItem:(id)item error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+{
+	NSMutableSet *pset = [NSMutableSet set];
+	
+	for (NSXMLElement *subnode in [node children])
+	{
+		NSMutableDictionary *data = [NSMutableDictionary dictionary];
+		id pnode = createBlock(subnode, @"PRCItem");
+		
+		if (!pnode)
+			return nil;
+		
+		[data setObject:subnode forKey:@"node"];
+		[data setObject:item forKey:@"offerItem"];
+		
+		for (NSXMLNode *attr in [subnode attributes])
+		{
+			if ([[attr name] isEqualToString:@"ProductID"]
+				|| [[attr name] isEqualToString:@"microContentID"]
+				|| [[attr name] isEqualToString:@"Version"])
+			{
+				[data setObject:[attr stringValue] forKey:[attr name]];
+				continue;
+			}
+		}
+		
+		for (NSXMLElement *subsubnode in [subnode children])
+		{
+			if ([[subsubnode name] isEqualToString:@"Title"])
+			{
+				id tnode = [self loadText:subsubnode forItem:pnode error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+				
+				if (!tnode)
+					return nil;
+				
+				[data setObject:tnode forKey:[subsubnode name]];
+				continue;
+			}
+		}
+		
+		pnode = setBlock(pnode, data);
+		if (!pnode)
+			return nil;
+		
+		[pset addObject:pnode];
+	}
+	return pset;
+}
+
+/*
+ * Load a single OfferItem node.
+ */
+- (id)loadOfferItem:(NSXMLElement *)node forManifest:(id)manifest error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+{
+	NSMutableDictionary *data;
+	id res;
+	
+	if (![[node name] isEqualToString:@"OfferItem"])
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Node is not an AddInItem"
+							   userInfo:[NSDictionary dictionaryWithObject:node forKey:@"node"]] raise];
+	
+	res = createBlock(node, @"OfferItem");
+	if (!res)
+		return nil;
+	
+	data = [self loadItem:res node:node forManifest:manifest error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+	if (!data)
+		return nil;
+	
+	for (NSXMLNode *attr in [node attributes])
+	{
+		if ([[attr name] isEqualToString:@"Presentation"])
+		{
+			[data setObject:[NSDecimalNumber decimalNumberWithString:[attr stringValue]] forKey:[attr name]];
+			continue;
+		}
+	}
+	
+	for (NSXMLElement *subnode in [node children])
+	{
+		if ([[subnode name] isEqualToString:@"PRCList"])
+		{
+			NSMutableSet *pset = [self loadPRCList:subnode forOfferItem:res error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+			
+			if (!pset)
+				return NO;
+			
+			[data setObject:pset forKey:[subnode name]];
+			continue;
+		}
+	}
+	
+	return setBlock(res, data);
+}
+
+/*
+ * Load an OfferList node
+ */
+- (BOOL)loadOfferList:(NSXMLElement *)node error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+{
+	/* XXX should probably return error instead of exception */
+	if (![[node name] isEqualToString:@"OfferList"])
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:@"Node is not an OfferList"
+							   userInfo:[NSDictionary dictionaryWithObject:node forKey:@"node"]] raise];
+	
+	for (NSXMLElement *subnode in [node children]) {
+		id res = [self loadOfferItem:subnode forManifest:nil error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+		
+		if (!res)
+			return NO;
+	}
+	
+	return YES;
+}
+
+/*
+ * Load an OfferManifest. Currently just loads the list.
+ */
+- (BOOL)loadOfferManifest:(NSXMLElement *)node error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+{
+	return [self loadOfferList:(NSXMLElement*)[node childAtIndex:0] error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+}
+
+
 - (NSString*)uniqueForNode:(NSXMLNode*)node
 {
 	NSXMLNode *parent = [node parent];
 	NSString *me = [node name];
 	
-	if ([me isEqualToString:@"AddInItem"])
+	if ([me isEqualToString:@"AddInItem"] || [me isEqualToString:@"OfferItem"])
 		return [[(NSXMLElement *)node attributeForName:@"UID"] stringValue];
 	
 	if ([me isEqualToString:@"file"] || [me isEqualToString:@"dir"])
@@ -355,6 +511,41 @@
 	
 	[res addChild:contentsNode];
 	return res;
+}
+
+- (NSXMLElement *)verifyManifestOfType:(NSString*)manifestType listNodeType:(NSString*)listNodeType
+{
+	NSXMLElement *root = [xmldoc rootElement];
+	
+	if (![[[root attributeForName:@"Type"] stringValue] isEqualToString:manifestType])
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Manifest type is not %@", manifestType] userInfo:nil] raise];
+	
+	if ([root childCount] < 1)
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"No contents in manifest"] userInfo:nil] raise];
+	
+	if ([root childCount] > 1)
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Unexpected contents in manifest"] userInfo:nil] raise];
+	
+	NSXMLElement *listNode = (NSXMLElement*)[root childAtIndex:0];
+	
+	if (![[listNode name] isEqualToString:listNodeType])
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Manifest contents is not %@", listNodeType] userInfo:nil] raise];
+	
+	if ([listNode childCount] < 1)
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"No contents in list"] userInfo:nil] raise];
+	
+	if ([listNode childCount] > 1)
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"More than one item listed"] userInfo:nil] raise];
+	
+	NSXMLElement *itemNode = (NSXMLElement*)[listNode childAtIndex:0];
+	
+	if (![[itemNode name] isEqualToString:[NSString stringWithFormat:@"%@Item", manifestType]])
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Unexpected item kind"] userInfo:nil] raise];
+	
+	if (![[[itemNode attributeForName:@"UID"] stringValue] length])
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"No UID for item"] userInfo:nil] raise];
+	
+	return itemNode;
 }
 
 @end
@@ -493,34 +684,35 @@
 	return self;
 }
 
-- (NSString *)type {
-    return @"AddInsListStore";
-}
-
 - (BOOL)load:(NSError **)error
 {
 	if (!xmldoc)
 		return YES;
 	
 	NSMutableSet *set = [NSMutableSet set];
-	BOOL res = [self loadAddInsList:[xmldoc rootElement] error:error
-				   usingCreateBlock:^(NSXMLElement *elem, NSString *entityName)
-	{
-		id cnode = [self makeCacheNode:elem forEntityName:entityName];
-		
-		[set addObject:cnode];
-		return cnode;
-	} usingSetBlock:^(id obj, NSMutableDictionary *data)
-	{
-		[obj setPropertyCache:data];
-		
-		return obj;
-	}];
+	BOOL res = [self loadAddInsList:[xmldoc rootElement] error:error usingCreateBlock:
+						  ^(NSXMLElement *elem, NSString *entityName)
+						  {
+							  id cnode = [self makeCacheNode:elem forEntityName:entityName];
+							  
+							  [set addObject:cnode];
+							  return cnode;
+						  } usingSetBlock:
+						  ^(id obj, NSMutableDictionary *data)
+						  {
+							  [obj setPropertyCache:data];
+							  
+							  return obj;
+						  }];
 	if (!res)
 		return NO;
 	
 	[self addCacheNodes:set];
 	return YES;
+}
+
+- (NSString *)type {
+    return @"AddInsListStore";
 }
 
 - (BOOL)save:(NSError **)error
@@ -535,142 +727,56 @@
 	node = [node copy];
 	
 	id res = [self loadAddInItem:node forManifest:nil error:error usingCreateBlock:^(NSXMLElement *elem, NSString *entityName)
-	{
-		return [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
-	} usingSetBlock:^(id obj, NSMutableDictionary *data)
-	{
-		for (NSString *key in data) {
-			[obj setValue:[data objectForKey:key] forKey:key];
-		}
-		return obj;
-	}];
+			  {
+				  return [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
+			  } usingSetBlock:^(id obj, NSMutableDictionary *data)
+			  {
+				  for (NSString *key in data) {
+					  [obj setValue:[data objectForKey:key] forKey:key];
+				  }
+				  [context assignObject:obj toPersistentStore:self];    
+				  return obj;
+			  }];
 	
 	if (!res)
 		return NO;
-																
+	
 	[[xmldoc rootElement] addChild:node];
 	return YES;
 }
 
 @end
 
-@implementation AddInStore
+@implementation OfferListStore
 
 - (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator configurationName:(NSString *)configurationName URL:(NSURL *)url options:(NSDictionary *)options {
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self && url)
 	{
-		/* XXX guessing encoding. */
-		DazipArchive *archive = [DazipArchive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:nil];
-		NSData *xmldata = nil;
-
-		NSMutableSet *files = [NSMutableSet set];
-		NSMutableSet *dirs = [NSMutableSet set];
-		NSMutableSet *contents = [NSMutableSet set];
-		
-		for (DazipArchiveMember *entry in archive)
-		{
-			switch (entry.type)
-			{
-			case dmtManifest:
-				xmldata = [entry data];
-				break;
-			case dmtERF:
-				{
-					NSData *erfdata = entry.data;
-					
-					parse_erf_data([erfdata bytes], [erfdata length],
-								^(struct erf_header *header, struct erf_file *file)
-					{
-						int len = 0;
-						
-						while (len < ERF_FILENAME_MAXLEN && file->entry->name[len] != 0)
-							len++;
-						
-						[contents addObject:[[NSString alloc] initWithBytes:file->entry->name
-																	 length:len * 2
-																   encoding:NSUTF16LittleEndianStringEncoding]];
-					});
-				}
-				/* Fall through */
-				if (0)
-				{
-			case dmtFile:
-					[contents addObject:entry.contentName];
-				}
-				switch (entry.contentType)
-				{
-				case dmctFile:
-					[files addObject:entry.contentPath];
-					break;
-				case dmctDirectory:
-					[dirs addObject:entry.contentPath];
-					break;
-				}
-				break;
-			}
-		}
+		NSError *error = nil;
+		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&error];
 		
 		if (!xmldata)
-			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not find Manifest.xml in URL %@", url] userInfo:nil] raise];
+		{
+			if ([url isFileURL] && [[error domain] isEqualToString:NSURLErrorDomain])
+			{
+				NSInteger code = [error code];
+				
+				if ((code == NSURLErrorCannotOpenFile) || (code == NSURLErrorZeroByteResource))
+				{
+					[[NSFileManager defaultManager] createFileAtPath:[url path] contents:nil attributes:nil];
+				}
+			}
+			else
+				[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not open URL %@", url] userInfo:nil] raise];
+			xmldoc = nil;
+		}
+		else
+			[self loadXML:xmldata ofType:@"OfferList"];
 		
-		[self loadXML:xmldata ofType:@"Manifest"];
-		
-		NSXMLElement *addinNode = [self verifyManifest];
-		
-		/* Filter files and dirs to only be those paths outside of the addin main directory. */
-		NSPredicate *notInAddin = [NSPredicate predicateWithFormat:@"NOT (SELF ==[c] %@)",
-								   [NSString stringWithFormat:@"Addins/%@",
-									[[addinNode attributeForName:@"UID"] stringValue]]];
-		[files filterUsingPredicate:notInAddin];
-		[dirs filterUsingPredicate:notInAddin];
-		
-		NSXMLElement *modNode = [self makeModazipinNodeForContents:contents files:files dirs:dirs];
-		
-		[addinNode addChild:modNode];
-		
-		self.identifier = [[addinNode attributeForName:@"UID"] stringValue];
+		self.identifier = @"OfferList";
 	}
 	return self;
-}
-
-- (NSString *)type {
-    return @"AddInStore";
-}
-
-- (NSXMLElement *)verifyManifest
-{
-	NSXMLElement *root = [xmldoc rootElement];
-	
-	if (![[[root attributeForName:@"Type"] stringValue] isEqualToString:@"AddIn"])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Manifest type is not AddIn"] userInfo:nil] raise];
-	
-	if ([root childCount] < 1)
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"No contents in manifest"] userInfo:nil] raise];
-
-	if ([root childCount] > 1)
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Unexpected contents in manifest"] userInfo:nil] raise];
-	
-	NSXMLElement *addinslistNode = (NSXMLElement*)[root childAtIndex:0];
-	
-	if (![[addinslistNode name] isEqualToString:@"AddInsList"])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Manifest contents is not AddInsList"] userInfo:nil] raise];
-
-	if ([addinslistNode childCount] < 1)
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"No addins listed"] userInfo:nil] raise];
-	
-	if ([addinslistNode childCount] > 1)
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"More than one addin listed"] userInfo:nil] raise];
-	
-	NSXMLElement *addinNode = (NSXMLElement*)[addinslistNode childAtIndex:0];
-	
-	if (![[addinNode name] isEqualToString:@"AddInItem"])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Unexpected AddIn kind"] userInfo:nil] raise];
-	
-	if (![[[addinNode attributeForName:@"UID"] stringValue] length])
-		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"No UID for AddIn"] userInfo:nil] raise];
-	
-	return addinNode;
 }
 
 - (BOOL)load:(NSError **)error
@@ -678,33 +784,219 @@
 	if (!xmldoc)
 		return YES;
 	
-	NSXMLElement *rootelem = [xmldoc rootElement];
-	
-	if (![[rootelem name] isEqualToString:@"Manifest"])
-	{
+	NSMutableSet *set = [NSMutableSet set];
+	BOOL res = [self loadOfferList:[xmldoc rootElement] error:error usingCreateBlock:
+				^(NSXMLElement *elem, NSString *entityName)
+				{
+					id cnode = [self makeCacheNode:elem forEntityName:entityName];
+					
+					[set addObject:cnode];
+					return cnode;
+				} usingSetBlock:
+				^(id obj, NSMutableDictionary *data)
+				{
+					[obj setPropertyCache:data];
+					
+					return obj;
+				}];
+	if (!res)
 		return NO;
+	
+	[self addCacheNodes:set];
+	return YES;
+}
+
+- (NSString *)type {
+    return @"OfferListStore";
+}
+
+- (BOOL)save:(NSError **)error
+{
+	BOOL res = [[xmldoc XMLDataWithOptions:NSXMLNodePrettyPrint] writeToURL:[self URL] options:0 error:error];
+	
+	return res;
+}
+
+- (BOOL)insertOfferNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context
+{
+	node = [node copy];
+	
+	id res = [self loadOfferItem:node forManifest:nil error:error usingCreateBlock:^(NSXMLElement *elem, NSString *entityName)
+			  {
+				  return [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
+			  } usingSetBlock:^(id obj, NSMutableDictionary *data)
+			  {
+				  for (NSString *key in data) {
+					  [obj setValue:[data objectForKey:key] forKey:key];
+				  }
+				  [context assignObject:obj toPersistentStore:self];    
+				  return obj;
+			  }];
+	
+	if (!res)
+		return NO;
+	
+	[[xmldoc rootElement] addChild:node];
+	return YES;
+}
+
+@end
+
+@implementation DazipStore
+
+- (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator configurationName:(NSString *)configurationName URL:(NSURL *)url options:(NSDictionary *)options {
+    self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
+	if (self && url)
+	{
+		NSDictionary *dazipData = [self loadDazip:url error:nil];
+		
+		NSData *xmldata = [dazipData objectForKey:@"manifest"];
+		NSMutableSet *files = [dazipData objectForKey:@"files"];
+		NSMutableSet *dirs = [dazipData objectForKey:@"directories"];
+		NSMutableSet *contents = [dazipData objectForKey:@"contents"];
+		
+		[self loadXML:xmldata ofType:@"Manifest"];
+		
+		NSString *manifestType = [[[xmldoc rootElement] attributeForName:@"Type"] stringValue];
+		NSString *listNodeType = nil;
+		NSString *mainDirectory = nil;
+		
+		if ([manifestType isEqualToString:@"AddIn"])
+		{
+			listNodeType = @"AddInsList";
+			mainDirectory = @"Addins";
+		}
+		else if ([manifestType isEqualToString:@"Offer"])
+		{
+			listNodeType = @"OfferList";
+			mainDirectory = @"Offers";
+		}
+		else
+			[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Unknown manifest type"] userInfo:nil] raise];
+			
+		NSXMLElement *itemNode = [self verifyManifestOfType:manifestType listNodeType:listNodeType];
+		
+		/* Filter files and dirs to only be those paths outside of the addin main directory. */
+		NSPredicate *notInItem = [NSPredicate predicateWithFormat:@"NOT (SELF ==[c] %@)",
+								   [NSString stringWithFormat:@"%@/%@", mainDirectory,
+									[[itemNode attributeForName:@"UID"] stringValue]]];
+		[files filterUsingPredicate:notInItem];
+		[dirs filterUsingPredicate:notInItem];
+		
+		NSXMLElement *modNode = [self makeModazipinNodeForContents:contents files:files dirs:dirs];
+		
+		[itemNode addChild:modNode];
+		
+		self.identifier = [[itemNode attributeForName:@"UID"] stringValue];
+	}
+	return self;
+}
+
+- (NSDictionary*)loadDazip:(NSURL *)url error:(NSError**)error
+{
+	/* XXX guessing encoding. */
+	DazipArchive *archive = [DazipArchive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
+	NSData *xmldata = nil;
+	
+	if (!archive)
+		return nil;
+	
+	NSMutableSet *files = [NSMutableSet set];
+	NSMutableSet *dirs = [NSMutableSet set];
+	NSMutableSet *contents = [NSMutableSet set];
+	
+	for (DazipArchiveMember *entry in archive)
+	{
+		switch (entry.type)
+		{
+			case dmtManifest:
+				xmldata = [entry data];
+				break;
+			case dmtERF:
+			{
+				NSData *erfdata = entry.data;
+				
+				parse_erf_data([erfdata bytes], [erfdata length],
+							   ^(struct erf_header *header, struct erf_file *file)
+							   {
+								   int len = 0;
+								   
+								   while (len < ERF_FILENAME_MAXLEN && file->entry->name[len] != 0)
+									   len++;
+								   
+								   [contents addObject:[[NSString alloc] initWithBytes:file->entry->name
+																				length:len * 2
+																			  encoding:NSUTF16LittleEndianStringEncoding]];
+							   });
+			}
+				/* Fall through */
+				if (0)
+				{
+				case dmtFile:
+					[contents addObject:entry.contentName];
+				}
+				switch (entry.contentType)
+			{
+				case dmctFile:
+					[files addObject:entry.contentPath];
+					break;
+				case dmctDirectory:
+					[dirs addObject:entry.contentPath];
+					break;
+			}
+				break;
+		}
 	}
 	
+	if (!xmldata)
+		[[NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Could not find Manifest.xml in URL %@", url] userInfo:nil] raise];
+	
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+			xmldata, @"manifest",
+			files, @"files",
+			dirs, @"directories",
+			contents, @"contents",
+			nil];
+}
+
+- (BOOL)load:(NSError **)error
+{
+	if (!xmldoc)
+		return YES;
+	
+	NSString *manifestType = [[[xmldoc rootElement] attributeForName:@"Type"] stringValue];
 	NSMutableSet *set = [NSMutableSet set];
-	BOOL res = [self loadAddInsList:(NSXMLElement*)[rootelem childAtIndex:0] error:error
-						 usingCreateBlock:^(NSXMLElement *elem, NSString *entityName)
+	BOOL res;
+	
+	createObjBlock createBlock = ^(NSXMLElement *elem, NSString *entityName)
 	{
 		id cnode = [self makeCacheNode:elem forEntityName:entityName];
 		
 		[set addObject:cnode];
 		return cnode;
-	} usingSetBlock:^(id obj, NSMutableDictionary *data)
+	};
+	
+	setDataBlock setBlock = ^(id obj, NSMutableDictionary *data)
 	{
 		[obj setPropertyCache:data];
 		
 		return obj;
-	}];
+	};
+	
+	if ([manifestType isEqualToString:@"AddIn"])
+		res = [self loadAddInManifest:[xmldoc rootElement] error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+	else
+		res = [self loadOfferManifest:[xmldoc rootElement] error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
 	
 	if (!res)
 		return NO;
 	
 	[self addCacheNodes:set];
 	return YES;
+}
+
+- (NSString *)type {
+    return @"DazipStore";
 }
 
 @end
