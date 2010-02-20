@@ -36,9 +36,9 @@
 
 - (BOOL)installItems:(NSArray *)items withArchive:(NSURL*)url error:(NSError**)error;
 
-- (IBAction)askUninstall:(Item*)addin;
+- (IBAction)askUninstall:(Item*)item;
 
-- (BOOL)uninstall:(Item*)addin error:(NSError**)error;
+- (BOOL)uninstall:(Item*)item error:(NSError**)error;
 
 - (void)selectItemWithUid:(NSString*)uid;
 

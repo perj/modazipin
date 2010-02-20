@@ -190,7 +190,7 @@ static AddInsList *sharedAddInsList;
 	return [self syncFilesFromContext:error];
 }
 
-- (IBAction)askUninstall:(AddInItem*)addin
+- (IBAction)askUninstall:(Item*)item
 {
 	NSBeginAlertSheet(@"Uninstall addin",
 					  @"Delete",
@@ -200,9 +200,9 @@ static AddInsList *sharedAddInsList;
 					  self,
 					  @selector(answerUninstall:returnCode:contextInfo:),
 					  NULL,
-					  addin,
+					  item,
 					  @"This will completely delete the addin \"%@\". You will not be able to reinstall it without the original file.",
-					  addin.Title.localizedValue);
+					  item.Title.localizedValue);
 }
 								  
 - (void)answerUninstall:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
@@ -213,9 +213,9 @@ static AddInsList *sharedAddInsList;
 	[self uninstall:contextInfo error:NULL];
 }
 
-- (BOOL)uninstall:(AddInItem*)addin error:(NSError **)error
+- (BOOL)uninstall:(Item*)item error:(NSError **)error
 {
-	NSSet *paths = addin.modazipin.paths;
+	NSSet *paths = item.modazipin.paths;
 	NSURL *base = [self fileURL];
 	
 	for (Path *path in paths)
@@ -234,13 +234,19 @@ static AddInsList *sharedAddInsList;
 			[self presentError:err];
 	}
 	
-	NSURL *addinURL = [[base URLByAppendingPathComponent:@"Addins"] URLByAppendingPathComponent:addin.UID];
+	NSString *dir = nil;
+	if ([item class] == [AddInItem self])
+		dir = @"Addins";
+	else
+		dir = @"Offers";
+	
+	NSURL *itemURL = [[base URLByAppendingPathComponent:dir] URLByAppendingPathComponent:item.UID];
 	NSError *err = nil;
-	BOOL res = [[NSFileManager defaultManager] removeItemAtURL:addinURL error:&err];
+	BOOL res = [[NSFileManager defaultManager] removeItemAtURL:itemURL error:&err];
 	if (!res)
 		[self presentError:err];
 
-	[[self managedObjectContext] deleteObject:addin];
+	[[self managedObjectContext] deleteObject:item];
 	[self saveDocument:self];
 	return YES;
 }
