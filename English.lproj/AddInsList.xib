@@ -554,7 +554,6 @@
 					<string key="NSEntityName">AddInItem</string>
 				</object>
 				<bool key="_NSIsUsingManagedProxy">YES</bool>
-				<bool key="NSAvoidsEmptySelection">YES</bool>
 				<bool key="NSSelectsInsertedObjects">YES</bool>
 				<bool key="NSFilterRestrictsInsertion">YES</bool>
 				<bool key="NSClearsFilterPredicateOnInsertion">YES</bool>
@@ -803,15 +802,15 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">enabled: selection.BioWare</string>
+						<string key="label">enabled: selection.self</string>
 						<reference key="source" ref="112232105"/>
 						<reference key="destination" ref="565607778"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="112232105"/>
 							<reference key="NSDestination" ref="565607778"/>
-							<string key="NSLabel">enabled: selection.BioWare</string>
+							<string key="NSLabel">enabled: selection.self</string>
 							<string key="NSBinding">enabled</string>
-							<string key="NSKeyPath">selection.BioWare</string>
+							<string key="NSKeyPath">selection.self</string>
 							<object class="NSDictionary" key="NSOptions">
 								<bool key="EncodedWithXMLCoder">YES</bool>
 								<object class="NSArray" key="dict.sortedKeys">
@@ -828,13 +827,13 @@
 									<integer value="0"/>
 									<integer value="0"/>
 									<integer value="0"/>
-									<string>NSNegateBoolean</string>
+									<string>NSIsNotNil</string>
 								</object>
 							</object>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">100312</int>
+					<int key="connectionID">100314</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -1208,7 +1207,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">100312</int>
+			<int key="maxID">100314</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
