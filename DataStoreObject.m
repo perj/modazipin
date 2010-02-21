@@ -31,7 +31,7 @@
 {
 	[super awakeFromFetch];
 	
-	DataStore *store = [[[[self managedObjectContext] persistentStoreCoordinator] persistentStores] objectAtIndex:0];
+	DataStore *store = (DataStore*)[[self objectID] persistentStore];
 	
 	self.node = [[[store cacheNodeForObjectID:[self objectID]] propertyCache] objectForKey:@"node"];
 }
