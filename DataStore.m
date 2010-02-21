@@ -937,6 +937,14 @@
 		[files filterUsingPredicate:notInItem];
 		[dirs filterUsingPredicate:notInItem];
 		
+		NSPredicate *otherItems = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] 'Addins/' OR SELF BEGINSWITH[c] 'Offers/'"];
+		
+		if ([[files filteredSetUsingPredicate:otherItems] count] || [[dirs filteredSetUsingPredicate:otherItems] count])
+		{
+			loadError = [self dataStoreError:14 msg:@"Cannot install into other items"];
+			return self;
+		}
+		
 		NSXMLElement *modNode = [self makeModazipinNodeForContents:contents files:files dirs:dirs];
 		
 		[itemNode addChild:modNode];
