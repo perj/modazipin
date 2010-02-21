@@ -20,6 +20,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import <WebKit/WebKit.h>
 #import "DataStore.h"
 #import "DataStoreObject.h"
 
@@ -30,9 +31,12 @@
 	
 	IBOutlet NSButton *launchGameButton;
 	IBOutlet NSArrayController *itemsController;
+	IBOutlet WebView *detailsView;
 }
 
 + (AddInsList*)sharedAddInsList;
+
+- (void)itemsControllerChanged;
 
 - (BOOL)installItems:(NSArray *)items withArchive:(NSURL*)url error:(NSError**)error;
 
@@ -51,6 +55,8 @@
 - (void)updateLaunchButtonImage;
 
 - (BOOL)searchSpotlightForGame;
+
+- (void)spotlightQueryChanged;
 
 - (NSURL*)gameURL;
 

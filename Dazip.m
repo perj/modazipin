@@ -43,7 +43,44 @@
 - (void)windowControllerDidLoadNib:(NSWindowController *)windowController 
 {
     [super windowControllerDidLoadNib:windowController];
-    // user interface preparation code
+	NSArray *arr = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"allItems"] error:nil];
+	
+    [[detailsView mainFrame] loadHTMLString:[[arr objectAtIndex:0] detailsHTML] baseURL:[[NSBundle mainBundle] resourceURL]];
+}
+
+- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id < WebPolicyDecisionListener >)listener
+{
+	if ([[request mainDocumentURL] isFileURL])
+		[listener use];
+	else if ([[[request URL] scheme] isEqualToString:@"command"])
+	{
+		NSString *command = [[request URL] resourceSpecifier];
+		
+		[listener ignore];
+		
+		if ([command isEqualToString:@"install"])
+			[self install:self];
+	}
+	else
+	{
+		[listener ignore];
+		[[NSWorkspace sharedWorkspace] openURL:[request mainDocumentURL]];
+	}
+}
+
+- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
+{
+	DOMDocument *root = [[detailsView mainFrame] DOMDocument];
+	DOMHTMLElement *body = [root body];
+	int height = [body scrollHeight];
+	
+	for (NSWindowController *wc in [self windowControllers])
+	{
+		NSSize cs = [[wc window] frame].size;
+		
+		cs.height = height;
+		[[wc window] setContentSize:cs];
+	}
 }
 
 - (void)displayUIDConflictFor:(Item*)a and:(Item*)b

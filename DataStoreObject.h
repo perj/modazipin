@@ -131,6 +131,9 @@
 @property (nonatomic, retain) Text * Title;
 @property (nonatomic, retain) Text * URL;
 
+@property (readonly) NSMutableAttributedString * infoAttributedString;
+@property (readonly) NSMutableString * detailsHTML;
+
 @end
 
 

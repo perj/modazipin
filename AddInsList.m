@@ -82,6 +82,15 @@ static AddInsList *sharedAddInsList;
 	return fileType;
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if (object == spotlightQuery)
+		[self spotlightQueryChanged];
+	else if (object == itemsController)
+		[self itemsControllerChanged];
+}
+
+
 - (void)windowControllerDidLoadNib:(NSWindowController *)windowController 
 {
     [super windowControllerDidLoadNib:windowController];
@@ -92,9 +101,54 @@ static AddInsList *sharedAddInsList;
 	
 	[itemsController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"Title.localizedValue" ascending:YES]]];
 	[itemsController rearrangeObjects];
+	[itemsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
 	
 	[launchGameButton setKeyEquivalent:@"\r"];
 	[self updateLaunchButtonImage];
+}
+
+- (void)itemsControllerChanged
+{
+	NSArray *objects = [itemsController selectedObjects];
+	
+	if ([objects count] == 1)
+	{
+		NSMutableString *html = [[objects objectAtIndex:0] detailsHTML];
+		
+		[html replaceOccurrencesOfString:@"<form" withString:@"<!--" options:0 range:NSMakeRange(0, [html length])];
+		[html replaceOccurrencesOfString:@"</form>" withString:@"-->" options:0 range:NSMakeRange(0, [html length])];
+		[[detailsView mainFrame] loadHTMLString:html baseURL:[[NSBundle mainBundle] resourceURL]];
+	}
+	else
+	{
+		[[detailsView mainFrame] loadHTMLString:@"<html><body style='background:#201000;'></body></html>" baseURL:[self fileURL]];
+	}
+
+}
+
+- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id < WebPolicyDecisionListener >)listener
+{
+	if ([[request mainDocumentURL] isFileURL])
+		[listener use];
+	else if ([[[request URL] scheme] isEqualToString:@"command"])
+	{
+		NSString *command = [[request URL] resourceSpecifier];
+		
+		[listener ignore];
+		
+		if ([command isEqualToString:@"uninstall"])
+		{
+			NSArray *selected = [itemsController selectedObjects];
+			
+			if ([selected count] == 1)
+				[self askUninstall:[selected objectAtIndex:0]];
+		}
+	}
+	else
+	{
+		[listener ignore];
+		[[NSWorkspace sharedWorkspace] openURL:[request mainDocumentURL]];
+	}
 }
 
 - (BOOL)installItems:(NSArray*)items withArchive:(NSURL*)url error:(NSError**)error
@@ -283,25 +337,6 @@ static AddInsList *sharedAddInsList;
 		[launchGameButton setImage:img];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-	
-	if (object == spotlightQuery)
-	{
-		[spotlightQuery disableUpdates];
-		
-		if ([spotlightQuery resultCount] > 0)
-		{
-			self.spotlightGameItem = [spotlightQuery resultAtIndex:0];
-			[self updateLaunchButtonImage];
-		}
-		
-		[spotlightQuery enableUpdates];
-		return;
-	}
-}
-
 - (BOOL)searchSpotlightForGame
 {
 	NSAssert(spotlightGameItem == nil, @"Already have spotlightGameItem!");
@@ -323,6 +358,19 @@ static AddInsList *sharedAddInsList;
 	return YES;
 }
 
+- (void)spotlightQueryChanged
+{
+	[spotlightQuery disableUpdates];
+	
+	if ([spotlightQuery resultCount] > 0)
+	{
+		self.spotlightGameItem = [spotlightQuery resultAtIndex:0];
+		[self updateLaunchButtonImage];
+	}
+	
+	[spotlightQuery enableUpdates];
+	return;
+}
 
 - (NSURL*)gameURL
 {

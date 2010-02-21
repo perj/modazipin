@@ -195,6 +195,76 @@
 @dynamic Title;
 @dynamic URL;
 
+- (NSMutableString*)replaceProperties:(NSMutableString*)str
+{
+	NSEntityDescription *textEntity = [NSEntityDescription entityForName:@"Text" inManagedObjectContext:[self managedObjectContext]];
+	
+	for (NSPropertyDescription *prop in [self entity])
+	{
+		NSString *repFrom = [NSString stringWithFormat:@"%%%@%%", [prop name]];
+		NSString *repTo = nil;
+		
+		if ([[prop class] isSubclassOfClass:[NSRelationshipDescription class]])
+		{
+			NSRelationshipDescription *rel = (NSRelationshipDescription*)prop;
+			
+			if (![rel isToMany] && [rel destinationEntity] == textEntity)
+			{
+				Text *t = [self valueForKey:[prop name]];
+				
+				[t updateLocalizedValue:nil];
+				repTo = [t localizedValue];
+			}
+		}
+		else
+		{
+			NSAttributeDescription *attr = (NSAttributeDescription*)prop;
+			
+			switch ([attr attributeType])
+			{
+				case NSStringAttributeType:
+					repTo = [self valueForKey:[prop name]];
+					break;
+				case NSDecimalAttributeType:
+					repTo = [[self valueForKey:[prop name]] stringValue];
+					break;
+			}
+		}
+		
+		if (repTo)
+			[str replaceOccurrencesOfString:repFrom withString:repTo options:0 range:NSMakeRange(0, [str length])];
+	}
+	
+	return str;
+}
+
+- (NSMutableAttributedString *)infoAttributedString
+{
+	NSURL *infoURL = [[NSBundle mainBundle] URLForResource:@"ItemInfo" withExtension:@"rtf"];
+	if (!infoURL)
+		return nil;
+	
+	NSMutableAttributedString *res = [[NSMutableAttributedString alloc] initWithURL:infoURL documentAttributes:nil];
+	if (!res)
+		return nil;
+	
+	[self replaceProperties:[res mutableString]];
+	return res;
+}
+
+- (NSMutableString *)detailsHTML
+{
+	NSURL *detailsURL = [[NSBundle mainBundle] URLForResource:@"ItemDetails" withExtension:@"html"];
+	if (!detailsURL)
+		return nil;
+	
+	NSMutableString *html = [NSMutableString stringWithContentsOfURL:detailsURL encoding:NSUTF8StringEncoding error:nil];
+	if (!html)
+		return nil;
+	
+	return [self replaceProperties:html];
+}
+
 @end
 
 

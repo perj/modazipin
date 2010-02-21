@@ -20,10 +20,10 @@
  */
 
 #import <Cocoa/Cocoa.h>
-
+#import <WebKit/WebKit.h>
 
 @interface Dazip : NSPersistentDocument {
-
+	IBOutlet WebView *detailsView;
 }
 
 - (IBAction)install:(id)sender;
