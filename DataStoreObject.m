@@ -203,17 +203,42 @@
 	{
 		NSString *repFrom = [NSString stringWithFormat:@"%%%@%%", [prop name]];
 		NSString *repTo = nil;
+		NSString *secStart = [NSString stringWithFormat:@"%%?%@%%", [prop name]];
+		NSString *secEnd = [NSString stringWithFormat:@"%%!%@%%", [prop name]];
 		
 		if ([[prop class] isSubclassOfClass:[NSRelationshipDescription class]])
 		{
 			NSRelationshipDescription *rel = (NSRelationshipDescription*)prop;
-			
-			if (![rel isToMany] && [rel destinationEntity] == textEntity)
+
+			if ([rel isToMany])
+			{
+				NSSet *set = [self valueForKey:[prop name]];
+				
+				if ([set count])
+					repTo = [NSString stringWithFormat:@"%d", (int)[set count]];
+				else
+					repTo = @"";
+			}
+			else if ([rel destinationEntity] == textEntity)
 			{
 				Text *t = [self valueForKey:[prop name]];
 				
-				[t updateLocalizedValue:nil];
-				repTo = [t localizedValue];
+				if (t)
+				{
+					[t updateLocalizedValue:nil];
+					repTo = [t localizedValue];
+				}
+				else
+					repTo = @"";
+			}
+			else
+			{
+				id v = [self valueForKey:[prop name]];
+				
+				if (v)
+					repTo = @"1";
+				else
+					repTo = @"";
 			}
 		}
 		else
@@ -224,15 +249,41 @@
 			{
 				case NSStringAttributeType:
 					repTo = [self valueForKey:[prop name]];
+					if (!repTo)
+						repTo = @"";
 					break;
 				case NSDecimalAttributeType:
-					repTo = [[self valueForKey:[prop name]] stringValue];
+					if ([[self valueForKey:[prop name]] boolValue])
+						repTo = [[self valueForKey:[prop name]] stringValue];
+					else
+						repTo = @"";
 					break;
 			}
 		}
 		
 		if (repTo)
+		{
 			[str replaceOccurrencesOfString:repFrom withString:repTo options:0 range:NSMakeRange(0, [str length])];
+			if ([repTo length])
+			{
+				[str replaceOccurrencesOfString:secStart withString:@"" options:0 range:NSMakeRange(0, [str length])];
+				[str replaceOccurrencesOfString:secEnd withString:@"" options:0 range:NSMakeRange(0, [str length])];
+			}
+			else
+			{
+				while (1)
+				{
+					NSRange rs = [str rangeOfString:secStart];
+					NSRange re = [str rangeOfString:secEnd];
+					
+					if (rs.location == NSNotFound || re.location == NSNotFound || re.location < rs.location)
+						break;
+					
+					rs.length = re.location + re.length - rs.location;
+					[str deleteCharactersInRange:rs];
+				}
+			}
+		}
 	}
 	
 	return str;

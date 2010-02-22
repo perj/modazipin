@@ -8,7 +8,7 @@
 				font-family: Verdana;
 				font-size: 14px;
 				color: #b7a266;
-				background: #201000;
+				background: #201001;
 			}
 			
 			.image {
@@ -20,11 +20,13 @@
 			}
 			
 			h1 {
+				font-family: Corsiva Hebrew;
 				font-size: 32px;
 				font-weight: normal;
 			}
 			
 			table {
+				clear: both;
 				width: 100%;
 			}
 			
@@ -41,6 +43,11 @@
 				overflow: hidden;
 			}
 			
+			td.grad {
+				background-image: URL("grad.png");
+				background-repeat: no-repeat;
+			}
+			
 			a {
 				color: #ccccff;
 			}
@@ -53,36 +60,48 @@
 				display: block;
 				width: 70px;
 			}
+			
+			.BioWare {
+				color: #5e7391;
+				font-family: Arial Black;
+				font-size: 28px;
+			}
 		</style>
 	</head>
 	<body>
 		<!-- <img class="image" src="data:%ImageData%" /> -->
-		<h1>%Title%</h1>
-		<br style="clear: both" />
+		<h1>%?BioWare%<span class="BioWare">B</span> %!BioWare%%Title%</h1>
 		<table>
+			<tr><td class="grad" colspan="3"></td></tr>
 			<tr>
 				<th>Version:<th>
 				<td>%Version%</td>
 			</tr>
+			<tr><td class="grad" colspan="3"></td></tr>
 			<tr>
 				<th>Publisher:<th>
 				<td>%Publisher%</td>
 			</tr>
+			<tr><td class="grad" colspan="3"></td></tr>
 			<tr>
 				<th>Release date:<th>
 				<td>%ReleaseDate%</td>
 			</tr>
+			<tr><td class="grad" colspan="3"></td></tr>
 			<tr>
 				<th>Required game version:<th>
 				<td>%GameVersion%</td>
 			</tr>
+%?URL%			<tr><td class="grad" colspan="3"></td></tr>
 			<tr>
 				<th>URL:<th>
 				<td><a href="%URL%">%URL%</a></td>
 			</tr>
-			<tr>
+%!URL%			<tr>
+			<tr><td class="grad" colspan="3"></td></tr>
 				<th>Details:</th>
 			</tr>
+			<tr><td class="grad" colspan="3"></td></tr>
 		</table>
 		<p>%Description%</p>
 		<br />
