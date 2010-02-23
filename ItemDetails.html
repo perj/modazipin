@@ -66,12 +66,18 @@
 				font-family: Arial Black;
 				font-size: 28px;
 			}
+			
+			.info {
+				color: #ffa266;
+				padding: 2px;
+			}
 		</style>
 	</head>
 	<body>
 		<!-- <img class="image" src="data:%ImageData%" /> -->
 		<h1>%?BioWare%<span class="BioWare">B</span> %!BioWare%%Title%</h1>
-%?Presentation%		<p>This is an offer installation file, not an addin.</p>%!Presentation%
+%?Presentation%		<p class="info">This is an offer installation file, not an addin.
+You will only see it in Modazipin if you install the addin as well.</p>%!Presentation%
 		<table>
 			
 			<tr><td class="grad" colspan="3"></td></tr>
@@ -85,7 +91,7 @@
 				<td>%Publisher%</td>
 			</tr>
 			<tr><td class="grad" colspan="3"></td></tr>
-			<tr>
+%?State%			<tr>
 				<th>Release date:<th>
 				<td>%ReleaseDate%</td>
 			</tr>
@@ -114,8 +120,8 @@
 				<th>Details:</th>
 			</tr>
 			<tr><td class="grad" colspan="3"></td></tr>
-		</table>
-		<p>%Description%</p>
+%!State%		</table>
+%?State%		<p>%Description%</p>%!State%
 		<br />
 		<form action="command:install" method="POST">
 			<input type="submit" value="Install" />

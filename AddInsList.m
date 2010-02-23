@@ -184,15 +184,24 @@ static AddInsList *sharedAddInsList;
 	/* XXX delete all files and items on error. */
 	for (NSXMLElement *node in items)
 	{
-		BOOL b = NO;
-		
 		if ([[node name] isEqualToString:@"AddInItem"])
-			b = [addinsStore insertAddInNode:node error:error intoContext:[self managedObjectContext]];
+		{
+			if (![addinsStore insertAddInNode:node error:error intoContext:[self managedObjectContext]])
+				return NO;
+		}
 		else if ([[node name] isEqualToString:@"OfferItem"])
-			b = [offersStore insertOfferNode:node error:error intoContext:[self managedObjectContext]];
-		
-		if (!b)
-			return NO;
+		{
+			OfferItem *offer = [offersStore insertOfferNode:node error:error intoContext:[self managedObjectContext]];
+			
+			if (!offer)
+				return NO;
+			
+			NSSet *microIds = [offer.PRCList valueForKey:@"microContentID"];
+			NSFetchRequest *req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"itemsWithUIDs" substitutionVariables:[NSDictionary dictionaryWithObject:microIds forKey:@"UIDs"]];
+			NSArray *related = [[self managedObjectContext] executeFetchRequest:req error:nil];
+			for (Item *rel in related)
+				[[self managedObjectContext] refreshObject:rel mergeChanges:NO];
+		}
 	}
 	return YES;
 }
@@ -246,7 +255,21 @@ static AddInsList *sharedAddInsList;
 
 - (IBAction)askUninstall:(Item*)item
 {
-	NSBeginAlertSheet(@"Uninstall addin",
+	NSString *title;
+	NSString *msg;
+	
+	if ([[[item entity] name] isEqualToString:@"AddInItem"] && [[item valueForKey:@"offers"] count])
+	{
+		title = @"Uninstall addin and offer";
+		msg = @"This will completely delete the addin \"%@\" and the associated offer. You will not be able to reinstall without the original files.";
+	}
+	else
+	{
+		title = @"Uninstall addin";
+		msg = @"This will completely delete the addin \"%@\". You will not be able to reinstall it without the original file.";
+	}
+
+	NSBeginAlertSheet(title,
 					  @"Delete",
 					  @"Cancel",
 					  nil,
@@ -255,7 +278,7 @@ static AddInsList *sharedAddInsList;
 					  @selector(answerUninstall:returnCode:contextInfo:),
 					  NULL,
 					  item,
-					  @"This will completely delete the addin \"%@\". You will not be able to reinstall it without the original file.",
+					  msg,
 					  item.Title.localizedValue);
 }
 								  
@@ -271,6 +294,15 @@ static AddInsList *sharedAddInsList;
 {
 	NSSet *paths = item.modazipin.paths;
 	NSURL *base = [self fileURL];
+	
+	if ([item class] == [AddInItem self])
+	{
+		for (Item *offer in [item valueForKey:@"offers"])
+		{
+			if (![self uninstall:offer error:error])
+				return NO; /* XXX inconsitent state. */
+		}
+	}
 	
 	for (Path *path in paths)
 	{

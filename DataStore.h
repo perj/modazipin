@@ -20,6 +20,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import "DataStoreObject.h"
 
 typedef id (^createObjBlock)(NSXMLElement *elem, NSString *entityName);
 typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
@@ -51,7 +52,7 @@ typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 {
 }
 
-- (BOOL)insertOfferNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context;
+- (OfferItem*)insertOfferNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context;
 
 @end
 

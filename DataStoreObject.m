@@ -325,29 +325,41 @@
 
 - (NSMutableAttributedString *)infoAttributedString
 {
+	if (cachedInfo)
+		return cachedInfo;
+	
 	NSURL *infoURL = [[NSBundle mainBundle] URLForResource:@"ItemInfo" withExtension:@"rtf"];
 	if (!infoURL)
 		return nil;
 	
-	NSMutableAttributedString *res = [[NSMutableAttributedString alloc] initWithURL:infoURL documentAttributes:nil];
-	if (!res)
+	cachedInfo = [[NSMutableAttributedString alloc] initWithURL:infoURL documentAttributes:nil];
+	if (!cachedInfo)
 		return nil;
 	
-	[self replaceProperties:[res mutableString]];
-	return res;
+	[self replaceProperties:[cachedInfo mutableString]];
+	return cachedInfo;
 }
 
 - (NSMutableString *)detailsHTML
 {
+	if (cachedDetails)
+		return cachedDetails;
+	
 	NSURL *detailsURL = [[NSBundle mainBundle] URLForResource:@"ItemDetails" withExtension:@"html"];
 	if (!detailsURL)
 		return nil;
 	
-	NSMutableString *html = [NSMutableString stringWithContentsOfURL:detailsURL encoding:NSUTF8StringEncoding error:nil];
-	if (!html)
+	cachedDetails = [NSMutableString stringWithContentsOfURL:detailsURL encoding:NSUTF8StringEncoding error:nil];
+	if (!cachedDetails)
 		return nil;
 	
-	return [self replaceProperties:html];
+	return [self replaceProperties:cachedDetails];
+}
+
+- (void)didTurnIntoFault
+{
+	cachedInfo = nil;
+	cachedDetails = nil;
 }
 
 @end

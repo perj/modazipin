@@ -108,6 +108,8 @@
 
 @interface Item : DataStoreObject
 {
+	NSMutableAttributedString *cachedInfo;
+	NSMutableString *cachedDetails;
 }
 
 @property (nonatomic, retain) NSDecimalNumber * BioWare;

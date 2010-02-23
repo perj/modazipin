@@ -862,7 +862,7 @@
 	return res;
 }
 
-- (BOOL)insertOfferNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context
+- (OfferItem*)insertOfferNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context
 {
 	node = [node copy];
 	
@@ -879,10 +879,10 @@
 			  }];
 	
 	if (!res)
-		return NO;
+		return nil;
 	
 	[[xmldoc rootElement] addChild:node];
-	return YES;
+	return res;
 }
 
 @end
