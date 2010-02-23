@@ -215,7 +215,7 @@
 				NSSet *set = [self valueForKey:[prop name]];
 				
 				if ([set count])
-					repTo = [NSString stringWithFormat:@"%d", (int)[set count]];
+					repTo = [[NSNumber numberWithInteger:[set count]] stringValue];
 				else
 					repTo = @"";
 			}
@@ -240,6 +240,21 @@
 				else
 					repTo = @"";
 			}
+		}
+		else if ([[prop class] isSubclassOfClass:[NSFetchedPropertyDescription class]])
+		{
+			NSArray *arr = [self valueForKey:[prop name]];
+			if ([arr count])
+			{
+				NSString *repPath = [[prop userInfo] objectForKey:@"repPath"];
+				
+				if (repPath)
+					repTo = [[arr objectAtIndex:0] valueForKey:repPath];
+				else
+					repTo = [[NSNumber numberWithInteger:[arr count]] stringValue];
+			}
+			else
+				repTo = @"";
 		}
 		else
 		{
@@ -284,6 +299,25 @@
 				}
 			}
 		}
+	}
+	while (1)
+	{
+		NSRange rs = [str rangeOfString:@"%?"];
+		
+		if (rs.location == NSNotFound)
+			break;
+		
+		while ([str characterAtIndex:rs.location + rs.length] != '%')
+			rs.length++;
+		
+		NSString *secEnd = [NSString stringWithFormat:@"%%!%@%", [str substringWithRange:NSMakeRange(rs.location + 2, rs.length - 1)]];
+		NSRange re = [str rangeOfString:secEnd];
+		
+		if (re.location == NSNotFound || re.location < rs.location)
+			break;
+		
+		rs.length = re.location + re.length - rs.location;
+		[str deleteCharactersInRange:rs];
 	}
 	
 	return str;

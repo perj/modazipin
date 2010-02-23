@@ -416,7 +416,7 @@
 												</object>
 											</object>
 										</object>
-										<object class="NSImageView" id="8797802">
+										<object class="NSImageView" id="9121316">
 											<reference key="NSNextResponder" ref="309467237"/>
 											<int key="NSvFlags">268</int>
 											<object class="NSMutableSet" key="NSDragTypes">
@@ -434,10 +434,10 @@
 											<string key="NSFrame">{{15, 435}, {300, 4}}</string>
 											<reference key="NSSuperview" ref="309467237"/>
 											<bool key="NSEnabled">YES</bool>
-											<object class="NSImageCell" key="NSCell" id="630100740">
+											<object class="NSImageCell" key="NSCell" id="877133625">
 												<int key="NSCellFlags">130560</int>
 												<int key="NSCellFlags2">33554432</int>
-												<object class="NSCustomResource" key="NSContents" id="631430200">
+												<object class="NSCustomResource" key="NSContents" id="732840303">
 													<string key="NSClassName">NSImage</string>
 													<string key="NSResourceName">grad</string>
 												</object>
@@ -448,7 +448,7 @@
 											</object>
 											<bool key="NSEditable">YES</bool>
 										</object>
-										<object class="NSImageView" id="678632982">
+										<object class="NSImageView" id="254951853">
 											<reference key="NSNextResponder" ref="309467237"/>
 											<int key="NSvFlags">265</int>
 											<object class="NSMutableSet" key="NSDragTypes">
@@ -466,10 +466,10 @@
 											<string key="NSFrame">{{378, 435}, {300, 4}}</string>
 											<reference key="NSSuperview" ref="309467237"/>
 											<bool key="NSEnabled">YES</bool>
-											<object class="NSImageCell" key="NSCell" id="120967559">
+											<object class="NSImageCell" key="NSCell" id="489692668">
 												<int key="NSCellFlags">130560</int>
 												<int key="NSCellFlags2">33554432</int>
-												<reference key="NSContents" ref="631430200"/>
+												<reference key="NSContents" ref="732840303"/>
 												<int key="NSAlign">0</int>
 												<int key="NSScale">1</int>
 												<int key="NSStyle">0</int>
@@ -548,7 +548,7 @@
 				<bool key="NSEditable">YES</bool>
 				<bool key="NSAutomaticallyPreparesContent">YES</bool>
 				<object class="_NSManagedProxy" key="_NSManagedProxy">
-					<string key="NSEntityName">Item</string>
+					<string key="NSEntityName">AddInItem</string>
 				</object>
 				<bool key="_NSIsUsingManagedProxy">YES</bool>
 				<bool key="NSPreservesSelection">YES</bool>
@@ -855,8 +855,8 @@
 							<reference ref="825199970"/>
 							<reference ref="514648745"/>
 							<reference ref="112232105"/>
-							<reference ref="8797802"/>
-							<reference ref="678632982"/>
+							<reference ref="9121316"/>
+							<reference ref="254951853"/>
 						</object>
 						<reference key="parent" ref="317955023"/>
 					</object>
@@ -996,31 +996,31 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">100339</int>
-						<reference key="object" ref="8797802"/>
+						<reference key="object" ref="9121316"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="630100740"/>
+							<reference ref="877133625"/>
 						</object>
 						<reference key="parent" ref="616436209"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">100340</int>
-						<reference key="object" ref="630100740"/>
-						<reference key="parent" ref="8797802"/>
+						<reference key="object" ref="877133625"/>
+						<reference key="parent" ref="9121316"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">100341</int>
-						<reference key="object" ref="678632982"/>
+						<reference key="object" ref="254951853"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="120967559"/>
+							<reference ref="489692668"/>
 						</object>
 						<reference key="parent" ref="616436209"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">100342</int>
-						<reference key="object" ref="120967559"/>
-						<reference key="parent" ref="678632982"/>
+						<reference key="object" ref="489692668"/>
+						<reference key="parent" ref="254951853"/>
 					</object>
 				</object>
 			</object>

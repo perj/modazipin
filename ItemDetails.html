@@ -39,7 +39,7 @@
 			td {
 				font-size: 14px;
 				text-align: right;
-				max-width: 200px;
+				max-width: 230px;
 				overflow: hidden;
 			}
 			
@@ -71,7 +71,9 @@
 	<body>
 		<!-- <img class="image" src="data:%ImageData%" /> -->
 		<h1>%?BioWare%<span class="BioWare">B</span> %!BioWare%%Title%</h1>
+%?Presentation%		<p>This is an offer installation file, not an addin.</p>%!Presentation%
 		<table>
+			
 			<tr><td class="grad" colspan="3"></td></tr>
 			<tr>
 				<th>Version:<th>
@@ -97,8 +99,18 @@
 				<th>URL:<th>
 				<td><a href="%URL%">%URL%</a></td>
 			</tr>
-%!URL%			<tr>
-			<tr><td class="grad" colspan="3"></td></tr>
+%!URL%%?offers%			<tr><td class="grad" colspan="3"></td></tr>
+			<tr>
+				<th>Price:<th>
+				<td>%Price% points</td>
+			</tr>
+%!offers%%?prcId%			<tr><td class="grad" colspan="3"></td></tr>
+			<tr>
+				<th>Purchase link:<th>
+				<td><a href="https://points.bioware.com/web/lockbox/checkout?productId=OFB-DRGN:%prcId%">https://points.bioware.com/web/lockbox/checkout?productId=OFB-DRGN:%prcId%</a></td>
+			</tr>
+%!prcId%			<tr><td class="grad" colspan="3"></td></tr>
+			<tr>
 				<th>Details:</th>
 			</tr>
 			<tr><td class="grad" colspan="3"></td></tr>
