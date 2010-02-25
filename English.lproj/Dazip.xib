@@ -73,11 +73,7 @@
 								<dictionary class="NSMutableDictionary" key="Values">
 									<integer value="12" key="WebKitDefaultFixedFontSize"/>
 									<integer value="12" key="WebKitDefaultFontSize"/>
-									<boolean value="NO" key="WebKitJavaEnabled"/>
-									<boolean value="NO" key="WebKitJavaScriptCanOpenWindowsAutomatically"/>
-									<boolean value="NO" key="WebKitJavaScriptEnabled"/>
 									<integer value="1" key="WebKitMinimumFontSize"/>
-									<boolean value="NO" key="WebKitPluginsEnabled"/>
 								</dictionary>
 							</object>
 							<bool key="UseBackForwardList">NO</bool>
@@ -198,6 +194,14 @@
 					</object>
 					<int key="connectionID">206</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">UIDelegate</string>
+						<reference key="source" ref="574071962"/>
+						<reference key="destination" ref="811140470"/>
+					</object>
+					<int key="connectionID">207</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -279,7 +283,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">206</int>
+			<int key="maxID">207</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">

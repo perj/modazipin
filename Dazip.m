@@ -24,6 +24,7 @@
 #import "AppDelegate.h"
 #import "DataStore.h"
 
+
 @implementation Dazip
 
 - (id)init 
@@ -81,6 +82,48 @@
 		cs.height = height;
 		[[wc window] setContentSize:cs];
 	}
+}
+
+- (NSArray *)webView:(WebView *)sender contextMenuItemsForElement:(NSDictionary *)element defaultMenuItems:(NSArray *)defaultMenuItems
+{
+	NSMutableArray *res = [NSMutableArray arrayWithCapacity:[defaultMenuItems count]];
+	
+	for (NSMenuItem *item in defaultMenuItems)
+	{
+		/* Was planning to white list instead of black list, but eg. Open Link is not documented. */
+		switch ([item tag])
+		{
+			case WebMenuItemTagOpenLinkInNewWindow:
+			case WebMenuItemTagDownloadLinkToDisk:
+			case WebMenuItemTagOpenImageInNewWindow:
+			case WebMenuItemTagDownloadImageToDisk:
+			case WebMenuItemTagCopyImageToClipboard:
+			case WebMenuItemTagOpenFrameInNewWindow:
+			case WebMenuItemTagGoBack:
+			case WebMenuItemTagGoForward:
+			case WebMenuItemTagStop:
+			case WebMenuItemTagReload:
+			case WebMenuItemTagCut:
+			case WebMenuItemTagPaste:
+			case WebMenuItemTagSpellingGuess:
+			case WebMenuItemTagNoGuessesFound:
+			case WebMenuItemTagIgnoreSpelling:
+			case WebMenuItemTagLearnSpelling:
+			case WebMenuItemTagOther: /* XXX huh? */
+			case WebMenuItemTagOpenWithDefaultApplication:
+				break;
+				
+			default:
+				[res addObject:item];
+				break;
+		}
+	}
+	return res;
+}
+
+- (NSUInteger)webView:(WebView *)webView dragDestinationActionMaskForDraggingInfo:(id <NSDraggingInfo>)draggingInfo
+{
+	return WebDragDestinationActionNone;
 }
 
 - (void)displayUIDConflictFor:(Item*)a and:(Item*)b

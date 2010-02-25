@@ -358,6 +358,7 @@
 
 - (void)didTurnIntoFault
 {
+	[super didTurnIntoFault];
 	cachedInfo = nil;
 	cachedDetails = nil;
 }
