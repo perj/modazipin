@@ -89,6 +89,8 @@ static AddInsList *sharedAddInsList;
 		[self spotlightQueryChanged];
 	else if (object == itemsController)
 		[self itemsControllerChanged];
+	else if ([keyPath isEqualToString:@"uncompressedOffset"])
+		[self progressChanged:object session:context];
 }
 
 
@@ -194,7 +196,7 @@ static AddInsList *sharedAddInsList;
 	return WebDragDestinationActionNone;
 }
 
-- (BOOL)installItems:(NSArray*)items withArchive:(NSURL*)url error:(NSError**)error
+- (BOOL)installItems:(NSArray*)items withArchive:(NSURL*)url uncompressedSize:(NSUInteger)sz error:(NSError**)error
 {
 	DazipArchive *archive = [DazipArchive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
 	NSURL *base = [self fileURL];
@@ -212,6 +214,13 @@ static AddInsList *sharedAddInsList;
 		else if ([store class] == [OfferListStore self])
 			offersStore = store;
 	}
+	
+	[progressIndicator setMaxValue:sz];
+	[progressIndicator setDoubleValue:0];
+	[progressWindow setTitle:[NSString stringWithFormat:@"Installing %@", [url lastPathComponent]]];
+	NSModalSession modal = [NSApp beginModalSessionForWindow:progressWindow];
+	
+	[archive addObserver:self forKeyPath:@"uncompressedOffset" options:0 context:modal];
 	
 	for (DazipArchiveMember *entry in archive)
 	{
@@ -246,7 +255,18 @@ static AddInsList *sharedAddInsList;
 				[[self managedObjectContext] refreshObject:rel mergeChanges:NO];
 		}
 	}
+	
+	[NSApp endModalSession:modal];
+	[progressWindow close];
+	
 	return YES;
+}
+
+- (void)progressChanged:(ArchiveWrapper*)archive session:(NSModalSession)modal
+{
+	[progressIndicator setDoubleValue:archive.uncompressedOffset];
+	[progressIndicator displayIfNeeded];
+	[NSApp runModalSession:modal];
 }
 
 - (BOOL)syncFilesFromContext:(NSError **)error

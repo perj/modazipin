@@ -1010,6 +1010,10 @@
 		}
 	}
 	
+	[self willChangeValueForKey:@"uncompressedSize"];
+	uncompressedSize = archive.uncompressedOffset;
+	[self didChangeValueForKey:@"uncompressedSize"];
+	
 	if (!xmldata)
 	{
 		if (error)
@@ -1072,5 +1076,7 @@
 - (NSString *)type {
     return @"DazipStore";
 }
+
+@synthesize uncompressedSize;
 
 @end

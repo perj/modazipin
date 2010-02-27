@@ -31,6 +31,8 @@
 struct archive;
 struct archive_entry;
 
+@class ArchiveWrapper;
+
 /**********************************************************************
  * Exceptions
  **********************************************************************/
@@ -60,6 +62,7 @@ extern NSString * const ArchiveErrorDomain;
 
 @interface ArchiveMember : NSObject
 {
+	ArchiveWrapper *wrapper;
 	struct archive *archive;
 	struct archive_entry *entry;
 	NSStringEncoding encoding;
@@ -106,6 +109,7 @@ extern NSString * const ArchiveErrorDomain;
 	NSStringEncoding encoding;
 	
 	ArchiveMember *lastMember;
+	NSUInteger uncompressedOffset;
 }
 
 /* Only file URLs are supported for now. */
@@ -116,5 +120,7 @@ extern NSString * const ArchiveErrorDomain;
 - (Class)memberClass;
 
 - (ArchiveMember *)nextMemberWithError:(NSError**)error;
+
+@property NSUInteger uncompressedOffset;
 
 @end

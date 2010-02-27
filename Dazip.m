@@ -202,7 +202,8 @@
 		return;
 	}
 	
-	[list installItems:[arr valueForKey:@"node"] withArchive:[self fileURL] error:&err];
+	DazipStore *store = (DazipStore*)[[[arr objectAtIndex:0] objectID] persistentStore];
+	[list installItems:[arr valueForKey:@"node"] withArchive:[self fileURL] uncompressedSize:store.uncompressedSize error:&err];
 	
 	[list selectItemWithUid:[[arr objectAtIndex:0] UID]];
 	[list saveDocument:self];

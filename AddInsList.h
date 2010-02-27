@@ -23,6 +23,7 @@
 #import <WebKit/WebKit.h>
 #import "DataStore.h"
 #import "DataStoreObject.h"
+#import "ArchiveWrapper.h"
 
 @interface AddInsList : NSPersistentDocument
 {
@@ -32,13 +33,17 @@
 	IBOutlet NSButton *launchGameButton;
 	IBOutlet NSArrayController *itemsController;
 	IBOutlet WebView *detailsView;
+	
+	IBOutlet NSWindow *progressWindow;
+	IBOutlet NSProgressIndicator *progressIndicator;
 }
 
 + (AddInsList*)sharedAddInsList;
 
 - (void)itemsControllerChanged;
 
-- (BOOL)installItems:(NSArray *)items withArchive:(NSURL*)url error:(NSError**)error;
+- (BOOL)installItems:(NSArray *)items withArchive:(NSURL*)url uncompressedSize:(NSUInteger)sz error:(NSError**)error;
+- (void)progressChanged:(ArchiveWrapper*)archive session:(NSModalSession)session;
 
 - (IBAction)askUninstall:(Item*)item;
 

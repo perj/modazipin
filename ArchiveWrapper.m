@@ -70,7 +70,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 
 @implementation ArchiveMember
 
-- (id)initWithArchive:(struct archive *)a encoding:(NSStringEncoding)enc error:(NSError**)error
+- (id)initWithWrapper:(ArchiveWrapper *)w archive:(struct archive *)a encoding:(NSStringEncoding)enc error:(NSError**)error
 {
 	self = [super init];
 	
@@ -78,6 +78,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	{
 		int r;
 		
+		wrapper = w;
 		archive = a;
 		encoding = enc;
 		if ((r = archive_read_next_header(a, &entry)) != ARCHIVE_OK)
@@ -180,18 +181,28 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	{
 		mutableData = [NSMutableData dataWithLength:(NSUInteger)self.size];
 		
+		int idx = 0;
 		while ((r = archive_read_data_block (archive, &buf, &len, &offset)) == ARCHIVE_OK)
+		{
 			[mutableData replaceBytesInRange:(NSRange){(NSUInteger)offset, (NSUInteger)len} withBytes:buf];
+		
+			if (++idx % 100 == 0 && wrapper)
+				wrapper.uncompressedOffset = archive_position_uncompressed(archive);
+		}
 	}
 	else
 	{
 		mutableData = [NSMutableData data];
 		
+		int idx = 0;
 		while ((r = archive_read_data_block (archive, &buf, &len, &offset)) == ARCHIVE_OK)
 		{
 			if (offset > [data length])
 				[mutableData increaseLengthBy:(NSUInteger)offset - [data length]];
 			[mutableData appendBytes:buf length:len];
+			
+			if (++idx % 100 == 0 && wrapper)
+				wrapper.uncompressedOffset = archive_position_uncompressed(archive);
 		}
 	}
 	
@@ -233,6 +244,9 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	[self willChangeValueForKey:@"dataAvailable"];
 	dataAvailable = NO;
 	[self didChangeValueForKey:@"dataAvailable"];
+	
+	if (wrapper)
+		wrapper.uncompressedOffset = archive_position_uncompressed(archive);
 	
 	if (r != ARCHIVE_OK && r != ARCHIVE_WARN)
 	{
@@ -309,11 +323,14 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	dataAvailable = NO;
 	[self didChangeValueForKey:@"dataAvailable"];
 	
+	int idx = 0;
 	while ((r = archive_read_data_block (archive, &buf, &len, &offset)) == ARCHIVE_OK)
 	{
 		if (offset > [fh offsetInFile])
 			[fh truncateFileAtOffset:offset];
 		[fh writeData:[NSData dataWithBytesNoCopy:(void*)buf length:len freeWhenDone:NO]];
+		if (++idx % 100 == 0 && wrapper)
+			wrapper.uncompressedOffset = archive_position_uncompressed(archive);
 	}
 	[fh closeFile];
 	
@@ -376,6 +393,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		encoding = enc;
 		
 		lastMember = nil;
+		self.uncompressedOffset = archive_position_uncompressed(archive);
 	}
 	return self;
 }
@@ -397,7 +415,8 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	if (lastMember)
 		[lastMember skipDataWithError:error];
 	
-	lastMember = [[[self memberClass] alloc] initWithArchive:archive encoding:encoding error:error];
+	lastMember = [[[self memberClass] alloc] initWithWrapper:self archive:archive encoding:encoding error:error];
+	self.uncompressedOffset = archive_position_uncompressed(archive);
 
 	if (!lastMember)
 		archive_read_close (archive);
@@ -423,5 +442,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	state->itemsPtr = stackbuf;
 	return 1;
 }
+
+@synthesize uncompressedOffset;
 
 @end
