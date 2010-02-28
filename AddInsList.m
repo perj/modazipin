@@ -98,6 +98,8 @@ static AddInsList *sharedAddInsList;
 {
     [super windowControllerDidLoadNib:windowController];
 	
+	[detailsView setDrawsBackground:NO];
+	
 	NSWindow *window = [windowController window];
 	[window setRepresentedURL:[self fileURL]];
 	[[window standardWindowButton:NSWindowDocumentIconButton] setImage:[NSImage imageNamed:@"dragon_4"]];
@@ -124,7 +126,7 @@ static AddInsList *sharedAddInsList;
 	}
 	else
 	{
-		[[detailsView mainFrame] loadHTMLString:@"<html><body style='background:#201000;'></body></html>" baseURL:[self fileURL]];
+		[[detailsView mainFrame] loadHTMLString:@"" baseURL:[[NSBundle mainBundle] resourceURL]];
 	}
 
 }
