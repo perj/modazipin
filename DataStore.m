@@ -129,9 +129,7 @@
 - (id)loadModazipin:(NSXMLElement*)node forItem:(id)item error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
 	NSXMLElement *pathsNode = nil;
-	NSXMLElement *contentsNode = nil;
 	NSMutableSet *paths = [NSMutableSet set];
-	NSMutableSet *contents = [NSMutableSet set];
 	id res = createBlock(node, @"Modazipin");
 	
 	if (!res)
@@ -142,7 +140,7 @@
 		if ([[elem name] isEqualToString:@"paths"])
 			pathsNode = elem;
 		else if ([[elem name] isEqualToString:@"contents"])
-			contentsNode = elem;
+			[elem detach];
 	}
 	
 	if (pathsNode)
@@ -164,27 +162,8 @@
 		}
 	}
 	
-	if (contentsNode)
-	{
-		for (NSXMLElement *elem in [contentsNode children])
-		{
-			NSMutableDictionary *data = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-										 [[elem attributeForName:@"name"] stringValue], @"name",
-										 elem, @"node",
-										 res, @"modazipin",
-										 nil];
-			id cnode = setBlock(createBlock(elem, @"Content"), data);
-			
-			if (!cnode)
-				return nil;
-			
-			[contents addObject:cnode];
-		}
-	}
-	
 	NSMutableDictionary *data = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 								 paths, @"paths",
-								 contents, @"contents",
 								 node, @"node",
 								 item, @"item",
 								 nil];
@@ -504,7 +483,7 @@
 	return cnode;
 }
 
-- (NSXMLElement*)makeModazipinNodeForContents:(NSSet*)contents files:(NSSet*)files dirs:(NSSet*)dirs
+- (NSXMLElement*)makeModazipinNodeForFiles:(NSSet*)files dirs:(NSSet*)dirs
 {
 	NSXMLElement *res = [NSXMLElement elementWithName:@"modazipin"];
 	
@@ -528,17 +507,6 @@
 	
 	[res addChild:paths];
 	
-	NSXMLElement *contentsNode = [NSXMLElement elementWithName:@"contents"];
-	
-	for (NSString *content in contents)
-	{
-		NSXMLElement *contentNode = [NSXMLElement elementWithName:@"content"];
-		
-		[contentNode addAttribute:[NSXMLNode attributeWithName:@"name" stringValue:content]];
-		[contentsNode addChild:contentNode];
-	}
-	
-	[res addChild:contentsNode];
 	return res;
 }
 
@@ -945,7 +913,7 @@
 			return self;
 		}
 		
-		NSXMLElement *modNode = [self makeModazipinNodeForContents:contents files:files dirs:dirs];
+		NSXMLElement *modNode = [self makeModazipinNodeForFiles:files dirs:dirs];
 		
 		[itemNode addChild:modNode];
 		

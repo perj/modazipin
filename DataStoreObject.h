@@ -32,16 +32,6 @@
 @end
 
 
-@interface Content : DataStoreObject
-{
-}
-
-@property (nonatomic, retain) Modazipin * modazipin;
-@property (nonatomic, retain) NSString * name;
-
-@end
-
-
 @interface Path : DataStoreObject
 {
 }
@@ -57,18 +47,16 @@
 {
 }
 
-@property (nonatomic, retain) NSSet* contents;
-@property (nonatomic, retain) Item * item;
-@property (nonatomic, retain) NSSet* paths;
+@property (retain) NSMutableSet* contents;
+@property (retain) Item * item;
+@property (retain) NSSet* paths;
+
+- (void)addContent:(NSString *)value;
+- (void)removeContent:(NSString *)value;
 
 @end
 
 @interface Modazipin (CoreDataGeneratedAccessors)
-- (void)addContentsObject:(Content *)value;
-- (void)removeContentsObject:(Content *)value;
-- (void)addContents:(NSSet *)value;
-- (void)removeContents:(NSSet *)value;
-
 - (void)addPathsObject:(Path *)value;
 - (void)removePathsObject:(Path *)value;
 - (void)addPaths:(NSSet *)value;

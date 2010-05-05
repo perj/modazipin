@@ -39,15 +39,6 @@
 @end
 
 
-@implementation Content
-
-@dynamic name;
-@dynamic modazipin;
-
-@end
-
-
-
 @implementation Path
 
 @dynamic modazipin;
@@ -62,6 +53,31 @@
 @dynamic contents;
 @dynamic item;
 @dynamic paths;
+
+- (void)awakeFromInsert
+{
+	[super awakeFromInsert];
+	
+	self.contents = [NSMutableSet set];
+}
+
+- (void)awakeFromFetch
+{
+	[super awakeFromFetch];
+	
+	self.contents = [NSMutableSet set];
+}
+
+
+- (void)addContent:(NSString *)value
+{
+	[self.contents addObject:value];
+}
+
+- (void)removeContent:(NSString *)value
+{
+	[self.contents removeObject:value];
+}
 
 @end
 

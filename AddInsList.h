@@ -30,7 +30,11 @@
 	NSMetadataQuery *spotlightQuery;
 	NSMetadataItem *spotlightGameItem;
 	
-	IBOutlet NSButton *launchGameButton;
+	NSOperationQueue *operationQueue;
+	BOOL isBusy;
+	NSString *statusMessage;
+	
+	IBOutlet NSToolbarItem *launchGameButton;
 	IBOutlet NSArrayController *itemsController;
 	IBOutlet WebView *detailsView;
 	
@@ -42,16 +46,36 @@
 
 - (void)itemsControllerChanged;
 
+- (void)selectItemWithUid:(NSString*)uid;
+
+- (void)addContents:(NSString *)contents forURL:(NSURL *)url;
+- (void)addContentsForURL:(NSDictionary*)data;
+
+@property(readonly) NSOperationQueue *queue;
+@property(readonly) BOOL isBusy;
+@property(readonly) NSString *statusMessage;
+
+- (void)updateOperationCount;
+
+@end
+
+
+@interface AddInsList (Installing)
+
 - (BOOL)installItems:(NSArray *)items withArchive:(NSURL*)url uncompressedSize:(NSUInteger)sz error:(NSError**)error;
 - (void)progressChanged:(ArchiveWrapper*)archive session:(NSModalSession)session;
 
-- (IBAction)askUninstall:(Item*)item;
+@end
+
+
+@interface AddInsList (Uninstalling)
+
+- (IBAction)askUninstall:(id)sender;
 
 - (BOOL)uninstall:(Item*)item error:(NSError**)error;
 
-- (void)selectItemWithUid:(NSString*)uid;
-
 @end
+
 
 @interface AddInsList (GameLaunching)
 

@@ -22,7 +22,7 @@
 #import "AddInsList.h"
 #import "DataStore.h"
 #import "DazipArchive.h"
-
+#import "Scanner.h"
 
 @implementation AddInsList
 
@@ -40,9 +40,11 @@ static AddInsList *sharedAddInsList;
 	NSAssert(sharedAddInsList == nil, @"Already a shared AddInsList");
 	
     self = [super init];
-    if (self != nil) {
-        // initialization code
-    }
+	if (self != nil) {
+		if (!operationQueue)
+			operationQueue = [[NSOperationQueue alloc] init];
+		[[self managedObjectContext] setUndoManager:nil];
+	}
 	sharedAddInsList = self;
     return self;
 }
@@ -68,11 +70,6 @@ static AddInsList *sharedAddInsList;
 	return YES;
 }
 
-- (BOOL)writeSafelyToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation error:(NSError **)outError
-{
-	return [[self managedObjectContext] save:outError];
-}
-
 - (NSString *)windowNibName 
 {
     return @"AddInsList";
@@ -91,6 +88,8 @@ static AddInsList *sharedAddInsList;
 		[self itemsControllerChanged];
 	else if ([keyPath isEqualToString:@"uncompressedOffset"])
 		[self progressChanged:object session:context];
+	else if (object == operationQueue)
+		[self updateOperationCount];
 }
 
 
@@ -108,8 +107,18 @@ static AddInsList *sharedAddInsList;
 	[itemsController rearrangeObjects];
 	[itemsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
 	
-	[launchGameButton setKeyEquivalent:@"\r"];
+	//[launchGameButton setKeyEquivalent:@"\r"];
 	[self updateLaunchButtonImage];
+	
+	NSURL *myURL = [self fileURL];
+	NSURL *scanAddinsURL = [myURL URLByAppendingPathComponent:@"Addins"];
+	NSURL *scanOffersURL = [myURL URLByAppendingPathComponent:@"Offers"];
+	NSURL *scanPackagesURL = [myURL URLByAppendingPathComponent:@"packages"];
+	
+	[operationQueue addObserver:self forKeyPath:@"operationCount" options:0 context:nil];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanAddinsURL message:@"addins"]];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanOffersURL message:@"offers"]];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanPackagesURL message:@"packages"]];
 }
 
 - (void)itemsControllerChanged
@@ -130,6 +139,109 @@ static AddInsList *sharedAddInsList;
 	}
 
 }
+
+- (void)selectItemWithUid:(NSString *)uid
+{
+	NSFetchRequest *req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"itemWithUID" substitutionVariables:[NSDictionary dictionaryWithObject:uid forKey:@"UID"]];
+	NSArray *arr = [[self managedObjectContext] executeFetchRequest:req error:nil];
+	
+	if ([arr count])
+		[itemsController setSelectedObjects:arr];
+}
+
+- (void)addContents:(NSString *)contents forURL:(NSURL *)url
+{
+	NSMutableArray *cparts = [NSMutableArray arrayWithArray:[url pathComponents]];
+	NSArray *mparts = [[self fileURL] pathComponents];
+	NSFetchRequest *req;
+	
+	for (NSString *p in mparts) {
+		if (![[cparts objectAtIndex:0] isEqualToString:p])
+			return; /* Exception */
+		
+		[cparts removeObjectAtIndex:0];
+	}
+	
+	if ([[cparts objectAtIndex:0] caseInsensitiveCompare:@"Addins"] == NSOrderedSame
+		|| [[cparts objectAtIndex:0] caseInsensitiveCompare:@"Offers"] == NSOrderedSame)
+	{
+		req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"itemWithUID" substitutionVariables:[NSDictionary dictionaryWithObject:[cparts objectAtIndex:1] forKey:@"UID"]];
+	}
+	else
+	{
+		NSString *path = [NSString pathWithComponents:cparts];
+		
+		req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"itemsWithPaths" substitutionVariables:[NSDictionary dictionaryWithObject:[NSSet setWithObject:path] forKey:@"paths"]];
+	}
+	
+	NSArray *items = [[self managedObjectContext] executeFetchRequest:req error:nil];
+	if ([items count])
+	{
+		Item *item = [items objectAtIndex:0];
+	
+		[item.modazipin addContent:contents];
+	}
+	else
+	{
+		/* An unknown item. */
+	}
+}
+
+- (void)addContentsForURL:(NSDictionary*)data
+{
+	[self addContents:[data objectForKey:@"contents"] forURL:[data objectForKey:@"URL"]];
+}
+
+- (NSOperationQueue*)queue
+{
+	return operationQueue;
+}
+
+- (void)updateOperationCount
+{
+	if ([operationQueue operationCount])
+	{
+		if (!isBusy)
+		{
+			[self willChangeValueForKey:@"isBusy"];
+			isBusy = YES;
+			[self didChangeValueForKey:@"isBusy"];
+		}
+		
+		NSArray *msgs = [[operationQueue operations] valueForKey:@"message"];
+		NSString *status = [NSString stringWithFormat:@"Scanning %@.", [msgs componentsJoinedByString:@", "]];
+		
+		if (![status isEqualToString:statusMessage])
+		{
+			[self willChangeValueForKey:@"statusMessage"];
+			statusMessage = status;
+			[self didChangeValueForKey:@"statusMessage"];
+		}
+	}
+	else
+	{
+		if (isBusy)
+		{
+			[self willChangeValueForKey:@"isBusy"];
+			isBusy = NO;
+			[self didChangeValueForKey:@"isBusy"];
+		}
+		if (![statusMessage isEqualToString:@""])
+		{
+			[self willChangeValueForKey:@"statusMessage"];
+			statusMessage = @"";
+			[self didChangeValueForKey:@"statusMessage"];
+		}
+	}
+}
+
+@synthesize isBusy;
+@synthesize statusMessage;
+
+@end
+
+
+@implementation AddInsList (WebView)
 
 - (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id < WebPolicyDecisionListener >)listener
 {
@@ -197,6 +309,11 @@ static AddInsList *sharedAddInsList;
 {
 	return WebDragDestinationActionNone;
 }
+
+@end
+
+
+@implementation AddInsList (Installing)
 
 - (BOOL)installItems:(NSArray*)items withArchive:(NSURL*)url uncompressedSize:(NSUInteger)sz error:(NSError**)error
 {
@@ -271,6 +388,11 @@ static AddInsList *sharedAddInsList;
 	[NSApp runModalSession:modal];
 }
 
+@end
+
+
+@implementation AddInsList (Saving)
+
 - (BOOL)syncFilesFromContext:(NSError **)error
 {
 	NSURL *base = [self fileURL];	
@@ -308,20 +430,28 @@ static AddInsList *sharedAddInsList;
 	return YES;
 }
 
-- (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation originalContentsURL:(NSURL *)absoluteOriginalContentsURL error:(NSError **)error
+- (BOOL)writeSafelyToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation error:(NSError **)outError
 {
-	BOOL res = [super writeToURL:absoluteURL ofType:typeName forSaveOperation:saveOperation originalContentsURL:absoluteOriginalContentsURL error:error];
+	BOOL res = [[self managedObjectContext] save:outError];
 	
 	if (!res)
 		return NO;
 	
-	return [self syncFilesFromContext:error];
+	return [self syncFilesFromContext:outError];
 }
 
-- (IBAction)askUninstall:(Item*)item
+@end
+
+
+@implementation AddInsList (Uninstalling)
+
+- (IBAction)askUninstall:(id)item
 {
 	NSString *title;
 	NSString *msg;
+	
+	if (![item isKindOfClass:[Item class]])
+		item = [[itemsController selectedObjects] objectAtIndex:0];
 	
 	if ([[[item entity] name] isEqualToString:@"AddInItem"] && [[item valueForKey:@"offers"] count])
 	{
@@ -344,7 +474,7 @@ static AddInsList *sharedAddInsList;
 					  NULL,
 					  item,
 					  msg,
-					  item.Title.localizedValue);
+					  ((Item*)item).Title.localizedValue);
 }
 								  
 - (void)answerUninstall:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
@@ -402,16 +532,8 @@ static AddInsList *sharedAddInsList;
 	return YES;
 }
 
-- (void)selectItemWithUid:(NSString *)uid
-{
-	NSFetchRequest *req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"itemWithUID" substitutionVariables:[NSDictionary dictionaryWithObject:uid forKey:@"UID"]];
-	NSArray *arr = [[self managedObjectContext] executeFetchRequest:req error:nil];
-	
-	if ([arr count])
-		[itemsController setSelectedObjects:arr];
-}
-
 @end
+
 
 @implementation AddInsList (GameLaunching)
 
