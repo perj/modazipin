@@ -28,6 +28,8 @@
 
 static AddInsList *sharedAddInsList;
 
+static NSPredicate *isDisabled;
+
 + (AddInsList*)sharedAddInsList
 {
 	return sharedAddInsList;
@@ -44,6 +46,9 @@ static AddInsList *sharedAddInsList;
 		if (!operationQueue)
 			operationQueue = [[NSOperationQueue alloc] init];
 		[[self managedObjectContext] setUndoManager:nil];
+		
+		if (!isDisabled)
+			isDisabled = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] ' (disabled)'"];
 	}
 	sharedAddInsList = self;
     return self;
@@ -114,11 +119,13 @@ static AddInsList *sharedAddInsList;
 	NSURL *scanAddinsURL = [myURL URLByAppendingPathComponent:@"Addins"];
 	NSURL *scanOffersURL = [myURL URLByAppendingPathComponent:@"Offers"];
 	NSURL *scanPackagesURL = [myURL URLByAppendingPathComponent:@"packages"];
+	NSURL *scanDisabledPackagesURL = [myURL URLByAppendingPathComponent:@"packages (disabled)"];
 	
 	[operationQueue addObserver:self forKeyPath:@"operationCount" options:0 context:nil];
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanAddinsURL message:@"addins"]];
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanOffersURL message:@"offers"]];
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanPackagesURL message:@"packages"]];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanDisabledPackagesURL message:@"disabled packages"]];
 }
 
 - (void)itemsControllerChanged
@@ -166,25 +173,46 @@ static AddInsList *sharedAddInsList;
 		|| [[cparts objectAtIndex:0] caseInsensitiveCompare:@"Offers"] == NSOrderedSame)
 	{
 		req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"itemWithUID" substitutionVariables:[NSDictionary dictionaryWithObject:[cparts objectAtIndex:1] forKey:@"UID"]];
+		
+		NSArray *items = [[self managedObjectContext] executeFetchRequest:req error:nil];
+		if ([items count])
+		{
+			Item *item = [items objectAtIndex:0];
+			
+			if (contents)
+				[item.modazipin addContent:contents];
+		}
+		else
+		{
+			/* An unknown item. */
+		}
 	}
 	else
 	{
+		if ([isDisabled evaluateWithObject:[cparts objectAtIndex:0]]) {
+			NSString *s = [cparts objectAtIndex:0];
+			
+			[cparts replaceObjectAtIndex:0 withObject:[s substringToIndex:[s length] - sizeof (" (disabled)") + 1]];
+		}
+		
 		NSString *path = [NSString pathWithComponents:cparts];
 		
-		req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"itemsWithPaths" substitutionVariables:[NSDictionary dictionaryWithObject:[NSSet setWithObject:path] forKey:@"paths"]];
+		req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"path" substitutionVariables:[NSDictionary dictionaryWithObject:path forKey:@"path"]];
+		NSArray *paths = [[self managedObjectContext] executeFetchRequest:req error:nil];
+		if ([paths count])
+		{
+			Path *p = [paths objectAtIndex:0];
+			
+			p.verified = [NSNumber numberWithBool:YES];
+			if (contents)
+				[p.modazipin addContent:contents];
+		}
+		else
+		{
+			/* An unknown path. */
+		}
 	}
 	
-	NSArray *items = [[self managedObjectContext] executeFetchRequest:req error:nil];
-	if ([items count])
-	{
-		Item *item = [items objectAtIndex:0];
-	
-		[item.modazipin addContent:contents];
-	}
-	else
-	{
-		/* An unknown item. */
-	}
 }
 
 - (void)addContentsForURL:(NSDictionary*)data
@@ -231,6 +259,28 @@ static AddInsList *sharedAddInsList;
 			[self willChangeValueForKey:@"statusMessage"];
 			statusMessage = @"";
 			[self didChangeValueForKey:@"statusMessage"];
+		}
+		NSFetchRequest *req = [[self managedObjectModel] fetchRequestTemplateForName:@"itemsWithAnyPath"];
+		NSArray *items = [[self managedObjectContext] executeFetchRequest:req error:nil];
+		
+		NSMutableArray *missing = [NSMutableArray array];
+		
+		for (Item *item in items)
+		{
+			[missing removeAllObjects];
+			
+			for (Path *p in item.modazipin.paths)
+			{
+				if (![p.verified boolValue])
+					[missing addObject:p.path];
+			}
+			if ([missing count])
+			{
+				item.missingFiles = [missing componentsJoinedByString:@", "];
+				[item updateInfo];
+				if ([[itemsController selectedObjects] indexOfObject:item] != NSNotFound)
+					[self performSelectorOnMainThread:@selector(itemsControllerChanged) withObject:nil waitUntilDone:NO];
+			}
 		}
 	}
 }

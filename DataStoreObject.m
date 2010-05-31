@@ -44,6 +44,7 @@
 @dynamic modazipin;
 @dynamic path;
 @dynamic type;
+@dynamic verified;
 
 @end
 
@@ -210,6 +211,7 @@
 @dynamic RatingDescription;
 @dynamic Title;
 @dynamic URL;
+@dynamic missingFiles;
 
 - (NSMutableString*)replaceProperties:(NSMutableString*)str
 {
@@ -284,6 +286,7 @@
 						repTo = @"";
 					break;
 				case NSDecimalAttributeType:
+				case NSBooleanAttributeType:
 					if ([[self valueForKey:[prop name]] boolValue])
 						repTo = [[self valueForKey:[prop name]] stringValue];
 					else
@@ -344,7 +347,7 @@
 	if (cachedInfo)
 		return cachedInfo;
 	
-	NSURL *infoURL = [[NSBundle mainBundle] URLForResource:@"ItemInfo" withExtension:@"rtf"];
+	NSURL *infoURL = [[NSBundle mainBundle] URLForResource:@"ItemInfo" withExtension:@"rtfd"];
 	if (!infoURL)
 		return nil;
 	
@@ -377,6 +380,18 @@
 	[super didTurnIntoFault];
 	cachedInfo = nil;
 	cachedDetails = nil;
+}
+
+- (void)updateInfo
+{
+	cachedDetails = nil;
+	cachedInfo = nil;
+	[self willChangeValueForKey:@"infoAttributedString"];
+	[self infoAttributedString];
+	[self didChangeValueForKey:@"infoAttributedString"];
+	[self willChangeValueForKey:@"detailsHTML"];
+	[self detailsHTML];
+	[self didChangeValueForKey:@"detailsHTML"];
 }
 
 @end

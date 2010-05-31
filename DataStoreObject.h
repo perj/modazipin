@@ -39,6 +39,7 @@
 @property (nonatomic, retain) Modazipin * modazipin;
 @property (nonatomic, retain) NSString * path;
 @property (nonatomic, retain) NSString * type;
+@property (nonatomic, retain) NSNumber * verified;
 
 @end
 
@@ -120,9 +121,12 @@
 @property (nonatomic, retain) Text * RatingDescription;
 @property (nonatomic, retain) Text * Title;
 @property (nonatomic, retain) Text * URL;
+@property (nonatomic, retain) NSString *missingFiles;
 
 @property (readonly) NSMutableAttributedString * infoAttributedString;
 @property (readonly) NSMutableString * detailsHTML;
+
+- (void)updateInfo;
 
 @end
 

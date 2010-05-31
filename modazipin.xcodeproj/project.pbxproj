@@ -30,7 +30,7 @@
 		66581ED610F3A7C00088EC73 /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66581ED510F3A7C00088EC73 /* libarchive.dylib */; };
 		66581F0C10F3B0400088EC73 /* Dazip.m in Sources */ = {isa = PBXBuildFile; fileRef = 66581F0B10F3B0400088EC73 /* Dazip.m */; };
 		66726AED10FD26EB001EB75C /* dragon_4_doc.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66726AEC10FD26EB001EB75C /* dragon_4_doc.icns */; };
-		6675043D113191C2002BA240 /* ItemInfo.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 6675043C113191C2002BA240 /* ItemInfo.rtf */; };
+		6675043D113191C2002BA240 /* ItemInfo.rtfd in Resources */ = {isa = PBXBuildFile; fileRef = 6675043C113191C2002BA240 /* ItemInfo.rtfd */; };
 		667505391131A26D002BA240 /* ItemDetails.html in Resources */ = {isa = PBXBuildFile; fileRef = 667505381131A26D002BA240 /* ItemDetails.html */; };
 		667505EE1131AC9F002BA240 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 667505ED1131AC9F002BA240 /* WebKit.framework */; };
 		6675096E113331E2002BA240 /* grad.png in Resources */ = {isa = PBXBuildFile; fileRef = 6675096D113331E2002BA240 /* grad.png */; };
@@ -84,7 +84,7 @@
 		66716B6D10FFB550009F0009 /* TODO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
 		66716B6E10FFB5CF009F0009 /* README.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = README.rtf; sourceTree = "<group>"; };
 		66726AEC10FD26EB001EB75C /* dragon_4_doc.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = dragon_4_doc.icns; sourceTree = "<group>"; };
-		6675043C113191C2002BA240 /* ItemInfo.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = ItemInfo.rtf; sourceTree = "<group>"; };
+		6675043C113191C2002BA240 /* ItemInfo.rtfd */ = {isa = PBXFileReference; lastKnownFileType = wrapper.rtfd; path = ItemInfo.rtfd; sourceTree = "<group>"; };
 		667505381131A26D002BA240 /* ItemDetails.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = ItemDetails.html; sourceTree = "<group>"; };
 		667505ED1131AC9F002BA240 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		6675096D113331E2002BA240 /* grad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grad.png; sourceTree = "<group>"; };
@@ -200,7 +200,7 @@
 				668DA23F113B02AD00A66EA8 /* ToolbarDeleteIcon.icns */,
 				6675096D113331E2002BA240 /* grad.png */,
 				667505381131A26D002BA240 /* ItemDetails.html */,
-				6675043C113191C2002BA240 /* ItemInfo.rtf */,
+				6675043C113191C2002BA240 /* ItemInfo.rtfd */,
 				66716B6E10FFB5CF009F0009 /* README.rtf */,
 				66726AEC10FD26EB001EB75C /* dragon_4_doc.icns */,
 				66893CB210FCF88900A29832 /* dragon_4.icns */,
@@ -278,7 +278,7 @@
 				6600E6FE11305DF7003B40E3 /* Dazip.xib in Resources */,
 				66726AED10FD26EB001EB75C /* dragon_4_doc.icns in Resources */,
 				66B2D8611102644900997830 /* dragon_4.icns in Resources */,
-				6675043D113191C2002BA240 /* ItemInfo.rtf in Resources */,
+				6675043D113191C2002BA240 /* ItemInfo.rtfd in Resources */,
 				667505391131A26D002BA240 /* ItemDetails.html in Resources */,
 				6675096E113331E2002BA240 /* grad.png in Resources */,
 				668DA283113B084200A66EA8 /* ToolbarDeleteIcon.icns in Resources */,

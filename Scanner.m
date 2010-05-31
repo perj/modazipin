@@ -82,6 +82,11 @@ static NSPredicate *isERF;
 													   waitUntilDone:YES];
 						   });
 		}
+		[document performSelectorOnMainThread:@selector(addContentsForURL:)
+								   withObject:[NSDictionary dictionaryWithObjectsAndKeys:
+											   url, @"URL",
+											   nil]
+								waitUntilDone:YES];
 	}
 	else
 		[document performSelectorOnMainThread:@selector(addContentsForURL:)
