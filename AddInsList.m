@@ -29,6 +29,7 @@
 static AddInsList *sharedAddInsList;
 
 static NSPredicate *isDisabled;
+static NSPredicate *isREADME;
 
 + (AddInsList*)sharedAddInsList
 {
@@ -49,6 +50,8 @@ static NSPredicate *isDisabled;
 		
 		if (!isDisabled)
 			isDisabled = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] ' (disabled)'"];
+		if (!isREADME)
+			isREADME = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i).*README.*'"];
 	}
 	sharedAddInsList = self;
     return self;
@@ -58,6 +61,7 @@ static NSPredicate *isDisabled;
 {
 	NSURL *addinsURL = [absoluteURL URLByAppendingPathComponent:@"Settings/AddIns.xml"];
 	NSURL *offersURL = [absoluteURL URLByAppendingPathComponent:@"Settings/Offers.xml"];
+	NSURL *nullURL = [NSURL URLWithString:@"file:///dev/null"];
 	
 	if (![self configurePersistentStoreCoordinatorForURL:addinsURL ofType:@"AddInsListStore" 
 									  modelConfiguration:@"addins" storeOptions:nil error:error])
@@ -67,6 +71,12 @@ static NSPredicate *isDisabled;
 	}
 	if (![self configurePersistentStoreCoordinatorForURL:offersURL ofType:@"OfferListStore" 
 									  modelConfiguration:@"offers" storeOptions:nil error:error])
+	{
+		sharedAddInsList = nil;
+		return NO;
+	}
+	if (![self configurePersistentStoreCoordinatorForURL:nullURL ofType:@"NullStore" 
+									  modelConfiguration:@"null" storeOptions:nil error:error])
 	{
 		sharedAddInsList = nil;
 		return NO;
@@ -189,27 +199,68 @@ static NSPredicate *isDisabled;
 	}
 	else
 	{
-		if ([isDisabled evaluateWithObject:[cparts objectAtIndex:0]]) {
+		NSString *pathType = @"file";
+		NSString *readme = nil;
+		NSString *realpath = [NSString pathWithComponents:cparts];
+		BOOL disabled;
+		
+		if ((disabled = [isDisabled evaluateWithObject:[cparts objectAtIndex:0]]))
+		{
 			NSString *s = [cparts objectAtIndex:0];
 			
 			[cparts replaceObjectAtIndex:0 withObject:[s substringToIndex:[s length] - sizeof (" (disabled)") + 1]];
+		}
+		
+		if ([isREADME evaluateWithObject:realpath])
+			readme = [NSString stringWithFormat:@"README:\n\n%@", [NSString stringWithContentsOfURL:[[self fileURL] URLByAppendingPathComponent:realpath] encoding:NSWindowsCP1252StringEncoding error:nil]];
+		
+		if ([cparts count] > 4)
+		{
+			[cparts removeObjectsInRange:NSMakeRange(4, [cparts count] - 4)];
+			pathType = @"dir";
 		}
 		
 		NSString *path = [NSString pathWithComponents:cparts];
 		
 		req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"path" substitutionVariables:[NSDictionary dictionaryWithObject:path forKey:@"path"]];
 		NSArray *paths = [[self managedObjectContext] executeFetchRequest:req error:nil];
+		Item *item;
+		
 		if ([paths count])
 		{
 			Path *p = [paths objectAtIndex:0];
 			
 			p.verified = [NSNumber numberWithBool:YES];
-			if (contents)
-				[p.modazipin addContent:contents];
+			item = p.modazipin.item;
 		}
 		else
 		{
 			/* An unknown path. */
+			item = [NSEntityDescription insertNewObjectForEntityForName:@"UnknownPath" inManagedObjectContext:[self managedObjectContext]];
+			Text *title = [NSEntityDescription insertNewObjectForEntityForName:@"Text" inManagedObjectContext:[self managedObjectContext]];
+			Path *p = [NSEntityDescription insertNewObjectForEntityForName:@"Path" inManagedObjectContext:[self managedObjectContext]];
+			
+			p.path = path;
+			p.type = pathType;
+			p.verified = [NSNumber numberWithBool:YES];
+			title.DefaultText = [cparts lastObject];
+			title.item = item;
+			item.Title = title;
+			item.modazipin = [NSEntityDescription insertNewObjectForEntityForName:@"Modazipin" inManagedObjectContext:[self managedObjectContext]];
+			item.Enabled = disabled ? [NSDecimalNumber zero] : [NSDecimalNumber one];
+			item.displayed = [NSNumber numberWithBool:YES];
+			[item.modazipin addPathsObject:p];
+		}
+		
+		if (contents)
+			[item.modazipin addContent:contents];
+		
+		Text *desc = !item.Description && readme ? [NSEntityDescription insertNewObjectForEntityForName:@"Text" inManagedObjectContext:[self managedObjectContext]] : nil;
+		if (desc)
+		{
+			desc.DefaultText = readme;
+			desc.item = item;
+			item.Description = desc;
 		}
 	}
 	

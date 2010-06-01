@@ -83,6 +83,7 @@
 @property (nonatomic, retain) NSString * DefaultText;
 @property (nonatomic, retain) NSSet* languages;
 @property (nonatomic, retain) NSString * localizedValue;
+@property (retain) Item * item;
 
 @end
 
@@ -102,6 +103,7 @@
 }
 
 @property (nonatomic, retain) NSDecimalNumber * BioWare;
+@property (nonatomic, retain) NSDecimalNumber * Enabled;
 @property (nonatomic, retain) NSString * ExtendedModuleUID;
 @property (nonatomic, retain) NSDecimalNumber * Format;
 @property (nonatomic, retain) NSString * GameVersion;
@@ -121,6 +123,7 @@
 @property (nonatomic, retain) Text * RatingDescription;
 @property (nonatomic, retain) Text * Title;
 @property (nonatomic, retain) Text * URL;
+@property (nonatomic, retain) NSNumber *displayed;
 @property (nonatomic, retain) NSString *missingFiles;
 
 @property (readonly) NSMutableAttributedString * infoAttributedString;
@@ -135,7 +138,6 @@
 {
 }
 
-@property (nonatomic, retain) NSDecimalNumber * Enabled;
 @property (nonatomic, retain) NSDecimalNumber * RequiresAuthorization;
 @property (nonatomic, retain) NSDecimalNumber * State;
 
@@ -165,7 +167,6 @@
 @property (nonatomic, retain) NSDecimalNumber * Presentation;
 @property (nonatomic, retain) NSSet* PRCList;
 
-@property (readonly) BOOL Enabled;
 @property (readonly) BOOL canToggleEnabled;
 
 @end

@@ -53,6 +53,7 @@
 			
 			p {
 				white-space: pre-wrap;
+				overflow: hidden;
 			}
 			
 			input {
@@ -81,17 +82,17 @@ You will only see it in Modazipin if you install the addin as well.</p>%!Present
 		<table>
 			
 			<tr><td class="grad" colspan="3"></td></tr>
-			<tr>
+%?Version%			<tr>
 				<th>Version:<th>
 				<td>%Version%</td>
 			</tr>
-			<tr><td class="grad" colspan="3"></td></tr>
+%!Version%%?Publisher%			<tr><td class="grad" colspan="3"></td></tr>
 			<tr>
 				<th>Publisher:<th>
 				<td>%Publisher%</td>
 			</tr>
-			<tr><td class="grad" colspan="3"></td></tr>
-%?State%			<tr>
+%!Publisher%%?State%			<tr><td class="grad" colspan="3"></td></tr>
+			<tr>
 				<th>Release date:<th>
 				<td>%ReleaseDate%</td>
 			</tr>
@@ -121,7 +122,9 @@ You will only see it in Modazipin if you install the addin as well.</p>%!Present
 			</tr>
 			<tr><td class="grad" colspan="3"></td></tr>
 %!State%		</table>
-%?State%		<p>%Description%</p>%!State%
+%?UnknownPath%		<p class="info">This is an item found in your packages folder.</p>			<table><tr><td class="grad" colspan="3"></td></tr></table>
+%!UnknownPath%
+%?Description%		<p>%Description%</p>%!Description%
 		<br />
 		<form action="command:install" method="POST">
 			<input type="submit" value="Install" />

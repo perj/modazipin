@@ -56,7 +56,7 @@ static NSPredicate *isERF;
 		return;
 	
 	NSString *name = [props objectForKey:NSURLNameKey];
-	if (!name)
+	if (!name || [name isEqualToString:@".DS_Store"])
 		return;
 	
 	if ([isERF evaluateWithObject:name])

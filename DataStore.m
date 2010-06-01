@@ -25,6 +25,70 @@
 
 #include "erf.h"
 
+@implementation NSAtomicStore (CacheNodeCreation)
+
+- (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject
+{
+	/* This function is completely generic. */
+	NSMutableDictionary *data = [NSMutableDictionary dictionary];
+	NSAtomicStoreCacheNode *cnode;
+	
+	for (NSPropertyDescription *prop in [managedObject entity])
+	{
+		NSString *key = [prop name];
+		id value = [managedObject valueForKey:key];
+		
+		if (!value)
+			continue;
+		
+		if ([[prop class] isSubclassOfClass:[NSRelationshipDescription class]])
+		{
+			NSRelationshipDescription *rel = (NSRelationshipDescription*)prop;
+			
+			if ([rel isToMany])
+			{
+				NSMutableSet *set = [NSMutableSet set];
+				
+				for (NSManagedObject *o in value)
+				{
+					cnode = [self cacheNodeForObjectID:[o objectID]];
+					
+					if (!cnode)
+					{
+						cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[o objectID]];
+						[self addCacheNodes:[NSSet setWithObject:cnode]];
+					}
+					[set addObject:cnode];
+				}
+				[data setObject:set forKey:key];
+			}
+			else
+			{
+				NSManagedObject *o = value;
+				
+				cnode = [self cacheNodeForObjectID:[o objectID]];
+				if (!cnode)
+				{
+					cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[o objectID]];
+					[self addCacheNodes:[NSSet setWithObject:cnode]];
+				}
+				[data setObject:cnode forKey:key];
+			}
+		}
+		else
+			[data setObject:[value copy] forKey:key];
+	}
+	
+	cnode = [self cacheNodeForObjectID:[managedObject objectID]];
+	if (!cnode)
+		cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[managedObject objectID]];
+	[cnode setPropertyCache:data];
+	return cnode;
+}
+
+@end
+
+
 @implementation DataStore (Errors)
 
 - (NSError*)dataStoreError:(NSInteger)code msg:(NSString*)fmt, ... NS_FORMAT_FUNCTION(2,3)
@@ -279,6 +343,8 @@
 	if (!data)
 		return nil;
 	
+	[data setValue:[NSNumber numberWithBool:YES] forKey:@"displayed"];
+	
 	for (NSXMLNode *attr in [node attributes])
 	{
 		if ([[attr name] isEqualToString:@"Enabled"]
@@ -397,6 +463,9 @@
 	data = [self loadItem:res node:node forManifest:manifest error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
 	if (!data)
 		return nil;
+	
+	[data setValue:[NSNumber numberWithBool:NO] forKey:@"displayed"];
+	[data setValue:[NSDecimalNumber one] forKey:@"Enabled"];
 	
 	for (NSXMLNode *attr in [node attributes])
 	{
@@ -608,65 +677,6 @@
 	DataStoreObject *obj = (DataStoreObject*)managedObject;
 	
 	return [self uniqueForNode:obj.node];
-}
-
-- (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject
-{
-	/* This function is completely generic. */
-	NSMutableDictionary *data = [NSMutableDictionary dictionary];
-	NSAtomicStoreCacheNode *cnode;
-	
-	for (NSPropertyDescription *prop in [managedObject entity])
-	{
-		NSString *key = [prop name];
-		id value = [managedObject valueForKey:key];
-		
-		if (!value)
-			continue;
-		
-		if ([[prop class] isSubclassOfClass:[NSRelationshipDescription class]])
-		{
-			NSRelationshipDescription *rel = (NSRelationshipDescription*)prop;
-			
-			if ([rel isToMany])
-			{
-				NSMutableSet *set = [NSMutableSet set];
-				
-				for (NSManagedObject *o in value)
-				{
-					cnode = [self cacheNodeForObjectID:[o objectID]];
-					
-					if (!cnode)
-					{
-						cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[o objectID]];
-						[self addCacheNodes:[NSSet setWithObject:cnode]];
-					}
-					[set addObject:cnode];
-				}
-				[data setObject:set forKey:key];
-			}
-			else
-			{
-				NSManagedObject *o = value;
-				
-				cnode = [self cacheNodeForObjectID:[o objectID]];
-				if (!cnode)
-				{
-					cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[o objectID]];
-					[self addCacheNodes:[NSSet setWithObject:cnode]];
-				}
-				[data setObject:cnode forKey:key];
-			}
-		}
-		else
-			[data setObject:[value copy] forKey:key];
-	}
-	
-	cnode = [self cacheNodeForObjectID:[managedObject objectID]];
-	if (!cnode)
-		cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[managedObject objectID]];
-	[cnode setPropertyCache:data];
-	return cnode;
 }
 
 - (void)willRemoveCacheNodes:(NSSet *)cacheNodes

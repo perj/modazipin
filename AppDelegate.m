@@ -22,6 +22,7 @@
 #import "AppDelegate.h"
 #import "DataStore.h"
 #import "AddInsList.h"
+#import "NullStore.h"
 
 @implementation AppDelegate
 
@@ -32,6 +33,7 @@ static BOOL fatal = NO;
 	[NSPersistentStoreCoordinator registerStoreClass:[AddInsListStore self] forStoreType:@"AddInsListStore"];
 	[NSPersistentStoreCoordinator registerStoreClass:[OfferListStore self] forStoreType:@"OfferListStore"];
 	[NSPersistentStoreCoordinator registerStoreClass:[DazipStore self] forStoreType:@"DazipStore"];
+	[NSPersistentStoreCoordinator registerStoreClass:[NullStore self] forStoreType:@"NullStore"];
 	[self openAddInsList:self];
 }
 

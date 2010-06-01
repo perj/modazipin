@@ -50,9 +50,9 @@ static NSPredicate *isERF;
 		if (!startsWithDot)
 			startsWithDot = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH '.'"];
 		if (!isBlacklisted)
-			isBlacklisted = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i)^Contents/(Characters|Logs|Screenshots|Settings)/'"];
+			isBlacklisted = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i)^Contents/(Characters|Logs|Screenshots|Settings)/.*'"];
 		if (!isDisabled)
-			isDisabled = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i) (disabled)/'"];
+			isDisabled = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i).* (disabled)/.*'"];
 		if (!isERF)
 			isERF = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] '.erf'"];
 	}

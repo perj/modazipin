@@ -95,6 +95,7 @@
 
 @dynamic DefaultText;
 @dynamic languages;
+@dynamic item;
 
 @synthesize localizedValue;
 
@@ -192,6 +193,7 @@
 @implementation Item
 
 @dynamic BioWare;
+@dynamic Enabled;
 @dynamic ExtendedModuleUID;
 @dynamic Format;
 @dynamic GameVersion;
@@ -211,6 +213,7 @@
 @dynamic RatingDescription;
 @dynamic Title;
 @dynamic URL;
+@dynamic displayed;
 @dynamic missingFiles;
 
 - (NSMutableString*)replaceProperties:(NSMutableString*)str
@@ -319,6 +322,13 @@
 			}
 		}
 	}
+	
+	NSString *secStart = [NSString stringWithFormat:@"%%?%@%%", [[self entity] name]];
+	NSString *secEnd = [NSString stringWithFormat:@"%%!%@%%", [[self entity] name]];
+	
+	[str replaceOccurrencesOfString:secStart withString:@"" options:0 range:NSMakeRange(0, [str length])];
+	[str replaceOccurrencesOfString:secEnd withString:@"" options:0 range:NSMakeRange(0, [str length])];
+	
 	while (1)
 	{
 		NSRange rs = [str rangeOfString:@"%?"];
@@ -394,12 +404,16 @@
 	[self didChangeValueForKey:@"detailsHTML"];
 }
 
+- (BOOL)canToggleEnabled
+{
+	return NO;
+}
+
 @end
 
 
 @implementation AddInItem
 
-@dynamic Enabled;
 @dynamic RequiresAuthorization;
 @dynamic State;
 
@@ -426,11 +440,6 @@
 @dynamic Presentation;
 @dynamic PRCList;
 
-- (BOOL)Enabled
-{
-	return YES;
-}
-
 - (BOOL)canToggleEnabled
 {
 	return NO;
@@ -449,5 +458,3 @@
 @dynamic AddInsList;
 
 @end
-
-
