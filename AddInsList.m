@@ -244,6 +244,7 @@ static NSPredicate *isREADME;
 			p.type = pathType;
 			p.verified = [NSNumber numberWithBool:YES];
 			title.DefaultText = [cparts lastObject];
+			[title updateLocalizedValue:nil];
 			title.item = item;
 			item.Title = title;
 			item.modazipin = [NSEntityDescription insertNewObjectForEntityForName:@"Modazipin" inManagedObjectContext:[self managedObjectContext]];
@@ -497,15 +498,15 @@ static NSPredicate *isREADME;
 - (BOOL)syncFilesFromContext:(NSError **)error
 {
 	NSURL *base = [self fileURL];	
-	NSArray *addins = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"addinsWithAnyPath"] error:error];
+	NSArray *items = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"itemsWithAnyPath"] error:error];
 	
-	if (!addins)
+	if (!items)
 		return NO;
 	
-	for (AddInItem *addin in addins)
+	for (Item *item in items)
 	{
-		NSSet *paths = addin.modazipin.paths;
-		BOOL isEnabled = [addin.Enabled boolValue];
+		NSSet *paths = item.modazipin.paths;
+		BOOL isEnabled = [item.Enabled boolValue];
 		
 		for (Path *path in paths)
 		{

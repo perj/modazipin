@@ -404,11 +404,6 @@
 	[self didChangeValueForKey:@"detailsHTML"];
 }
 
-- (BOOL)canToggleEnabled
-{
-	return NO;
-}
-
 @end
 
 
@@ -416,11 +411,6 @@
 
 @dynamic RequiresAuthorization;
 @dynamic State;
-
-- (BOOL)canToggleEnabled
-{
-	return YES;
-}
 
 @end
 
@@ -439,11 +429,6 @@
 
 @dynamic Presentation;
 @dynamic PRCList;
-
-- (BOOL)canToggleEnabled
-{
-	return NO;
-}
 
 @end
 

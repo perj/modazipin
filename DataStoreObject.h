@@ -85,6 +85,8 @@
 @property (nonatomic, retain) NSString * localizedValue;
 @property (retain) Item * item;
 
+- (void)updateLocalizedValue:(NSNotification*)notice;
+
 @end
 
 @interface Text (CoreDataGeneratedAccessors)
@@ -141,8 +143,6 @@
 @property (nonatomic, retain) NSDecimalNumber * RequiresAuthorization;
 @property (nonatomic, retain) NSDecimalNumber * State;
 
-@property (readonly) BOOL canToggleEnabled;
-
 @end
 
 
@@ -166,8 +166,6 @@
 
 @property (nonatomic, retain) NSDecimalNumber * Presentation;
 @property (nonatomic, retain) NSSet* PRCList;
-
-@property (readonly) BOOL canToggleEnabled;
 
 @end
 

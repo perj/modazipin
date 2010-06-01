@@ -21,7 +21,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="5"/>
+			<integer value="100197"/>
 			<integer value="100345"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
@@ -330,9 +330,14 @@
 																			<reference key="NSColor" ref="61254853"/>
 																		</object>
 																	</object>
-																	<int key="NSResizingMask">3</int>
+																	<int key="NSResizingMask">1</int>
 																	<bool key="NSIsResizeable">YES</bool>
 																	<reference key="NSTableView" ref="190920673"/>
+																	<object class="NSSortDescriptor" key="NSSortDescriptorPrototype">
+																		<string key="NSKey">Title.localizedValue</string>
+																		<bool key="NSAscending">YES</bool>
+																		<string key="NSSelector">compare:</string>
+																	</object>
 																</object>
 																<object class="NSTableColumn" id="23942345">
 																	<double key="NSWidth">45</double>
@@ -386,10 +391,10 @@
 																</object>
 															</object>
 															<double key="NSRowHeight">24</double>
-															<int key="NSTvFlags">1379958784</int>
+															<int key="NSTvFlags">1379926016</int>
 															<reference key="NSDelegate"/>
 															<reference key="NSDataSource"/>
-															<int key="NSColumnAutoresizingStyle">1</int>
+															<int key="NSColumnAutoresizingStyle">5</int>
 															<int key="NSDraggingSourceMaskForLocal">-1</int>
 															<int key="NSDraggingSourceMaskForNonLocal">0</int>
 															<bool key="NSAllowsTypeSelect">YES</bool>
@@ -415,7 +420,7 @@
 													<int key="NSViewLayerContentsRedrawPolicy">2</int>
 													<reference key="NSTarget" ref="212672432"/>
 													<string key="NSAction">_doScroller:</string>
-													<double key="NSPercent">0.99790356394129975</double>
+													<double key="NSPercent">0.99781659388646293</double>
 												</object>
 												<object class="NSScroller" id="580817402">
 													<reference key="NSNextResponder" ref="212672432"/>
@@ -731,7 +736,6 @@
 				<bool key="NSSelectsInsertedObjects">YES</bool>
 				<bool key="NSFilterRestrictsInsertion">YES</bool>
 				<bool key="NSClearsFilterPredicateOnInsertion">YES</bool>
-				<bool key="NSAutomaticallyRearrangesObjects">YES</bool>
 			</object>
 			<object class="NSWindowTemplate" id="277927555">
 				<int key="NSWindowStyleMask">1</int>
@@ -848,22 +852,6 @@
 						</object>
 					</object>
 					<int key="connectionID">100322</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">enabled: arrangedObjects.canToggleEnabled</string>
-						<reference key="source" ref="23942345"/>
-						<reference key="destination" ref="565607778"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="23942345"/>
-							<reference key="NSDestination" ref="565607778"/>
-							<string key="NSLabel">enabled: arrangedObjects.canToggleEnabled</string>
-							<string key="NSBinding">enabled</string>
-							<string key="NSKeyPath">arrangedObjects.canToggleEnabled</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">100323</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -1453,7 +1441,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">100413</int>
+			<int key="maxID">100414</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
