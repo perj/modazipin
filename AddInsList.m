@@ -118,7 +118,7 @@ static NSPredicate *isREADME;
 	[window setRepresentedURL:[self fileURL]];
 	[[window standardWindowButton:NSWindowDocumentIconButton] setImage:[NSImage imageNamed:@"dragon_4"]];
 	
-	[itemsController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"Title.localizedValue" ascending:YES]]];
+	[itemsController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"Title.localizedValue" ascending:YES selector:@selector(caseInsensitiveCompare:)]]];
 	[itemsController rearrangeObjects];
 	[itemsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
 	
