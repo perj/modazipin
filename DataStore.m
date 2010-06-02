@@ -919,6 +919,7 @@
 		
 		if ([[files filteredSetUsingPredicate:otherItems] count] || [[dirs filteredSetUsingPredicate:otherItems] count])
 		{
+			/* XXX No followers autolevel has a readme in addins/. Handle it somehow. */
 			loadError = [self dataStoreError:14 msg:@"Cannot install into other items"];
 			return self;
 		}

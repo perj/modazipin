@@ -46,6 +46,7 @@
     [super windowControllerDidLoadNib:windowController];
 	NSArray *arr = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"allItems"] error:nil];
 	
+	[detailsView setDrawsBackground:NO];
     [[detailsView mainFrame] loadHTMLString:[[arr objectAtIndex:0] detailsHTML] baseURL:[[NSBundle mainBundle] resourceURL]];
 }
 

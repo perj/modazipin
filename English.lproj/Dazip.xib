@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1060</int>
-		<string key="IBDocument.SystemVersion">10C540</string>
-		<string key="IBDocument.InterfaceBuilderVersion">740</string>
-		<string key="IBDocument.AppKitVersion">1038.25</string>
-		<string key="IBDocument.HIToolboxVersion">458.00</string>
+		<string key="IBDocument.SystemVersion">10D573</string>
+		<string key="IBDocument.InterfaceBuilderVersion">762</string>
+		<string key="IBDocument.AppKitVersion">1038.29</string>
+		<string key="IBDocument.HIToolboxVersion">460.00</string>
 		<dictionary class="NSMutableDictionary" key="IBDocument.PluginVersions">
-			<string key="com.apple.InterfaceBuilder.CocoaPlugin">740</string>
-			<string key="com.apple.WebKitIBPlugin">740</string>
+			<string key="com.apple.InterfaceBuilder.CocoaPlugin">762</string>
+			<string key="com.apple.WebKitIBPlugin">762</string>
 		</dictionary>
 		<array class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<integer value="2"/>
@@ -42,42 +42,92 @@
 					<reference key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<array class="NSMutableArray" key="NSSubviews">
-						<object class="WebView" id="574071962">
+						<object class="NSBox" id="609230243">
 							<reference key="NSNextResponder" ref="982721750"/>
-							<int key="NSvFlags">274</int>
-							<set class="NSMutableSet" key="NSDragTypes">
-								<string>Apple HTML pasteboard type</string>
-								<string>Apple PDF pasteboard type</string>
-								<string>Apple PICT pasteboard type</string>
-								<string>Apple URL pasteboard type</string>
-								<string>Apple Web Archive pasteboard type</string>
-								<string>NSColor pasteboard type</string>
-								<string>NSFilenamesPboardType</string>
-								<string>NSStringPboardType</string>
-								<string>NeXT RTFD pasteboard type</string>
-								<string>NeXT Rich Text Format v1.0 pasteboard type</string>
-								<string>NeXT TIFF v4.0 pasteboard type</string>
-								<string>WebURLsWithTitlesPboardType</string>
-								<string>public.png</string>
-								<string>public.url</string>
-								<string>public.url-name</string>
-							</set>
-							<string key="NSFrameSize">{380, 353}</string>
+							<int key="NSvFlags">4114</int>
+							<array class="NSMutableArray" key="NSSubviews">
+								<object class="NSView" id="497967548">
+									<reference key="NSNextResponder" ref="609230243"/>
+									<int key="NSvFlags">256</int>
+									<array class="NSMutableArray" key="NSSubviews">
+										<object class="WebView" id="574071962">
+											<reference key="NSNextResponder" ref="497967548"/>
+											<int key="NSvFlags">274</int>
+											<set class="NSMutableSet" key="NSDragTypes">
+												<string>Apple HTML pasteboard type</string>
+												<string>Apple PDF pasteboard type</string>
+												<string>Apple PICT pasteboard type</string>
+												<string>Apple URL pasteboard type</string>
+												<string>Apple Web Archive pasteboard type</string>
+												<string>NSColor pasteboard type</string>
+												<string>NSFilenamesPboardType</string>
+												<string>NSStringPboardType</string>
+												<string>NeXT RTFD pasteboard type</string>
+												<string>NeXT Rich Text Format v1.0 pasteboard type</string>
+												<string>NeXT TIFF v4.0 pasteboard type</string>
+												<string>WebURLsWithTitlesPboardType</string>
+												<string>public.png</string>
+												<string>public.url</string>
+												<string>public.url-name</string>
+											</set>
+											<string key="NSFrame">{{18, 14}, {382, 369}}</string>
+											<reference key="NSSuperview" ref="497967548"/>
+											<reference key="NSNextKeyView"/>
+											<int key="NSViewLayerContentsRedrawPolicy">2</int>
+											<string key="FrameName"/>
+											<string key="GroupName"/>
+											<object class="WebPreferences" key="Preferences">
+												<string key="Identifier"/>
+												<dictionary class="NSMutableDictionary" key="Values">
+													<integer value="12" key="WebKitDefaultFixedFontSize"/>
+													<integer value="12" key="WebKitDefaultFontSize"/>
+													<integer value="1" key="WebKitMinimumFontSize"/>
+												</dictionary>
+											</object>
+											<bool key="UseBackForwardList">NO</bool>
+											<bool key="AllowsUndo">YES</bool>
+										</object>
+									</array>
+									<string key="NSFrameSize">{418, 393}</string>
+									<reference key="NSSuperview" ref="609230243"/>
+								</object>
+							</array>
+							<string key="NSFrame">{{-19, -15}, {418, 393}}</string>
 							<reference key="NSSuperview" ref="982721750"/>
-							<reference key="NSNextKeyView"/>
-							<int key="NSViewLayerContentsRedrawPolicy">2</int>
-							<string key="FrameName"/>
-							<string key="GroupName"/>
-							<object class="WebPreferences" key="Preferences">
-								<string key="Identifier"/>
-								<dictionary class="NSMutableDictionary" key="Values">
-									<integer value="12" key="WebKitDefaultFixedFontSize"/>
-									<integer value="12" key="WebKitDefaultFontSize"/>
-									<integer value="1" key="WebKitMinimumFontSize"/>
-								</dictionary>
+							<string key="NSOffsets">{0, 0}</string>
+							<object class="NSTextFieldCell" key="NSTitleCell">
+								<int key="NSCellFlags">67239424</int>
+								<int key="NSCellFlags2">0</int>
+								<string key="NSContents">Box</string>
+								<object class="NSFont" key="NSSupport">
+									<string key="NSName">LucidaGrande</string>
+									<double key="NSSize">11</double>
+									<int key="NSfFlags">3100</int>
+								</object>
+								<object class="NSColor" key="NSBackgroundColor">
+									<int key="NSColorSpace">6</int>
+									<string key="NSCatalogName">System</string>
+									<string key="NSColorName">textBackgroundColor</string>
+									<object class="NSColor" key="NSColor">
+										<int key="NSColorSpace">3</int>
+										<bytes key="NSWhite">MQA</bytes>
+									</object>
+								</object>
+								<object class="NSColor" key="NSTextColor">
+									<int key="NSColorSpace">3</int>
+									<bytes key="NSWhite">MCAwLjgwMDAwMDAxMTkAA</bytes>
+								</object>
 							</object>
-							<bool key="UseBackForwardList">NO</bool>
-							<bool key="AllowsUndo">YES</bool>
+							<reference key="NSContentView" ref="497967548"/>
+							<int key="NSBorderType">0</int>
+							<int key="NSBoxType">4</int>
+							<int key="NSTitlePosition">0</int>
+							<bool key="NSTransparent">NO</bool>
+							<real value="0.0" key="NSBorderWidth2"/>
+							<object class="NSColor" key="NSFillColor2">
+								<int key="NSColorSpace">1</int>
+								<bytes key="NSRGB">MC4wOTQxMTc2NDcwNiAwLjA1NDkwMTk2MDc4IDAAA</bytes>
+							</object>
 						</object>
 					</array>
 					<string key="NSFrameSize">{380, 353}</string>
@@ -247,14 +297,22 @@
 						<int key="objectID">2</int>
 						<reference key="object" ref="982721750"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="574071962"/>
+							<reference ref="609230243"/>
 						</array>
 						<reference key="parent" ref="897028704"/>
 					</object>
 					<object class="IBObjectRecord">
+						<int key="objectID">208</int>
+						<reference key="object" ref="609230243"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="574071962"/>
+						</array>
+						<reference key="parent" ref="982721750"/>
+					</object>
+					<object class="IBObjectRecord">
 						<int key="objectID">201</int>
 						<reference key="object" ref="574071962"/>
-						<reference key="parent" ref="982721750"/>
+						<reference key="parent" ref="609230243"/>
 					</object>
 				</array>
 			</object>
@@ -283,7 +341,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">207</int>
+			<int key="maxID">208</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -724,6 +782,7 @@
 			</array>
 		</object>
 		<int key="IBDocument.localizationMode">0</int>
+		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaFramework</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencyDefaults">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin.macosx</string>
 			<integer value="1060" key="NS.object.0"/>
