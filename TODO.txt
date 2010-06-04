@@ -4,7 +4,10 @@ This list is likely to change, no guarantees what so ever.
 1.0
 Option to quit modazipin when launching game.
 Allow new addins to be created, empty or with unknown files.
+Disable offer when disabling addin.
+Display offers if the corresponding addin is not installed.
 
 Future
+Keep track of files added or removed from the folders while running.
 Recreate dazip from addin (requires a zip writing lib).
 Icons (requires code to read dds data)
