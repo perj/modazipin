@@ -58,7 +58,7 @@
 			
 			input {
 				display: block;
-				width: 70px;
+				padding: 4px 10px;
 			}
 			
 			.BioWare {
@@ -126,8 +126,13 @@ You will only see it in Modazipin if you install the addin as well.</p>%!Present
 %!UnknownPath%
 %?Description%		<p>%Description%</p>%!Description%
 		<br />
-		<form action="command:install" method="POST">
+		<!--dazip--><form action="command:install" method="POST">
 			<input type="submit" value="Install" />
+		</form><!--/dazip-->
+%?UnknownPath%
+		<form action="command:assign" method="POST">
+			<input type="submit" value="Assign to AddIn" />
 		</form>
+%!UnknownPath%
 	</body>
 </html>

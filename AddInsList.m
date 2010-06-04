@@ -122,6 +122,8 @@ static NSPredicate *isREADME;
 	[itemsController rearrangeObjects];
 	[itemsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
 	
+	[assignAddInController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"Title.localizedValue" ascending:YES selector:@selector(caseInsensitiveCompare:)]]];
+	
 	//[launchGameButton setKeyEquivalent:@"\r"];
 	[self updateLaunchButtonImage];
 	
@@ -146,8 +148,8 @@ static NSPredicate *isREADME;
 	{
 		NSMutableString *html = [[objects objectAtIndex:0] detailsHTML];
 		
-		[html replaceOccurrencesOfString:@"<form" withString:@"<!--" options:0 range:NSMakeRange(0, [html length])];
-		[html replaceOccurrencesOfString:@"</form>" withString:@"-->" options:0 range:NSMakeRange(0, [html length])];
+		[html replaceOccurrencesOfString:@"<!--dazip-->" withString:@"<!--" options:0 range:NSMakeRange(0, [html length])];
+		[html replaceOccurrencesOfString:@"<!--/dazip-->" withString:@"-->" options:0 range:NSMakeRange(0, [html length])];
 		[[detailsView mainFrame] loadHTMLString:html baseURL:[[NSBundle mainBundle] resourceURL]];
 	}
 	else
@@ -224,7 +226,7 @@ static NSPredicate *isREADME;
 		
 		req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"path" substitutionVariables:[NSDictionary dictionaryWithObject:path forKey:@"path"]];
 		NSArray *paths = [[self managedObjectContext] executeFetchRequest:req error:nil];
-		Item *item;
+		Item *item = nil;
 		
 		if ([paths count])
 		{
@@ -362,6 +364,13 @@ static NSPredicate *isREADME;
 			if ([selected count] == 1)
 				[self askUninstall:[selected objectAtIndex:0]];
 		}
+		else if ([command isEqualToString:@"assign"])
+		{
+			NSArray *selected = [itemsController selectedObjects];
+			
+			if ([selected count] == 1)
+				[self askAssign:[selected objectAtIndex:0]];
+		}
 	}
 	else
 	{
@@ -488,6 +497,67 @@ static NSPredicate *isREADME;
 	[progressIndicator setDoubleValue:archive.uncompressedOffset];
 	[progressIndicator displayIfNeeded];
 	[NSApp runModalSession:modal];
+}
+
+- (void)askAssign:(Item*)item
+{
+	[NSApp beginSheet:assignSheet modalForWindow:[self windowForSheet] modalDelegate:self didEndSelector:@selector(verifyAssign:returnCode:contextInfo:) contextInfo:item];
+}
+
+- (IBAction)closeAssign:(id)sender
+{
+	[NSApp endSheet:assignSheet returnCode:[sender tag]];
+}
+
+- (void)verifyAssign:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+	[sheet close];
+	
+	if (returnCode)
+	{
+		NSArray *selection = [assignAddInController selectedObjects];
+		
+		if ([selection count] == 1)
+		{
+			AddInItem *addin = [selection objectAtIndex:0];
+			Item *item = contextInfo;
+			
+			NSBeginCriticalAlertSheet(@"Assign item",
+					  @"Assign",
+					  @"Cancel",
+					  nil,
+					  [self windowForSheet],
+					  self,
+					  @selector(answerAssign:returnCode:contextInfo:),
+					  NULL,
+					  [NSArray arrayWithObjects:item, addin, nil],
+					  @"Permanently assign the item \"%@\" to the addin \"%@\"? This action can not be undone.",
+					  item.Title.localizedValue,
+					  addin.Title.localizedValue);
+			return;
+		}
+	}
+}
+	
+- (void)answerAssign:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+	NSArray *args = contextInfo;
+	
+	[sheet close];
+	
+	if (returnCode != NSOKButton)
+		return;
+	
+	[self assignPath:[args objectAtIndex:0] toAddIn:[args objectAtIndex:1]];
+}
+
+- (void)assignPath:(Item*)unkPath toAddIn:(AddInItem*)addin
+{
+	NSSet *paths = unkPath.modazipin.paths;
+	
+	[addin.modazipin addPaths:paths];
+	[[self managedObjectContext] deleteObject:unkPath];
+	[self saveDocument:self];
 }
 
 @end

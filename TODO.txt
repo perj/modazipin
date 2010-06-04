@@ -3,9 +3,6 @@ This list is likely to change, no guarantees what so ever.
 
 1.0
 Option to quit modazipin when launching game.
-Scan unknown addins for files/contents.
-Scan and list other unknown files.
-Allow unknown files to be assigned to an addin.
 Allow new addins to be created, empty or with unknown files.
 
 Future

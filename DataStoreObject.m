@@ -49,6 +49,13 @@
 @end
 
 
+@interface Modazipin (CoreDataGeneratedPrimitiveAccessors)
+
+- (NSMutableSet*)primitivePaths;
+- (void)setPrimitivePaths:(NSMutableSet*)value;
+
+@end
+
 @implementation Modazipin
 
 @dynamic contents;
@@ -80,8 +87,52 @@
 	[self.contents removeObject:value];
 }
 
-@end
+- (void)addPathNodes:(NSSet*)paths
+{
+	if (!self.node)
+		return;
+	
+	NSXMLElement *node = [[(NSXMLElement*)self.node elementsForName:@"paths"] objectAtIndex:0];
+	
+	if (!node)
+	{
+		node = [NSXMLElement elementWithName:@"paths"];
+		[(NSXMLElement*)self.node addChild:node];
+	}
+	
+	for (Path *p in paths)
+	{
+		NSXMLElement *pNode = [NSXMLElement elementWithName:p.type];
+		
+		[pNode addAttribute:[NSXMLNode attributeWithName:@"path" stringValue:p.path]];
+		[node addChild:pNode];
+		p.node = pNode;
+	}
+}
 
+- (void)addPathsObject:(Path *)value 
+{    
+    NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
+    
+    [self willChangeValueForKey:@"paths" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
+    [[self primitivePaths] addObject:value];
+    [self didChangeValueForKey:@"paths" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
+	
+	[self addPathNodes:changedObjects];
+    
+    [changedObjects release];
+}
+
+- (void)addPaths:(NSSet *)value 
+{    
+	[self addPathNodes:value];
+	
+    [self willChangeValueForKey:@"paths" withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];
+    [[self primitivePaths] unionSet:value];
+    [self didChangeValueForKey:@"paths" withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];
+}
+
+@end
 
 @implementation LocalizedText
 

@@ -40,6 +40,9 @@
 	
 	IBOutlet NSWindow *progressWindow;
 	IBOutlet NSProgressIndicator *progressIndicator;
+	
+	IBOutlet NSWindow *assignSheet;
+	IBOutlet NSArrayController *assignAddInController;
 }
 
 + (AddInsList*)sharedAddInsList;
@@ -64,6 +67,12 @@
 
 - (BOOL)installItems:(NSArray *)items withArchive:(NSURL*)url uncompressedSize:(NSUInteger)sz error:(NSError**)error;
 - (void)progressChanged:(ArchiveWrapper*)archive session:(NSModalSession)session;
+
+- (void)askAssign:(Item*)item;
+- (IBAction)closeAssign:(id)sender;
+- (void)verifyAssign:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo;
+- (void)answerAssign:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo;
+- (void)assignPath:(Item*)unkPath toAddIn:(AddInItem*)addin;
 
 @end
 
