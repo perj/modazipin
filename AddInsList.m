@@ -82,6 +82,13 @@ static NSPredicate *isREADME;
 		return NO;
 	}
 	
+	/* Figure out what offers to show. */
+	NSArray *offers = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"allOffers"] error:nil];
+	for (OfferItem *offer in offers)
+	{
+		offer.displayed = [NSNumber numberWithBool:![[offer valueForKey:@"addins"] count]];
+	}
+	
 	return YES;
 }
 

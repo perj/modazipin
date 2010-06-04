@@ -449,7 +449,7 @@
 	NSMutableDictionary *data;
 	id res;
 	
-	if (![[node name] isEqualToString:@"OfferItem"])
+	if (![[node name] isEqualToString:@"OfferItem"] && ![[node name] isEqualToString:@"DisabledOfferItem"])
 	{
 		if (error)
 			*error = [self dataStoreError:5 msg:@"Node is not an OfferItem"];
@@ -464,8 +464,9 @@
 	if (!data)
 		return nil;
 	
-	[data setValue:[NSNumber numberWithBool:NO] forKey:@"displayed"];
-	[data setValue:[NSDecimalNumber one] forKey:@"Enabled"];
+	[data setObject:[NSNumber numberWithBool:NO] forKey:@"displayed"];
+	[data setObject:[[node name] isEqualToString:@"OfferItem"] ? [NSDecimalNumber one] : [NSDecimalNumber zero]
+			 forKey:@"Enabled"];
 	
 	for (NSXMLNode *attr in [node attributes])
 	{
@@ -653,22 +654,29 @@
 
 - (void)updateCacheNode:(NSAtomicStoreCacheNode *)node fromManagedObject:(NSManagedObject *)managedObject
 {
-	DataStoreObject *obj = (DataStoreObject*)managedObject;
-	NSXMLElement *elem = (NSXMLElement*)obj.node;
-	NSXMLNode *attr;
-	AddInItem *item;
-	
 	/* Only support updating Enabled for now */
-	
-	if (![[elem name] isEqualToString:@"AddInItem"])
+	if (![[managedObject class] isSubclassOfClass:[Item class]])
 		return;
 	
-	item = (AddInItem*)obj;
-	attr = [elem attributeForName:@"Enabled"];
-	if ([item.Enabled intValue])
-		[attr setStringValue:@"1"];
-	else
-		[attr setStringValue:@"0"];
+	Item *item = (Item*)managedObject;
+	NSXMLElement *elem = (NSXMLElement*)item.node;
+	NSXMLNode *attr;
+	
+	if ([[[item entity] name] isEqualToString:@"AddInItem"])
+	{
+		attr = [elem attributeForName:@"Enabled"];
+		if ([item.Enabled intValue])
+			[attr setStringValue:@"1"];
+		else
+			[attr setStringValue:@"0"];
+	}
+	else if ([[[item entity] name] isEqualToString:@"OfferItem"])
+	{
+		if ([item.Enabled intValue])
+			[elem setName:@"OfferItem"];
+		else
+			[elem setName:@"DisabledOfferItem"];
+	}
 	[node setValue:item.Enabled forKey:@"Enabled"];
 }
 
