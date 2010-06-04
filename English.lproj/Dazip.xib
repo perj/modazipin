@@ -11,7 +11,7 @@
 			<string key="com.apple.WebKitIBPlugin">762</string>
 		</dictionary>
 		<array class="NSMutableArray" key="IBDocument.EditedObjectIDs">
-			<integer value="2"/>
+			<integer value="201"/>
 		</array>
 		<array key="IBDocument.PluginDependencies">
 			<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -70,7 +70,7 @@
 												<string>public.url</string>
 												<string>public.url-name</string>
 											</set>
-											<string key="NSFrame">{{18, 14}, {382, 369}}</string>
+											<string key="NSFrameSize">{380, 353}</string>
 											<reference key="NSSuperview" ref="497967548"/>
 											<reference key="NSNextKeyView"/>
 											<int key="NSViewLayerContentsRedrawPolicy">2</int>
@@ -88,11 +88,11 @@
 											<bool key="AllowsUndo">YES</bool>
 										</object>
 									</array>
-									<string key="NSFrameSize">{418, 393}</string>
+									<string key="NSFrameSize">{380, 353}</string>
 									<reference key="NSSuperview" ref="609230243"/>
 								</object>
 							</array>
-							<string key="NSFrame">{{-19, -15}, {418, 393}}</string>
+							<string key="NSFrameSize">{380, 353}</string>
 							<reference key="NSSuperview" ref="982721750"/>
 							<string key="NSOffsets">{0, 0}</string>
 							<object class="NSTextFieldCell" key="NSTitleCell">
