@@ -557,6 +557,7 @@ static NSPredicate *isREADME;
 	
 	[addin.modazipin addPaths:paths];
 	[[self managedObjectContext] deleteObject:unkPath];
+	[itemsController setSelectedObjects:[NSArray arrayWithObject:addin]];
 	[self saveDocument:self];
 }
 
