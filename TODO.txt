@@ -5,7 +5,7 @@ This list is likely to change, no guarantees what so ever.
 Option to quit modazipin when launching game.
 Allow new addins to be created, empty or with unknown files.
 Disable offer when disabling addin.
-Display offers if the corresponding addin is not installed.
+Allow bypassing the addin game version required check.
 
 Future
 Keep track of files added or removed from the folders while running.

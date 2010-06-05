@@ -44,7 +44,7 @@ typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 {
 }
 
-- (BOOL)insertAddInNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context;
+- (AddInItem*)insertAddInNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context;
 
 @end
 

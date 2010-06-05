@@ -761,7 +761,7 @@
 	return res;
 }
 
-- (BOOL)insertAddInNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context
+- (AddInItem*)insertAddInNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context
 {
 	node = [node copy];
 	
@@ -778,10 +778,10 @@
 			  }];
 	
 	if (!res)
-		return NO;
+		return nil;
 	
 	[[xmldoc rootElement] addChild:node];
-	return YES;
+	return res;
 }
 
 @end

@@ -76,8 +76,9 @@
 	<body>
 		<!-- <img class="image" src="data:%ImageData%" /> -->
 		<h1>%?BioWare%<span class="BioWare">B</span> %!BioWare%%Title%</h1>
-%?Presentation%		<p class="info">This is an offer, not an addin.
-That means it has limited functionality aimed at selling premium content. The premium addin usually requires the offer to be installed, however.</p>%!Presentation%
+%?offers%		<p class="info">Offer installed.</p>%!offers%
+%?OfferItem%		<p class="info">This is an offer, not an addin.
+That means it has limited functionality aimed at selling premium content. The premium addin usually requires the offer to be installed, however.</p>%!OfferItem%
 %?missingFiles%	<p class="info">Files missing: %missingFiles%.</p>%!missingFiles%
 		<table>
 			
@@ -111,12 +112,7 @@ That means it has limited functionality aimed at selling premium content. The pr
 				<th>Price:<th>
 				<td>%Price% points</td>
 			</tr>
-%!offers%%?prcId%			<tr><td class="grad" colspan="3"></td></tr>
-			<tr>
-				<th>Purchase link:<th>
-				<td><a href="https://points.bioware.com/web/lockbox/checkout?productId=OFB-DRGN:%prcId%">https://points.bioware.com/web/lockbox/checkout?productId=OFB-DRGN:%prcId%</a></td>
-			</tr>
-%!prcId%			<tr><td class="grad" colspan="3"></td></tr>
+%!offers%			<tr><td class="grad" colspan="3"></td></tr>
 			<tr>
 				<th>Details:</th>
 			</tr>

@@ -475,8 +475,12 @@ static NSPredicate *isREADME;
 	{
 		if ([[node name] isEqualToString:@"AddInItem"])
 		{
-			if (![addinsStore insertAddInNode:node error:error intoContext:[self managedObjectContext]])
+			AddInItem *item = [addinsStore insertAddInNode:node error:error intoContext:[self managedObjectContext]];
+			
+			if (!item)
 				return NO;
+			
+			[[item valueForKey:@"offers"] setValue:[NSNumber numberWithBool:NO] forKey:@"displayed"];
 		}
 		else if ([[node name] isEqualToString:@"OfferItem"])
 		{
@@ -485,11 +489,10 @@ static NSPredicate *isREADME;
 			if (!offer)
 				return NO;
 			
-			NSSet *microIds = [offer.PRCList valueForKey:@"microContentID"];
-			NSFetchRequest *req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"itemsWithUIDs" substitutionVariables:[NSDictionary dictionaryWithObject:microIds forKey:@"UIDs"]];
-			NSArray *related = [[self managedObjectContext] executeFetchRequest:req error:nil];
-			for (Item *rel in related)
+			NSArray *related = [offer valueForKey:@"addins"];
+			for (AddInItem *rel in related)
 				[[self managedObjectContext] refreshObject:rel mergeChanges:NO];
+			offer.displayed = [NSNumber numberWithBool:![related count]];
 		}
 	}
 	
