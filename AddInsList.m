@@ -692,7 +692,7 @@ static NSPredicate *isREADME;
 		
 		res = [[NSFileManager defaultManager] removeItemAtURL:[base URLByAppendingPathComponent:enabledPath] error:&err];
 		if (!res)
-			res =[[NSFileManager defaultManager] removeItemAtURL:[base URLByAppendingPathComponent:disabledPath] error:&err];
+			res = [[NSFileManager defaultManager] removeItemAtURL:[base URLByAppendingPathComponent:disabledPath] error:&err];
 		
 		if (!res)
 			[self presentError:err];
@@ -701,8 +701,10 @@ static NSPredicate *isREADME;
 	NSString *dir = nil;
 	if ([item class] == [AddInItem self])
 		dir = @"Addins";
-	else
+	else if ([item class] == [OfferItem self])
 		dir = @"Offers";
+	else
+		return YES;
 	
 	NSURL *itemURL = [[base URLByAppendingPathComponent:dir] URLByAppendingPathComponent:item.UID];
 	NSError *err = nil;

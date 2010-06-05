@@ -76,7 +76,7 @@
 			}
 		}
 		else
-			[data setObject:[value copy] forKey:key];
+			[data setObject:value forKey:key];
 	}
 	
 	cnode = [self cacheNodeForObjectID:[managedObject objectID]];
@@ -530,7 +530,7 @@
 	NSXMLNode *parent = [node parent];
 	NSString *me = [node name];
 	
-	if ([me isEqualToString:@"AddInItem"] || [me isEqualToString:@"OfferItem"])
+	if ([me isEqualToString:@"AddInItem"] || [me isEqualToString:@"OfferItem"] || [me isEqualToString:@"DisabledOfferItem"])
 		return [[(NSXMLElement *)node attributeForName:@"UID"] stringValue];
 	
 	if ([me isEqualToString:@"file"] || [me isEqualToString:@"dir"])

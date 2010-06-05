@@ -186,7 +186,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		{
 			[mutableData replaceBytesInRange:(NSRange){(NSUInteger)offset, (NSUInteger)len} withBytes:buf];
 		
-			if (++idx % 100 == 0 && wrapper)
+			if (++idx % 300 == 0 && wrapper)
 				wrapper.uncompressedOffset = archive_position_uncompressed(archive);
 		}
 	}
@@ -201,7 +201,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 				[mutableData increaseLengthBy:(NSUInteger)offset - [data length]];
 			[mutableData appendBytes:buf length:len];
 			
-			if (++idx % 100 == 0 && wrapper)
+			if (++idx % 300 == 0 && wrapper)
 				wrapper.uncompressedOffset = archive_position_uncompressed(archive);
 		}
 	}
@@ -329,7 +329,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		if (offset > [fh offsetInFile])
 			[fh truncateFileAtOffset:offset];
 		[fh writeData:[NSData dataWithBytesNoCopy:(void*)buf length:len freeWhenDone:NO]];
-		if (++idx % 100 == 0 && wrapper)
+		if (++idx % 300 == 0 && wrapper)
 			wrapper.uncompressedOffset = archive_position_uncompressed(archive);
 	}
 	[fh closeFile];
