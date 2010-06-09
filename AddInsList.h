@@ -68,11 +68,21 @@
 - (BOOL)installItems:(NSArray *)items withArchive:(NSURL*)url uncompressedSize:(NSUInteger)sz error:(NSError**)error;
 - (void)progressChanged:(ArchiveWrapper*)archive session:(NSModalSession)session;
 
+@end
+
+
+@interface AddInsList (Editing)
+
 - (void)askAssign:(Item*)item;
 - (IBAction)closeAssign:(id)sender;
 - (void)verifyAssign:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo;
 - (void)answerAssign:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo;
 - (void)assignPath:(Item*)unkPath toAddIn:(AddInItem*)addin;
+
+- (IBAction)toggleEnabled:(id)sender;
+- (void)enabledChanged:(Item*)item;
+- (void)askOverrideGameVersion:(Item*)item;
+- (void)answerOverrideGameVersion:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo;
 
 @end
 
@@ -99,5 +109,7 @@
 - (NSURL*)gameURL;
 
 - (IBAction)launchGame:(id)sender;
+
+- (NSString *)gameVersion;
 
 @end

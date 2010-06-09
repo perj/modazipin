@@ -61,6 +61,7 @@
 @dynamic contents;
 @dynamic item;
 @dynamic paths;
+@dynamic origGameVersion;
 
 - (void)awakeFromInsert
 {

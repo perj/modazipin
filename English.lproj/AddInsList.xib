@@ -21,9 +21,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="100331"/>
-			<integer value="100416"/>
-			<integer value="100345"/>
+			<integer value="100202"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -749,7 +747,7 @@
 				<string key="NSWindowContentMaxSize">{396, 56}</string>
 				<string key="NSWindowContentMinSize">{396, 56}</string>
 				<object class="NSView" key="NSWindowView" id="395115659">
-					<reference key="NSNextResponder"/>
+					<nil key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<object class="NSMutableArray" key="NSSubviews">
 						<bool key="EncodedWithXMLCoder">YES</bool>
@@ -764,7 +762,6 @@
 						</object>
 					</object>
 					<string key="NSFrameSize">{396, 56}</string>
-					<reference key="NSSuperview"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1440, 878}}</string>
 				<string key="NSMinSize">{396, 78}</string>
@@ -778,8 +775,9 @@
 				<string key="NSWindowTitle">Window</string>
 				<string key="NSWindowClass">NSWindow</string>
 				<nil key="NSViewClass"/>
+				<string key="NSWindowContentMaxSize">{1.79769e+308, 1.79769e+308}</string>
 				<object class="NSView" key="NSWindowView" id="271598440">
-					<reference key="NSNextResponder"/>
+					<nil key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<object class="NSMutableArray" key="NSSubviews">
 						<bool key="EncodedWithXMLCoder">YES</bool>
@@ -862,7 +860,6 @@
 									</object>
 									<string key="NSFrame">{{1, 1}, {480, 251}}</string>
 									<reference key="NSSuperview" ref="631150247"/>
-									<reference key="NSNextKeyView" ref="880318528"/>
 									<reference key="NSDocView" ref="880318528"/>
 									<reference key="NSBGColor" ref="774956499"/>
 									<int key="NScvFlags">4</int>
@@ -889,7 +886,6 @@
 							</object>
 							<string key="NSFrame">{{20, 60}, {482, 253}}</string>
 							<reference key="NSSuperview" ref="271598440"/>
-							<reference key="NSNextKeyView" ref="48155450"/>
 							<int key="NSsFlags">562</int>
 							<reference key="NSVScroller" ref="517731858"/>
 							<reference key="NSHScroller" ref="237702044"/>
@@ -959,7 +955,6 @@
 						</object>
 					</object>
 					<string key="NSFrameSize">{522, 358}</string>
-					<reference key="NSSuperview"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1440, 878}}</string>
 				<string key="NSMaxSize">{1.79769e+308, 1.79769e+308}</string>
@@ -1032,14 +1027,6 @@
 						</object>
 					</object>
 					<int key="connectionID">100232</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">saveDocument:</string>
-						<reference key="source" ref="488872867"/>
-						<reference key="destination" ref="687483433"/>
-					</object>
-					<int key="connectionID">100250</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -1354,6 +1341,14 @@
 						<reference key="destination" ref="56186114"/>
 					</object>
 					<int key="connectionID">100465</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleEnabled:</string>
+						<reference key="source" ref="488872867"/>
+						<reference key="destination" ref="687483433"/>
+					</object>
+					<int key="connectionID">100468</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -1906,7 +1901,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">100467</int>
+			<int key="maxID">100468</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1921,9 +1916,11 @@
 							<string>askUninstall:</string>
 							<string>closeAssign:</string>
 							<string>launchGame:</string>
+							<string>toggleEnabled:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>

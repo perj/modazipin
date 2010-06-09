@@ -509,6 +509,10 @@ static NSPredicate *isREADME;
 	[NSApp runModalSession:modal];
 }
 
+@end
+
+@implementation AddInsList (Editing)
+
 - (void)askAssign:(Item*)item
 {
 	[NSApp beginSheet:assignSheet modalForWindow:[self windowForSheet] modalDelegate:self didEndSelector:@selector(verifyAssign:returnCode:contextInfo:) contextInfo:item];
@@ -569,6 +573,73 @@ static NSPredicate *isREADME;
 	[[self managedObjectContext] deleteObject:unkPath];
 	[itemsController setSelectedObjects:[NSArray arrayWithObject:addin]];
 	[self saveDocument:self];
+}
+
+- (IBAction)toggleEnabled:(id)sender
+{
+	[self enabledChanged:[[itemsController arrangedObjects] objectAtIndex:[sender clickedRow]]];
+}
+
+- (void)enabledChanged:(Item *)item
+{
+	if ([item.Enabled boolValue])
+	{
+		NSString *gameVersion = [self gameVersion];
+		NSString *reqGameVersion = item.GameVersion;
+		
+		if (gameVersion && reqGameVersion && [reqGameVersion caseInsensitiveCompare:gameVersion] == NSOrderedDescending)
+			[self performSelectorOnMainThread:@selector(askOverrideGameVersion:) withObject:item waitUntilDone:NO];
+	}
+	else
+	{
+		NSString *origGameVersion = item.modazipin.origGameVersion;
+		
+		if (origGameVersion && ![origGameVersion isEqualToString:@""] && ![origGameVersion isEqualToString:item.GameVersion])
+		{
+			item.GameVersion = origGameVersion;
+			if ([item class] == [AddInItem self])
+				[[item valueForKey:@"offers"] setValue:origGameVersion forKey:@"GameVersion"];
+		}
+	}
+	
+	if ([item class] == [AddInItem self])
+		[[item valueForKey:@"offers"] setValue:item.Enabled forKey:@"Enabled"];
+	
+	[self saveDocument:self];
+}
+
+- (void)askOverrideGameVersion:(Item*)item
+{
+	NSBeginAlertSheet(@"Override required game version", @"Override", @"Cancel", nil, [self windowForSheet], self, @selector(answerOverrideGameVersion:returnCode:contextInfo:), nil, item, @"\"%@\" requires game version %@, but you have %@. Override the required game version check?", item.Title.localizedValue, item.GameVersion, [self gameVersion]);
+}
+
+- (void)answerOverrideGameVersion:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+	Item *item = contextInfo;
+	
+	if (returnCode == NSOKButton)
+	{
+		if (!item.modazipin)
+		{
+			Modazipin *modazipin = [NSEntityDescription insertNewObjectForEntityForName:@"Modazipin" inManagedObjectContext:[self managedObjectContext]];
+			
+			modazipin.item = item;
+		}
+		
+		item.modazipin.origGameVersion = item.GameVersion;
+		item.GameVersion = @"";
+		
+		if ([item class] == [AddInItem self])
+			[[item valueForKey:@"offers"] setValue:@"" forKey:@"GameVersion"];
+		
+		[self saveDocument:self];
+	}
+	else
+	{
+		item.Enabled = [NSDecimalNumber zero];
+		
+		[self enabledChanged:item];
+	}
 }
 
 @end
@@ -834,6 +905,21 @@ static NSPredicate *isREADME;
 	}
 	
 	/* -gameURL works very hard to find the URL, so assume it is not there if it fails. */
+}
+
+- (NSString*)gameVersion;
+{
+	NSURL *url = [self gameURL];
+	
+	if (!url)
+	{
+		[self searchSpotlightForGame];
+		return nil;
+	}
+	
+	NSBundle *gameBundle = [NSBundle bundleWithURL:url];
+	NSDictionary *gameInfo = [gameBundle infoDictionary];
+	return [gameInfo objectForKey:@"CFBundleShortVersionString"];
 }
 
 @end

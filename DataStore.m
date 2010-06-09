@@ -231,6 +231,16 @@
 								 node, @"node",
 								 item, @"item",
 								 nil];
+	
+	for (NSXMLNode *attr in [node attributes])
+	{
+		if ([[attr name] isEqualToString:@"orgiGameVersion"])
+		{
+			[data setObject:[attr stringValue] forKey:[attr name]];
+			continue;
+		}
+	}
+	
 	return setBlock(res, data);
 }
 
@@ -654,30 +664,59 @@
 
 - (void)updateCacheNode:(NSAtomicStoreCacheNode *)node fromManagedObject:(NSManagedObject *)managedObject
 {
-	/* Only support updating Enabled for now */
-	if (![[managedObject class] isSubclassOfClass:[Item class]])
+	if (![managedObject isKindOfClass:[DataStoreObject self]])
 		return;
 	
-	Item *item = (Item*)managedObject;
-	NSXMLElement *elem = (NSXMLElement*)item.node;
+	NSXMLElement *elem = (NSXMLElement*)[managedObject valueForKey:@"node"];
 	NSXMLNode *attr;
 	
-	if ([[[item entity] name] isEqualToString:@"AddInItem"])
+	if ([managedObject isKindOfClass:[Item self]])
 	{
-		attr = [elem attributeForName:@"Enabled"];
-		if ([item.Enabled intValue])
-			[attr setStringValue:@"1"];
-		else
-			[attr setStringValue:@"0"];
+		Item *item = (Item*)managedObject;
+		
+		if ([[[managedObject entity] name] isEqualToString:@"AddInItem"])
+		{
+			attr = [elem attributeForName:@"Enabled"];
+			if ([item.Enabled intValue])
+				[attr setStringValue:@"1"];
+			else
+				[attr setStringValue:@"0"];
+		}
+		else if ([[[managedObject entity] name] isEqualToString:@"OfferItem"])
+		{
+			if ([item.Enabled intValue])
+				[elem setName:@"OfferItem"];
+			else
+				[elem setName:@"DisabledOfferItem"];
+		}
+		
+		for (NSXMLNode *child in [elem children])
+		{
+			if ([[child name] isEqualToString:@"GameVersion"])
+				[child setStringValue:item.GameVersion];
+		}
+		
+		[node setValue:item.Enabled forKey:@"Enabled"];
+		[node setValue:item.GameVersion forKey:@"GameVersion"];
+		
 	}
-	else if ([[[item entity] name] isEqualToString:@"OfferItem"])
+	else if ([[[managedObject entity] name] isEqualToString:@"Modazipin"])
 	{
-		if ([item.Enabled intValue])
-			[elem setName:@"OfferItem"];
-		else
-			[elem setName:@"DisabledOfferItem"];
+		Modazipin *modazipin = (Modazipin*)managedObject;
+		
+		if (modazipin.origGameVersion)
+		{
+			attr = [elem attributeForName:@"origGameVersion"];
+			
+			if (attr)
+				[attr setStringValue:modazipin.origGameVersion];
+			else
+			{
+				attr = [NSXMLNode attributeWithName:@"origGameVersion" stringValue:modazipin.origGameVersion];
+				[elem addAttribute:attr];
+			}
+		}
 	}
-	[node setValue:item.Enabled forKey:@"Enabled"];
 }
 
 - (id)newReferenceObjectForManagedObject:(NSManagedObject *)managedObject
@@ -685,6 +724,27 @@
 	DataStoreObject *obj = (DataStoreObject*)managedObject;
 	
 	return [self uniqueForNode:obj.node];
+}
+
+- (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject
+{
+	/* Create a node if needed. */
+	if ([managedObject isKindOfClass:[DataStoreObject self]] && ![managedObject valueForKey:@"node"])
+	{
+		if ([[[managedObject entity] name] isEqualToString:@"Modazipin"])
+		{
+			Modazipin *modazipin = (Modazipin*)managedObject;
+			
+			if (modazipin.item.node)
+			{
+				NSXMLElement *elem = [NSXMLElement elementWithName:@"modazipin"];
+				[(NSXMLElement*)modazipin.item.node addChild:elem];
+				modazipin.node = elem;
+			}
+		}
+	}
+	
+	return [super newCacheNodeForManagedObject:managedObject];
 }
 
 - (void)willRemoveCacheNodes:(NSSet *)cacheNodes
@@ -887,7 +947,7 @@
 		NSData *xmldata = [dazipData objectForKey:@"manifest"];
 		NSMutableSet *files = [dazipData objectForKey:@"files"];
 		NSMutableSet *dirs = [dazipData objectForKey:@"directories"];
-		NSMutableSet *contents = [dazipData objectForKey:@"contents"];
+		//NSMutableSet *contents = [dazipData objectForKey:@"contents"];
 		
 		if (![self loadXML:xmldata ofType:@"Manifest" error:&loadError])
 			return self;

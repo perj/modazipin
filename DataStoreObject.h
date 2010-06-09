@@ -48,9 +48,10 @@
 {
 }
 
-@property (retain) NSMutableSet* contents;
-@property (retain) Item * item;
-@property (retain) NSSet* paths;
+@property (nonatomic, retain) NSMutableSet* contents;
+@property (nonatomic, retain) Item * item;
+@property (nonatomic, retain) NSSet* paths;
+@property (nonatomic, retain) NSString *origGameVersion;
 
 - (void)addContent:(NSString *)value;
 - (void)removeContent:(NSString *)value;
