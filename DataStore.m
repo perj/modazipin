@@ -88,10 +88,15 @@
 
 @end
 
+@interface DataStore (Errors)
+
+- (NSError*)dataStoreError:(NSInteger)code msg:(NSString*)fmt, ... NS_FORMAT_FUNCTION(2,3);
+
+@end
 
 @implementation DataStore (Errors)
 
-- (NSError*)dataStoreError:(NSInteger)code msg:(NSString*)fmt, ... NS_FORMAT_FUNCTION(2,3)
+- (NSError*)dataStoreError:(NSInteger)code msg:(NSString*)fmt, ...
 {
 	va_list ap;
 	

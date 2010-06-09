@@ -391,7 +391,7 @@
 		while ([str characterAtIndex:rs.location + rs.length] != '%')
 			rs.length++;
 		
-		NSString *secEnd = [NSString stringWithFormat:@"%%!%@%", [str substringWithRange:NSMakeRange(rs.location + 2, rs.length - 1)]];
+		secEnd = [NSString stringWithFormat:@"%%!%@%", [str substringWithRange:NSMakeRange(rs.location + 2, rs.length - 1)]];
 		NSRange re = [str rangeOfString:secEnd];
 		
 		if (re.location == NSNotFound || re.location < rs.location)

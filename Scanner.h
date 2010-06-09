@@ -32,6 +32,6 @@
 
 - (id)initWithDocument:(AddInsList*)doc URL:(NSURL*)url message:(NSString*)msg;
 
-@property NSString *message;
+@property(copy) NSString *message;
 
 @end

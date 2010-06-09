@@ -678,7 +678,7 @@ static NSPredicate *isREADME;
 			
 			[[NSFileManager defaultManager] createDirectoryAtPath:[dirURL path] withIntermediateDirectories:YES attributes:nil error:nil];
 			if (![[NSFileManager defaultManager] moveItemAtURL:otherURL toURL:expectedURL error:error])
-				NULL; /* XXX do something here. */
+				(void)0; /* XXX do something here. */
 		}
 	}
 	return YES;

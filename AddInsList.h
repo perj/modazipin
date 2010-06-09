@@ -60,6 +60,8 @@
 
 - (void)updateOperationCount;
 
+@property NSMetadataItem *spotlightGameItem;
+
 @end
 
 
@@ -97,8 +99,6 @@
 
 
 @interface AddInsList (GameLaunching)
-
-@property NSMetadataItem *spotlightGameItem;
 
 - (void)updateLaunchButtonImage;
 

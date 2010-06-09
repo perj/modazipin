@@ -28,6 +28,6 @@
 	NSString *identifier;
 }
 
-@property NSString *identifier;
+@property(copy) NSString *identifier;
 
 @end

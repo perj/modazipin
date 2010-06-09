@@ -197,7 +197,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		int idx = 0;
 		while ((r = archive_read_data_block (archive, &buf, &len, &offset)) == ARCHIVE_OK)
 		{
-			if (offset > [data length])
+			if (offset > (off_t)[data length])
 				[mutableData increaseLengthBy:(NSUInteger)offset - [data length]];
 			[mutableData appendBytes:buf length:len];
 			
@@ -326,7 +326,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	int idx = 0;
 	while ((r = archive_read_data_block (archive, &buf, &len, &offset)) == ARCHIVE_OK)
 	{
-		if (offset > [fh offsetInFile])
+		if (offset > (off_t)[fh offsetInFile])
 			[fh truncateFileAtOffset:offset];
 		[fh writeData:[NSData dataWithBytesNoCopy:(void*)buf length:len freeWhenDone:NO]];
 		if (++idx % 300 == 0 && wrapper)
