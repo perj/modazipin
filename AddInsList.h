@@ -67,7 +67,7 @@
 
 @interface AddInsList (Installing)
 
-- (BOOL)installItems:(NSArray *)items withArchive:(NSURL*)url uncompressedSize:(NSUInteger)sz error:(NSError**)error;
+- (BOOL)installItems:(NSArray *)items withArchive:(NSURL*)url uncompressedSize:(int64_t)sz error:(NSError**)error;
 - (void)progressChanged:(ArchiveWrapper*)archive session:(NSModalSession)session;
 
 @end

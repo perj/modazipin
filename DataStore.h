@@ -58,11 +58,11 @@ typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 
 @interface DazipStore : DataStore
 {
-	NSUInteger uncompressedSize;
+	int64_t uncompressedSize;
 }
 
 - (NSDictionary*)loadDazip:(NSURL *)url error:(NSError**)error;
 
-@property(readonly) NSUInteger uncompressedSize;
+@property(readonly) int64_t uncompressedSize;
 
 @end

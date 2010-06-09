@@ -103,11 +103,11 @@
 	
 	for (Path *p in paths)
 	{
-		NSXMLElement *pNode = [NSXMLElement elementWithName:p.type];
+		NSXMLElement *pnode = [NSXMLElement elementWithName:p.type];
 		
-		[pNode addAttribute:[NSXMLNode attributeWithName:@"path" stringValue:p.path]];
-		[node addChild:pNode];
-		p.node = pNode;
+		[pnode addAttribute:[NSXMLNode attributeWithName:@"path" stringValue:p.path]];
+		[node addChild:pnode];
+		p.node = pnode;
 	}
 }
 
@@ -148,8 +148,7 @@
 @dynamic DefaultText;
 @dynamic languages;
 @dynamic item;
-
-@synthesize localizedValue;
+@dynamic localizedValue;
 
 - (void)updateLocalizedValue:(NSNotification*)notice
 {
@@ -198,7 +197,7 @@
 	if (!value)
 		value = self.DefaultText;
 	
-	if (![value isEqualToString:localizedValue])
+	if (![value isEqualToString:self.localizedValue])
 	{
 		self.localizedValue = value;
 	}

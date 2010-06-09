@@ -109,7 +109,7 @@ extern NSString * const ArchiveErrorDomain;
 	NSStringEncoding encoding;
 	
 	ArchiveMember *lastMember;
-	NSUInteger uncompressedOffset;
+	int64_t uncompressedOffset;
 }
 
 /* Only file URLs are supported for now. */
@@ -121,6 +121,6 @@ extern NSString * const ArchiveErrorDomain;
 
 - (ArchiveMember *)nextMemberWithError:(NSError**)error;
 
-@property NSUInteger uncompressedOffset;
+@property int64_t uncompressedOffset;
 
 @end

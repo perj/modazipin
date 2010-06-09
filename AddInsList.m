@@ -210,7 +210,7 @@ static NSPredicate *isREADME;
 	{
 		NSString *pathType = @"file";
 		NSString *readme = nil;
-		NSString *realpath = [NSString pathWithComponents:cparts];
+		NSString *origPath = [NSString pathWithComponents:cparts];
 		BOOL disabled;
 		
 		if ((disabled = [isDisabled evaluateWithObject:[cparts objectAtIndex:0]]))
@@ -220,8 +220,8 @@ static NSPredicate *isREADME;
 			[cparts replaceObjectAtIndex:0 withObject:[s substringToIndex:[s length] - sizeof (" (disabled)") + 1]];
 		}
 		
-		if ([isREADME evaluateWithObject:realpath])
-			readme = [NSString stringWithFormat:@"README:\n\n%@", [NSString stringWithContentsOfURL:[[self fileURL] URLByAppendingPathComponent:realpath] encoding:NSWindowsCP1252StringEncoding error:nil]];
+		if ([isREADME evaluateWithObject:origPath])
+			readme = [NSString stringWithFormat:@"README:\n\n%@", [NSString stringWithContentsOfURL:[[self fileURL] URLByAppendingPathComponent:origPath] encoding:NSWindowsCP1252StringEncoding error:nil]];
 		
 		if ([cparts count] > 4)
 		{
@@ -433,7 +433,7 @@ static NSPredicate *isREADME;
 
 @implementation AddInsList (Installing)
 
-- (BOOL)installItems:(NSArray*)items withArchive:(NSURL*)url uncompressedSize:(NSUInteger)sz error:(NSError**)error
+- (BOOL)installItems:(NSArray*)items withArchive:(NSURL*)url uncompressedSize:(int64_t)sz error:(NSError**)error
 {
 	DazipArchive *archive = [DazipArchive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
 	NSURL *base = [self fileURL];
