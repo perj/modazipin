@@ -89,6 +89,8 @@ static NSPredicate *isREADME;
 		offer.displayed = [NSNumber numberWithBool:![[offer valueForKey:@"addins"] count]];
 	}
 	
+	[self searchSpotlightForScreenshots:absoluteURL];
+	
 	return YES;
 }
 
@@ -102,16 +104,28 @@ static NSPredicate *isREADME;
 	return fileType;
 }
 
+- (void)updateDefaults:(NSString *)key
+{
+	if ([key isEqualToString:@"backgroundAlpha"])
+		[backgroundImage setAlphaValue:[[NSUserDefaults standardUserDefaults] floatForKey:@"backgroundAlpha"]];
+	else if ([key isEqualToString:@"useCustomBackground"] || [key isEqualToString:@"customBackgroundURL"])
+		[self updateBackgroundURL];
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-	if (object == spotlightQuery)
-		[self spotlightQueryChanged];
+	if (object == gameSpotlightQuery)
+		[self gameSpotlightQueryChanged];
 	else if (object == itemsController)
 		[self itemsControllerChanged];
 	else if ([keyPath isEqualToString:@"uncompressedOffset"])
 		[self progressChanged:object session:context];
 	else if (object == operationQueue)
 		[self updateOperationCount];
+	else if (object == [NSUserDefaultsController sharedUserDefaultsController])
+		[self updateDefaults:[keyPath substringFromIndex:sizeof("values.") - 1]];
+	else if (object == self && [keyPath isEqualToString:@"randomScreenshotURL"])
+		[self updateBackgroundURL];
 }
 
 
@@ -145,6 +159,13 @@ static NSPredicate *isREADME;
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanOffersURL message:@"offers"]];
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanPackagesURL message:@"packages"]];
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanDisabledPackagesURL message:@"disabled packages"]];
+	
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	[backgroundImage setAlphaValue:[defaults floatForKey:@"backgroundAlpha"]];
+	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.backgroundAlpha" options:0 context:nil];
+	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.useCustomBackground" options:0 context:nil];
+	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.customBackgroundURL" options:0 context:nil];
+	[self addObserver:self forKeyPath:@"randomScreenshotURL" options:0 context:nil];
 }
 
 - (void)itemsControllerChanged
@@ -349,7 +370,56 @@ static NSPredicate *isREADME;
 @synthesize isBusy;
 @synthesize statusMessage;
 
+@synthesize randomScreenshotURL;
+@synthesize backgroundURL;
+
 @end
+
+
+@implementation AddInsList (Background)
+
+- (void)updateBackgroundURL
+{
+	if (![[NSUserDefaults standardUserDefaults] boolForKey:@"useCustomBackground"])
+		self.backgroundURL = self.randomScreenshotURL;
+	else
+		self.backgroundURL = [[NSUserDefaults standardUserDefaults] URLForKey:@"customBackgroundURL"];
+}
+
+- (IBAction)updateRandomScreenshot:(id)sender
+{
+	if ([screenshotSpotlightQuery resultCount] > 0)
+	{
+		NSMetadataItem *item = [screenshotSpotlightQuery resultAtIndex:arc4random() % [screenshotSpotlightQuery resultCount]];
+		
+		self.randomScreenshotURL = [NSURL fileURLWithPath:[item valueForAttribute:(NSString *)kMDItemPath] isDirectory:NO];
+	}
+}
+
+- (BOOL)searchSpotlightForScreenshots:(NSURL*)baseURL
+{
+	NSURL *sURL = [baseURL URLByAppendingPathComponent:@"Screenshots"];
+	
+	if (screenshotSpotlightQuery)
+		return [screenshotSpotlightQuery isGathering];
+	
+	screenshotSpotlightQuery = [[NSMetadataQuery alloc] init];
+	[screenshotSpotlightQuery setPredicate:[NSPredicate predicateWithFormat:@"kMDItemContentTypeTree = 'public.image'"]];
+	[screenshotSpotlightQuery setSearchScopes:[NSArray arrayWithObject:sURL]];
+	
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateRandomScreenshot:) name:NSMetadataQueryDidFinishGatheringNotification object:screenshotSpotlightQuery];
+	
+	if (![screenshotSpotlightQuery startQuery])
+	{
+		screenshotSpotlightQuery = nil;
+		return NO;
+	}
+	return YES;
+}
+
+@end
+
 
 
 @implementation AddInsList (WebView)
@@ -816,34 +886,34 @@ static NSPredicate *isREADME;
 {
 	NSAssert(spotlightGameItem == nil, @"Already have spotlightGameItem!");
 	
-	if (spotlightQuery)
-		return [spotlightQuery isGathering];
+	if (gameSpotlightQuery)
+		return [gameSpotlightQuery isGathering];
 	
-	spotlightQuery = [[NSMetadataQuery alloc] init];
-	[spotlightQuery setPredicate:[NSPredicate predicateWithFormat:@"kMDItemContentType == 'com.apple.application-bundle' AND (kMDItemCFBundleIdentifier == 'com.transgaming.cider.dragonageorigins' OR kMDItemFSName == 'DragonAgeOrigins.app')"]];
-	[spotlightQuery setSearchScopes:[NSArray arrayWithObject:NSMetadataQueryLocalComputerScope]];
+	gameSpotlightQuery = [[NSMetadataQuery alloc] init];
+	[gameSpotlightQuery setPredicate:[NSPredicate predicateWithFormat:@"kMDItemContentType == 'com.apple.application-bundle' AND (kMDItemCFBundleIdentifier == 'com.transgaming.cider.dragonageorigins' OR kMDItemFSName == 'DragonAgeOrigins.app')"]];
+	[gameSpotlightQuery setSearchScopes:[NSArray arrayWithObject:NSMetadataQueryLocalComputerScope]];
 	
-	[spotlightQuery addObserver:self forKeyPath:@"results" options:0 context:nil];
+	[gameSpotlightQuery addObserver:self forKeyPath:@"results" options:0 context:nil];
 	
-	if (![spotlightQuery startQuery])
+	if (![gameSpotlightQuery startQuery])
 	{
-		spotlightQuery = nil;
+		gameSpotlightQuery = nil;
 		return NO;
 	}
 	return YES;
 }
 
-- (void)spotlightQueryChanged
+- (void)gameSpotlightQueryChanged
 {
-	[spotlightQuery disableUpdates];
+	[gameSpotlightQuery disableUpdates];
 	
-	if ([spotlightQuery resultCount] > 0)
+	if ([gameSpotlightQuery resultCount] > 0)
 	{
-		self.spotlightGameItem = [spotlightQuery resultAtIndex:0];
+		self.spotlightGameItem = [gameSpotlightQuery resultAtIndex:0];
 		[self updateLaunchButtonImage];
 	}
 	
-	[spotlightQuery enableUpdates];
+	[gameSpotlightQuery enableUpdates];
 	return;
 }
 
@@ -900,6 +970,8 @@ static NSPredicate *isREADME;
 		if (running)
 		{
 			[[NSUserDefaults standardUserDefaults] setURL:[running bundleURL] forKey:@"game url"];
+			if ([[NSUserDefaults standardUserDefaults] boolForKey:@"quitOnGameLaunch"])
+				[NSApp terminate:self];
 			return;
 		}
 	}

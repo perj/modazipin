@@ -27,7 +27,7 @@
 
 @interface AddInsList : NSPersistentDocument
 {
-	NSMetadataQuery *spotlightQuery;
+	NSMetadataQuery *gameSpotlightQuery;
 	NSMetadataItem *spotlightGameItem;
 	
 	NSOperationQueue *operationQueue;
@@ -43,6 +43,10 @@
 	
 	IBOutlet NSWindow *assignSheet;
 	IBOutlet NSArrayController *assignAddInController;
+	
+	IBOutlet NSImageView *backgroundImage;
+	NSMetadataQuery *screenshotSpotlightQuery;
+	NSURL *randomScreenshotURL;
 }
 
 + (AddInsList*)sharedAddInsList;
@@ -61,6 +65,19 @@
 - (void)updateOperationCount;
 
 @property NSMetadataItem *spotlightGameItem;
+
+@property(copy) NSURL *backgroundURL;
+@property(copy) NSURL *randomScreenshotURL;
+
+@end
+
+
+@interface AddInsList (Background)
+
+- (void)updateBackgroundURL;
+- (IBAction)updateRandomScreenshot:(id)sender;
+- (BOOL)searchSpotlightForScreenshots:(NSURL*)baseURL;
+
 
 @end
 
@@ -104,7 +121,7 @@
 
 - (BOOL)searchSpotlightForGame;
 
-- (void)spotlightQueryChanged;
+- (void)gameSpotlightQueryChanged;
 
 - (NSURL*)gameURL;
 

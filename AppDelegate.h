@@ -23,11 +23,12 @@
 
 
 @interface AppDelegate : NSObject {
-
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notice;
 
 - (IBAction)openAddInsList:(id)sender;
+
+- (IBAction)chooseCustomBackground:(id)sender;
 
 @end

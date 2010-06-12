@@ -28,12 +28,24 @@
 
 static BOOL fatal = NO;
 
+- (void)setupDefaults
+{
+	[[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
+															 @"0.2", @"backgroundAlpha",
+															 @"0", @"useCustomBackground",
+															 @"0", @"quitOnGameLaunch",
+															 nil]];
+}
+
 - (void)applicationWillFinishLaunching:(NSNotification *)notice
 {
 	[NSPersistentStoreCoordinator registerStoreClass:[AddInsListStore self] forStoreType:@"AddInsListStore"];
 	[NSPersistentStoreCoordinator registerStoreClass:[OfferListStore self] forStoreType:@"OfferListStore"];
 	[NSPersistentStoreCoordinator registerStoreClass:[DazipStore self] forStoreType:@"DazipStore"];
 	[NSPersistentStoreCoordinator registerStoreClass:[NullStore self] forStoreType:@"NullStore"];
+	
+	[self setupDefaults];
+	
 	[self openAddInsList:self];
 }
 
@@ -82,6 +94,36 @@ static BOOL fatal = NO;
 		}
 	}
 	
+}
+
+- (IBAction)chooseCustomBackground:(id)sender
+{
+	NSOpenPanel *panel = [NSOpenPanel openPanel];
+	NSURL *oldUrl = [[NSUserDefaults standardUserDefaults] URLForKey:@"customBackgroundURL"];
+	
+	if (!oldUrl)
+		oldUrl = [[AddInsList sharedAddInsList] randomScreenshotURL];
+	
+	if (oldUrl)
+		[panel setDirectoryURL:[oldUrl URLByDeletingLastPathComponent]];
+	
+	[panel setAllowedFileTypes:[NSArray arrayWithObject:@"public.image"]];
+	
+	[panel beginSheetModalForWindow:[sender window] completionHandler:^(NSInteger result)
+	 {
+		if (result == NSFileHandlingPanelOKButton)
+		{
+			NSURL *newUrl = [panel URL];
+			NSString *displayName = nil;
+			
+			[[NSUserDefaults standardUserDefaults] setURL:newUrl forKey:@"customBackgroundURL"];
+			//[[[NSUserDefaultsController sharedUserDefaultsController] values] setValue:newUrl forKey:@"customBackgroundURL"];
+			[newUrl getResourceValue:&displayName forKey:NSURLLocalizedNameKey error:nil];
+			[[[NSUserDefaultsController sharedUserDefaultsController] values] setValue:displayName forKey:@"customBackgroundDisplayName"];
+			[[[NSUserDefaultsController sharedUserDefaultsController] values] setValue:@"1" forKey:@"useCustomBackground"];
+			
+		}
+	 }];
 }
 
 @end
