@@ -46,6 +46,7 @@
 	
 	IBOutlet NSImageView *backgroundImage;
 	NSMetadataQuery *screenshotSpotlightQuery;
+	NSURL *backgroundURL;
 	NSURL *randomScreenshotURL;
 }
 
