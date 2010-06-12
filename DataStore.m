@@ -239,7 +239,7 @@
 	
 	for (NSXMLNode *attr in [node attributes])
 	{
-		if ([[attr name] isEqualToString:@"orgiGameVersion"])
+		if ([[attr name] isEqualToString:@"origGameVersion"])
 		{
 			[data setObject:[attr stringValue] forKey:[attr name]];
 			continue;

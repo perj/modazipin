@@ -82,8 +82,8 @@ That means it has limited functionality aimed at selling premium content. The pr
 %?missingFiles%	<p class="info">Files missing: %missingFiles%.</p>%!missingFiles%
 		<table>
 			
-			<tr><td class="grad" colspan="3"></td></tr>
-%?Version%			<tr>
+%?Version%			<tr><td class="grad" colspan="3"></td></tr>
+			<tr>
 				<th>Version:<th>
 				<td>%Version%</td>
 			</tr>
@@ -92,17 +92,17 @@ That means it has limited functionality aimed at selling premium content. The pr
 				<th>Publisher:<th>
 				<td>%Publisher%</td>
 			</tr>
-%!Publisher%			<tr><td class="grad" colspan="3"></td></tr>
+%!Publisher%%?ReleaseDate%			<tr><td class="grad" colspan="3"></td></tr>
 			<tr>
 				<th>Release date:<th>
 				<td>%ReleaseDate%</td>
 			</tr>
-			<tr><td class="grad" colspan="3"></td></tr>
+%!ReleaseDate%%?GameVersion%			<tr><td class="grad" colspan="3"></td></tr>
 			<tr>
 				<th>Required game version:<th>
 				<td>%GameVersion%</td>
 			</tr>
-%?URL%			<tr><td class="grad" colspan="3"></td></tr>
+%!GameVersion%%?URL%			<tr><td class="grad" colspan="3"></td></tr>
 			<tr>
 				<th>URL:<th>
 				<td><a href="%URL%">%URL%</a></td>
