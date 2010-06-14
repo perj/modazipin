@@ -193,7 +193,13 @@ static NSPredicate *isREADME;
 	NSArray *arr = [[self managedObjectContext] executeFetchRequest:req error:nil];
 	
 	if ([arr count])
+	{
+		Item *item = [arr objectAtIndex:0];
+		
+		if (![item.displayed boolValue] && [item class] == [OfferItem self])
+			arr = [item valueForKey:@"addins"];
 		[itemsController setSelectedObjects:arr];
+	}
 }
 
 - (void)addContents:(NSString *)contents forURL:(NSURL *)url
@@ -543,9 +549,11 @@ static NSPredicate *isREADME;
 	/* XXX delete all files and items on error. */
 	for (NSXMLElement *node in items)
 	{
+		Item *item = nil;
+		
 		if ([[node name] isEqualToString:@"AddInItem"])
 		{
-			AddInItem *item = [addinsStore insertAddInNode:node error:error intoContext:[self managedObjectContext]];
+			item = [addinsStore insertAddInNode:node error:error intoContext:[self managedObjectContext]];
 			
 			if (!item)
 				return NO;
@@ -554,16 +562,22 @@ static NSPredicate *isREADME;
 		}
 		else if ([[node name] isEqualToString:@"OfferItem"])
 		{
-			OfferItem *offer = [offersStore insertOfferNode:node error:error intoContext:[self managedObjectContext]];
+			item = [offersStore insertOfferNode:node error:error intoContext:[self managedObjectContext]];
 			
-			if (!offer)
+			if (!item)
 				return NO;
 			
-			NSArray *related = [offer valueForKey:@"addins"];
-			for (AddInItem *rel in related)
+			NSArray *related = [item valueForKey:@"addins"];
+			for (AddInItem *rel in related) {
 				[[self managedObjectContext] refreshObject:rel mergeChanges:NO];
-			offer.displayed = [NSNumber numberWithBool:![related count]];
+				if (![rel.Enabled boolValue])
+					item.Enabled = [NSDecimalNumber zero];
+			}
+			item.displayed = [NSNumber numberWithBool:![related count]];
 		}
+		
+		if (item)
+			[self enabledChanged:item canInteract:NO];
 	}
 	
 	[NSApp endModalSession:modal];
@@ -647,10 +661,10 @@ static NSPredicate *isREADME;
 
 - (IBAction)toggleEnabled:(id)sender
 {
-	[self enabledChanged:[[itemsController arrangedObjects] objectAtIndex:[sender clickedRow]]];
+	[self enabledChanged:[[itemsController arrangedObjects] objectAtIndex:[sender clickedRow]] canInteract:YES];
 }
 
-- (void)enabledChanged:(Item *)item
+- (void)enabledChanged:(Item *)item canInteract:(BOOL)canInteract
 {
 	if ([item.Enabled boolValue])
 	{
@@ -658,7 +672,15 @@ static NSPredicate *isREADME;
 		NSString *reqGameVersion = item.GameVersion;
 		
 		if (gameVersion && reqGameVersion && [reqGameVersion caseInsensitiveCompare:gameVersion] == NSOrderedDescending)
-			[self performSelectorOnMainThread:@selector(askOverrideGameVersion:) withObject:item waitUntilDone:NO];
+		{
+			if (canInteract)
+				[self performSelectorOnMainThread:@selector(askOverrideGameVersion:) withObject:item waitUntilDone:NO];
+			else
+			{
+				item.Enabled = [NSDecimalNumber zero];
+				[self enabledChanged:item canInteract:NO];
+			}
+		}
 	}
 	else
 	{
@@ -708,7 +730,7 @@ static NSPredicate *isREADME;
 	{
 		item.Enabled = [NSDecimalNumber zero];
 		
-		[self enabledChanged:item];
+		[self enabledChanged:item canInteract:NO];
 	}
 }
 
