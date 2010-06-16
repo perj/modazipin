@@ -19,17 +19,17 @@
  * THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
-#import <WebKit/WebKit.h>
 
-@interface Dazip : NSPersistentDocument {
-	IBOutlet WebView *detailsView;
+#import <Cocoa/Cocoa.h>
+
+@interface DataProxy : NSObject
+{
+	NSURL *dataUrl;
+	NSData *data;
 }
 
-- (void)detailsDidLoad;
++ (id)dataProxyForURL:(NSURL*)url;
 
-- (void)detailsCommand:(NSString*)command;
-
-- (IBAction)install:(id)sender;
+- (id)initWithURL:(NSURL*)url;
 
 @end

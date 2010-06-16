@@ -20,16 +20,17 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import <WebKit/WebKit.h>
 
-@interface Dazip : NSPersistentDocument {
-	IBOutlet WebView *detailsView;
+/* Need these defines to be compatible with CarbonCore and QD. */
+#define ExceptionInfo MagickExceptionInfo
+#define ColorInfo MagickColorInfo
+
+#include <magick/MagickCore.h>
+
+@interface MagickImageRep : NSImageRep
+{
 }
 
-- (void)detailsDidLoad;
-
-- (void)detailsCommand:(NSString*)command;
-
-- (IBAction)install:(id)sender;
++ (BOOL)canInitWithData:(NSData *)data;
 
 @end

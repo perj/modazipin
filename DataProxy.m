@@ -19,17 +19,30 @@
  * THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
-#import <WebKit/WebKit.h>
+#import "DataProxy.h"
 
-@interface Dazip : NSPersistentDocument {
-	IBOutlet WebView *detailsView;
+
+@implementation DataProxy
+
++ (id)dataProxyForURL:(NSURL*)url
+{
+	return [[self alloc] initWithURL:url];
 }
 
-- (void)detailsDidLoad;
+- (id)initWithURL:(NSURL*)url
+{
+	self = [super init];
+	
+	if (self)
+		dataUrl = url;
+	return self;
+}
 
-- (void)detailsCommand:(NSString*)command;
-
-- (IBAction)install:(id)sender;
+- (id)forwardingTargetForSelector:(SEL)aSelector
+{
+	if (!data)
+		data = [NSData dataWithContentsOfURL:dataUrl];
+	return data;
+}
 
 @end

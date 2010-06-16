@@ -20,16 +20,11 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import <WebKit/WebKit.h>
 
-@interface Dazip : NSPersistentDocument {
-	IBOutlet WebView *detailsView;
+
+@interface DetailsDelegate : NSObject
+{
+	IBOutlet id doc;
 }
-
-- (void)detailsDidLoad;
-
-- (void)detailsCommand:(NSString*)command;
-
-- (IBAction)install:(id)sender;
 
 @end

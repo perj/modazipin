@@ -37,6 +37,10 @@ static NSPredicate *isREADME;
 }
 
 @synthesize spotlightGameItem;
+@synthesize isBusy;
+@synthesize statusMessage;
+@synthesize randomScreenshotURL;
+@synthesize backgroundURL;
 
 - (id)init 
 {
@@ -196,11 +200,12 @@ static NSPredicate *isREADME;
 		[itemsController setSelectedObjects:arr];
 }
 
-- (void)addContents:(NSString *)contents forURL:(NSURL *)url
+- (void)addContents:(NSString *)contents data:(NSData*)data forURL:(NSURL *)url
 {
 	NSMutableArray *cparts = [NSMutableArray arrayWithArray:[url pathComponents]];
 	NSArray *mparts = [[self fileURL] pathComponents];
 	NSFetchRequest *req;
+	Item *item = nil;
 	
 	for (NSString *p in mparts) {
 		if (![[cparts objectAtIndex:0] isEqualToString:p])
@@ -217,7 +222,7 @@ static NSPredicate *isREADME;
 		NSArray *items = [[self managedObjectContext] executeFetchRequest:req error:nil];
 		if ([items count])
 		{
-			Item *item = [items objectAtIndex:0];
+			item = [items objectAtIndex:0];
 			
 			if (contents)
 				[item.modazipin addContent:contents];
@@ -254,7 +259,6 @@ static NSPredicate *isREADME;
 		
 		req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"path" substitutionVariables:[NSDictionary dictionaryWithObject:path forKey:@"path"]];
 		NSArray *paths = [[self managedObjectContext] executeFetchRequest:req error:nil];
-		Item *item = nil;
 		
 		if ([paths count])
 		{
@@ -295,11 +299,20 @@ static NSPredicate *isREADME;
 		}
 	}
 	
+	/* Check if this is the image. */
+	if (item && contents && item.Image && [item.Image isEqualToString:[contents stringByDeletingPathExtension]])
+	{
+		NSImage *img = [[NSImage alloc] initWithData:data];
+		[item setValue:[img TIFFRepresentation] forKey:@"imageData"];
+		[item updateInfo];
+		if ([[itemsController selectedObjects] indexOfObject:item] != NSNotFound)
+			[self performSelectorOnMainThread:@selector(itemsControllerChanged) withObject:nil waitUntilDone:NO];
+	}
 }
 
 - (void)addContentsForURL:(NSDictionary*)data
 {
-	[self addContents:[data objectForKey:@"contents"] forURL:[data objectForKey:@"URL"]];
+	[self addContents:[data objectForKey:@"contents"] data:[data objectForKey:@"data"] forURL:[data objectForKey:@"URL"]];
 }
 
 - (NSOperationQueue*)queue
@@ -367,11 +380,23 @@ static NSPredicate *isREADME;
 	}
 }
 
-@synthesize isBusy;
-@synthesize statusMessage;
-
-@synthesize randomScreenshotURL;
-@synthesize backgroundURL;
+- (void)detailsCommand:(NSString*)command
+{
+	if ([command isEqualToString:@"uninstall"])
+	{
+		NSArray *selected = [itemsController selectedObjects];
+		
+		if ([selected count] == 1)
+			[self askUninstall:[selected objectAtIndex:0]];
+	}
+	else if ([command isEqualToString:@"assign"])
+	{
+		NSArray *selected = [itemsController selectedObjects];
+		
+		if ([selected count] == 1)
+			[self askAssign:[selected objectAtIndex:0]];
+	}
+}
 
 @end
 
@@ -416,86 +441,6 @@ static NSPredicate *isREADME;
 		return NO;
 	}
 	return YES;
-}
-
-@end
-
-
-
-@implementation AddInsList (WebView)
-
-- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id < WebPolicyDecisionListener >)listener
-{
-	if ([[request mainDocumentURL] isFileURL])
-		[listener use];
-	else if ([[[request URL] scheme] isEqualToString:@"command"])
-	{
-		NSString *command = [[request URL] resourceSpecifier];
-		
-		[listener ignore];
-		
-		if ([command isEqualToString:@"uninstall"])
-		{
-			NSArray *selected = [itemsController selectedObjects];
-			
-			if ([selected count] == 1)
-				[self askUninstall:[selected objectAtIndex:0]];
-		}
-		else if ([command isEqualToString:@"assign"])
-		{
-			NSArray *selected = [itemsController selectedObjects];
-			
-			if ([selected count] == 1)
-				[self askAssign:[selected objectAtIndex:0]];
-		}
-	}
-	else
-	{
-		[listener ignore];
-		[[NSWorkspace sharedWorkspace] openURL:[request mainDocumentURL]];
-	}
-}
-
-- (NSArray *)webView:(WebView *)sender contextMenuItemsForElement:(NSDictionary *)element defaultMenuItems:(NSArray *)defaultMenuItems
-{
-	NSMutableArray *res = [NSMutableArray arrayWithCapacity:[defaultMenuItems count]];
-	
-	for (NSMenuItem *item in defaultMenuItems)
-	{
-		/* Was planning to white list instead of black list, but eg. Open Link is not documented. */
-		switch ([item tag])
-		{
-			case WebMenuItemTagOpenLinkInNewWindow:
-			case WebMenuItemTagDownloadLinkToDisk:
-			case WebMenuItemTagOpenImageInNewWindow:
-			case WebMenuItemTagDownloadImageToDisk:
-			case WebMenuItemTagCopyImageToClipboard:
-			case WebMenuItemTagOpenFrameInNewWindow:
-			case WebMenuItemTagGoBack:
-			case WebMenuItemTagGoForward:
-			case WebMenuItemTagStop:
-			case WebMenuItemTagReload:
-			case WebMenuItemTagCut:
-			case WebMenuItemTagPaste:
-			case WebMenuItemTagSpellingGuess:
-			case WebMenuItemTagNoGuessesFound:
-			case WebMenuItemTagIgnoreSpelling:
-			case WebMenuItemTagLearnSpelling:
-			case WebMenuItemTagOther: /* XXX huh? */
-			case WebMenuItemTagOpenWithDefaultApplication:
-				break;
-				
-			default:
-				[res addObject:item];
-				break;
-		}
-	}
-	return res;
-}
-
-- (NSUInteger)webView:(WebView *)webView dragDestinationActionMaskForDraggingInfo:(id <NSDraggingInfo>)draggingInfo
-{
-	return WebDragDestinationActionNone;
 }
 
 @end

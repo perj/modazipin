@@ -21,7 +21,7 @@
 
 #import "DataStoreObject.h"
 #import "DataStore.h"
-
+#import "base64.h"
 
 @implementation DataStoreObject
 
@@ -345,6 +345,13 @@
 						repTo = [[self valueForKey:[prop name]] stringValue];
 					else
 						repTo = @"";
+					break;
+				case NSBinaryDataAttributeType:
+					{
+						NSData *data = [self valueForKey:[prop name]];
+						
+						repTo = [data base64];
+					}
 					break;
 			}
 		}

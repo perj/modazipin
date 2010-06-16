@@ -5,6 +5,5 @@ Future
 Allow new addins to be created, empty or with unknown files.
 Keep track of files added or removed from the folders while running.
 Recreate dazip from addin (requires a zip writing lib).
-Icons (requires code to read dds data)
 Support .override files
 Contents conflict check.

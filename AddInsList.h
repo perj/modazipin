@@ -56,7 +56,7 @@
 
 - (void)selectItemWithUid:(NSString*)uid;
 
-- (void)addContents:(NSString *)contents forURL:(NSURL *)url;
+- (void)addContents:(NSString *)contents data:(NSData*)data forURL:(NSURL *)url;
 - (void)addContentsForURL:(NSDictionary*)data;
 
 @property(readonly) NSOperationQueue *queue;
@@ -69,6 +69,8 @@
 
 @property(copy) NSURL *backgroundURL;
 @property(copy) NSURL *randomScreenshotURL;
+
+- (void)detailsCommand:(NSString*)command;
 
 @end
 

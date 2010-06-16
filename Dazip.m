@@ -50,32 +50,12 @@
     [[detailsView mainFrame] loadHTMLString:[[arr objectAtIndex:0] detailsHTML] baseURL:[[NSBundle mainBundle] resourceURL]];
 }
 
-- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id < WebPolicyDecisionListener >)listener
-{
-	if ([[request mainDocumentURL] isFileURL])
-		[listener use];
-	else if ([[[request URL] scheme] isEqualToString:@"command"])
-	{
-		NSString *command = [[request URL] resourceSpecifier];
-		
-		[listener ignore];
-		
-		if ([command isEqualToString:@"install"])
-			[self install:self];
-	}
-	else
-	{
-		[listener ignore];
-		[[NSWorkspace sharedWorkspace] openURL:[request mainDocumentURL]];
-	}
-}
-
-- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
+- (void)detailsDidLoad
 {
 	DOMDocument *root = [[detailsView mainFrame] DOMDocument];
 	DOMHTMLElement *body = [root body];
 	int height = [body scrollHeight];
-	
+
 	for (NSWindowController *wc in [self windowControllers])
 	{
 		NSSize cs = [[wc window] frame].size;
@@ -85,46 +65,10 @@
 	}
 }
 
-- (NSArray *)webView:(WebView *)sender contextMenuItemsForElement:(NSDictionary *)element defaultMenuItems:(NSArray *)defaultMenuItems
+- (void)detailsCommand:(NSString*)command
 {
-	NSMutableArray *res = [NSMutableArray arrayWithCapacity:[defaultMenuItems count]];
-	
-	for (NSMenuItem *item in defaultMenuItems)
-	{
-		/* Was planning to white list instead of black list, but eg. Open Link is not documented. */
-		switch ([item tag])
-		{
-			case WebMenuItemTagOpenLinkInNewWindow:
-			case WebMenuItemTagDownloadLinkToDisk:
-			case WebMenuItemTagOpenImageInNewWindow:
-			case WebMenuItemTagDownloadImageToDisk:
-			case WebMenuItemTagCopyImageToClipboard:
-			case WebMenuItemTagOpenFrameInNewWindow:
-			case WebMenuItemTagGoBack:
-			case WebMenuItemTagGoForward:
-			case WebMenuItemTagStop:
-			case WebMenuItemTagReload:
-			case WebMenuItemTagCut:
-			case WebMenuItemTagPaste:
-			case WebMenuItemTagSpellingGuess:
-			case WebMenuItemTagNoGuessesFound:
-			case WebMenuItemTagIgnoreSpelling:
-			case WebMenuItemTagLearnSpelling:
-			case WebMenuItemTagOther: /* XXX huh? */
-			case WebMenuItemTagOpenWithDefaultApplication:
-				break;
-				
-			default:
-				[res addObject:item];
-				break;
-		}
-	}
-	return res;
-}
-
-- (NSUInteger)webView:(WebView *)webView dragDestinationActionMaskForDraggingInfo:(id <NSDraggingInfo>)draggingInfo
-{
-	return WebDragDestinationActionNone;
+	if ([command isEqualToString:@"install"])
+		[self install:self];
 }
 
 - (void)displayUIDConflictFor:(Item*)a and:(Item*)b

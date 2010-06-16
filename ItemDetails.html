@@ -16,6 +16,7 @@
 				width: 120px;
 				height: 120px;
 				margin-right: 5px;
+				-webkit-border-radius: 10px;
 			}
 			
 			h1 {
@@ -74,7 +75,7 @@
 		</style>
 	</head>
 	<body>
-		<!-- <img class="image" src="data:%ImageData%" /> -->
+		%?imageData%<img class="image" src="data:image/tiff;base64,%imageData%" />%!imageData%
 		<h1>%?BioWare%<span class="BioWare">B</span> %!BioWare%%Title%</h1>
 %?offers%		<p class="info">Offer installed.</p>%!offers%
 %?OfferItem%		<p class="info">This is an offer, not an addin.

@@ -30,6 +30,10 @@
 		6652961E10F2AF300095E65F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6652961D10F2AF300095E65F /* AppDelegate.m */; };
 		66581ED610F3A7C00088EC73 /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66581ED510F3A7C00088EC73 /* libarchive.dylib */; };
 		66581F0C10F3B0400088EC73 /* Dazip.m in Sources */ = {isa = PBXBuildFile; fileRef = 66581F0B10F3B0400088EC73 /* Dazip.m */; };
+		6662531E11C6B74500AA6A27 /* DataProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6662531D11C6B74500AA6A27 /* DataProxy.m */; };
+		6662533011C6BA6000AA6A27 /* MagickImageRep.m in Sources */ = {isa = PBXBuildFile; fileRef = 6662532F11C6BA6000AA6A27 /* MagickImageRep.m */; };
+		6662533C11C6C19A00AA6A27 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6662533A11C6C19A00AA6A27 /* Quartz.framework */; };
+		6662533D11C6C19A00AA6A27 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6662533B11C6C19A00AA6A27 /* QuartzCore.framework */; };
 		66726AED10FD26EB001EB75C /* dragon_4_doc.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66726AEC10FD26EB001EB75C /* dragon_4_doc.icns */; };
 		6675043D113191C2002BA240 /* ItemInfo.rtfd in Resources */ = {isa = PBXBuildFile; fileRef = 6675043C113191C2002BA240 /* ItemInfo.rtfd */; };
 		667505391131A26D002BA240 /* ItemDetails.html in Resources */ = {isa = PBXBuildFile; fileRef = 667505381131A26D002BA240 /* ItemDetails.html */; };
@@ -37,7 +41,14 @@
 		6675096E113331E2002BA240 /* grad.png in Resources */ = {isa = PBXBuildFile; fileRef = 6675096D113331E2002BA240 /* grad.png */; };
 		668DA1CA113AF21800A66EA8 /* Scanner.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A067B4113AC18400A68244 /* Scanner.m */; };
 		668DA283113B084200A66EA8 /* ToolbarDeleteIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 668DA23F113B02AD00A66EA8 /* ToolbarDeleteIcon.icns */; };
+		66A57FB511C9678C00787850 /* libMagickCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FB411C9678C00787850 /* libMagickCore.a */; };
+		66A57FC811C967E500787850 /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FC711C967E500787850 /* libbz2.dylib */; };
+		66A57FCC11C967F900787850 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FCB11C967F900787850 /* libz.dylib */; };
+		66A57FE311C96A7500787850 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FBA11C967C700787850 /* OpenCL.framework */; };
+		66A5800A11C96F3B00787850 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 66A5800911C96F3B00787850 /* LICENSE */; };
 		66B2D8611102644900997830 /* dragon_4.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66893CB210FCF88900A29832 /* dragon_4.icns */; };
+		66B6A88911C7DF7C00C4457D /* base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 66B6A88811C7DF7C00C4457D /* base64.m */; };
+		66B6A8F711C8006F00C4457D /* DetailsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 66B6A8F611C8006F00C4457D /* DetailsDelegate.m */; };
 		66BBE8F4110C704100F4B94A /* DataStoreObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 66BBE8F3110C704100F4B94A /* DataStoreObject.m */; };
 		66C74A0E111F0BEF0084E7AC /* DazipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C749EF111EFB360084E7AC /* DazipArchive.m */; };
 		66D0F66210F677F400C5B31A /* erf.c in Sources */ = {isa = PBXBuildFile; fileRef = 66D0F66110F677F400C5B31A /* erf.c */; };
@@ -51,6 +62,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		66A57F9411C9659700787850 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2A37F4A9FDCFA73011CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66A57F5D11C951F800787850 /* ImageMagick */;
+			remoteInfo = ImageMagick;
+		};
 		66B2D87A1102648600997830 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2A37F4A9FDCFA73011CA2CEA /* Project object */;
@@ -84,6 +102,13 @@
 		66581F0410F3B0110088EC73 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Dazip.xib; sourceTree = "<group>"; };
 		66581F0A10F3B0400088EC73 /* Dazip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dazip.h; sourceTree = "<group>"; };
 		66581F0B10F3B0400088EC73 /* Dazip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Dazip.m; sourceTree = "<group>"; };
+		666252B311C6A5CA00AA6A27 /* MagickCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MagickCore.h; path = ImageMagick/magick/MagickCore.h; sourceTree = SOURCE_ROOT; };
+		6662531C11C6B74500AA6A27 /* DataProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataProxy.h; sourceTree = "<group>"; };
+		6662531D11C6B74500AA6A27 /* DataProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataProxy.m; sourceTree = "<group>"; };
+		6662532E11C6BA6000AA6A27 /* MagickImageRep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagickImageRep.h; sourceTree = "<group>"; };
+		6662532F11C6BA6000AA6A27 /* MagickImageRep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagickImageRep.m; sourceTree = "<group>"; };
+		6662533A11C6C19A00AA6A27 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
+		6662533B11C6C19A00AA6A27 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		66716B6D10FFB550009F0009 /* TODO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
 		66716B6E10FFB5CF009F0009 /* README.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = README.rtf; sourceTree = "<group>"; };
 		66726AEC10FD26EB001EB75C /* dragon_4_doc.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = dragon_4_doc.icns; sourceTree = "<group>"; };
@@ -95,6 +120,17 @@
 		668DA23F113B02AD00A66EA8 /* ToolbarDeleteIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ToolbarDeleteIcon.icns; path = /System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/ToolbarDeleteIcon.icns; sourceTree = "<absolute>"; };
 		66A067B3113AC18400A68244 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scanner.h; sourceTree = "<group>"; };
 		66A067B4113AC18400A68244 /* Scanner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Scanner.m; sourceTree = "<group>"; };
+		66A57F9811C965C700787850 /* delegates.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = delegates.xml; sourceTree = BUILT_PRODUCTS_DIR; };
+		66A57FB411C9678C00787850 /* libMagickCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMagickCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		66A57FBA11C967C700787850 /* OpenCL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenCL.framework; path = System/Library/Frameworks/OpenCL.framework; sourceTree = SDKROOT; };
+		66A57FC711C967E500787850 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
+		66A57FCB11C967F900787850 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		66A5800911C96F3B00787850 /* LICENSE */ = {isa = PBXFileReference; comments = "Should rename it during copy."; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ImageMagick/LICENSE; sourceTree = SOURCE_ROOT; };
+		66A5804411C9764D00787850 /* build-magick.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-magick.sh"; sourceTree = "<group>"; };
+		66B6A88811C7DF7C00C4457D /* base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = base64.m; sourceTree = "<group>"; };
+		66B6A88B11C7DF9900C4457D /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base64.h; sourceTree = "<group>"; };
+		66B6A8F511C8006F00C4457D /* DetailsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailsDelegate.h; sourceTree = "<group>"; };
+		66B6A8F611C8006F00C4457D /* DetailsDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailsDelegate.m; sourceTree = "<group>"; };
 		66BBE8F2110C704100F4B94A /* DataStoreObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataStoreObject.h; sourceTree = "<group>"; };
 		66BBE8F3110C704100F4B94A /* DataStoreObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataStoreObject.m; sourceTree = "<group>"; };
 		66C749EE111EFB360084E7AC /* DazipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DazipArchive.h; sourceTree = "<group>"; };
@@ -117,6 +153,12 @@
 				775DFF38067A968500C5B868 /* Cocoa.framework in Frameworks */,
 				66581ED610F3A7C00088EC73 /* libarchive.dylib in Frameworks */,
 				667505EE1131AC9F002BA240 /* WebKit.framework in Frameworks */,
+				6662533C11C6C19A00AA6A27 /* Quartz.framework in Frameworks */,
+				6662533D11C6C19A00AA6A27 /* QuartzCore.framework in Frameworks */,
+				66A57FB511C9678C00787850 /* libMagickCore.a in Frameworks */,
+				66A57FC811C967E500787850 /* libbz2.dylib in Frameworks */,
+				66A57FCC11C967F900787850 /* libz.dylib in Frameworks */,
+				66A57FE311C96A7500787850 /* OpenCL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +186,8 @@
 		19C28FB0FE9D524F11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				66A57FB411C9678C00787850 /* libMagickCore.a */,
+				66A57F9811C965C700787850 /* delegates.xml */,
 				8D15AC370486D014006FF6A4 /* Modazipin.app */,
 			);
 			name = Products;
@@ -166,6 +210,8 @@
 		2A37F4ABFDCFA73011CA2CEA /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				66B6A88B11C7DF9900C4457D /* base64.h */,
+				66B6A88811C7DF7C00C4457D /* base64.m */,
 				6643D44B11B3ADB000B5626D /* NullStore.h */,
 				6643D44C11B3ADB000B5626D /* NullStore.m */,
 				66A067B3113AC18400A68244 /* Scanner.h */,
@@ -184,6 +230,12 @@
 				2A37F4ACFDCFA73011CA2CEA /* AddInsList.m */,
 				6652961C10F2AF300095E65F /* AppDelegate.h */,
 				6652961D10F2AF300095E65F /* AppDelegate.m */,
+				6662531C11C6B74500AA6A27 /* DataProxy.h */,
+				6662531D11C6B74500AA6A27 /* DataProxy.m */,
+				6662532E11C6BA6000AA6A27 /* MagickImageRep.h */,
+				6662532F11C6BA6000AA6A27 /* MagickImageRep.m */,
+				66B6A8F511C8006F00C4457D /* DetailsDelegate.h */,
+				66B6A8F611C8006F00C4457D /* DetailsDelegate.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -191,6 +243,7 @@
 		2A37F4AFFDCFA73011CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				66A5804411C9764D00787850 /* build-magick.sh */,
 				32DBCF750370BD2300C91783 /* modazipin_Prefix.pch */,
 				2A37F4B0FDCFA73011CA2CEA /* main.m */,
 				66D0F65E10F66F2100C5B31A /* erf.h */,
@@ -222,6 +275,13 @@
 		2A37F4C3FDCFA73011CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				66A5800911C96F3B00787850 /* LICENSE */,
+				666252B311C6A5CA00AA6A27 /* MagickCore.h */,
+				66A57FCB11C967F900787850 /* libz.dylib */,
+				66A57FC711C967E500787850 /* libbz2.dylib */,
+				66A57FBA11C967C700787850 /* OpenCL.framework */,
+				6662533A11C6C19A00AA6A27 /* Quartz.framework */,
+				6662533B11C6C19A00AA6A27 /* QuartzCore.framework */,
 				667505ED1131AC9F002BA240 /* WebKit.framework */,
 				66581EE610F3AAFC0088EC73 /* archive_entry.h */,
 				66581ED510F3A7C00088EC73 /* libarchive.dylib */,
@@ -233,6 +293,23 @@
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		66A57F5D11C951F800787850 /* ImageMagick */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "build-magick.sh $ACTION";
+			buildConfigurationList = 66A57F6011C9521600787850 /* Build configuration list for PBXLegacyTarget "ImageMagick" */;
+			buildPhases = (
+			);
+			buildToolPath = /bin/sh;
+			buildWorkingDirectory = "";
+			dependencies = (
+			);
+			name = ImageMagick;
+			passBuildSettingsInEnvironment = 1;
+			productName = ImageMagick;
+		};
+/* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
 		8D15AC270486D014006FF6A4 /* Modazipin */ = {
@@ -246,6 +323,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				66A57F9511C9659700787850 /* PBXTargetDependency */,
 			);
 			name = Modazipin;
 			productInstallPath = "$(HOME)/Applications";
@@ -267,6 +345,7 @@
 			targets = (
 				66B2D8771102647F00997830 /* Modazipin.zip */,
 				8D15AC270486D014006FF6A4 /* Modazipin */,
+				66A57F5D11C951F800787850 /* ImageMagick */,
 			);
 		};
 /* End PBXProject section */
@@ -287,6 +366,7 @@
 				667505391131A26D002BA240 /* ItemDetails.html in Resources */,
 				6675096E113331E2002BA240 /* grad.png in Resources */,
 				668DA283113B084200A66EA8 /* ToolbarDeleteIcon.icns in Resources */,
+				66A5800A11C96F3B00787850 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -329,12 +409,21 @@
 				66C74A0E111F0BEF0084E7AC /* DazipArchive.m in Sources */,
 				668DA1CA113AF21800A66EA8 /* Scanner.m in Sources */,
 				6643D44D11B3ADB000B5626D /* NullStore.m in Sources */,
+				6662531E11C6B74500AA6A27 /* DataProxy.m in Sources */,
+				6662533011C6BA6000AA6A27 /* MagickImageRep.m in Sources */,
+				66B6A88911C7DF7C00C4457D /* base64.m in Sources */,
+				66B6A8F711C8006F00C4457D /* DetailsDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		66A57F9511C9659700787850 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66A57F5D11C951F800787850 /* ImageMagick */;
+			targetProxy = 66A57F9411C9659700787850 /* PBXContainerItemProxy */;
+		};
 		66B2D87B1102648600997830 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 8D15AC270486D014006FF6A4 /* Modazipin */;
@@ -430,7 +519,7 @@
 				GCC_ENABLE_OBJC_GC = required;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
@@ -438,9 +527,9 @@
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "${SRCROOT}/ImageMagick";
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PREBINDING = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx10.6;
 				SKIP_INSTALL = YES;
@@ -458,7 +547,7 @@
 				GCC_ENABLE_OBJC_GC = required;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
@@ -466,12 +555,33 @@
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "${SRCROOT}/ImageMagick";
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
-				PREBINDING = NO;
-				RUN_CLANG_STATIC_ANALYZER = NO;
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx10.6;
 				VERSION = 1.0;
 				WARNING_CFLAGS = "-Wreturn-type";
+			};
+			name = Release;
+		};
+		66A57F5E11C951F800787850 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = ImageMagick;
+			};
+			name = Debug;
+		};
+		66A57F5F11C951F800787850 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = ImageMagick;
+				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
@@ -505,6 +615,15 @@
 			buildConfigurations = (
 				26FC0AAA0875C8B900E6366F /* Debug */,
 				26FC0AAB0875C8B900E6366F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66A57F6011C9521600787850 /* Build configuration list for PBXLegacyTarget "ImageMagick" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66A57F5E11C951F800787850 /* Debug */,
+				66A57F5F11C951F800787850 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

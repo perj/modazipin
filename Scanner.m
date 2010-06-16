@@ -21,6 +21,7 @@
 
 #import "Scanner.h"
 #import "AddInsList.h"
+#import "DataProxy.h"
 
 #include "erf.h"
 
@@ -77,6 +78,7 @@ static NSPredicate *isERF;
 																	  [[NSString alloc] initWithBytes:file->entry->name
 																								length:len * 2
 																							  encoding:NSUTF16LittleEndianStringEncoding], @"contents",
+																	  [NSData dataWithBytesNoCopy:(void*)file->data length:file->entry->length freeWhenDone:NO], @"data",
 																	  url, @"URL",
 																	  nil]
 													   waitUntilDone:YES];
@@ -92,6 +94,7 @@ static NSPredicate *isERF;
 		[document performSelectorOnMainThread:@selector(addContentsForURL:)
 								   withObject:[NSDictionary dictionaryWithObjectsAndKeys:
 											   name, @"contents",
+											   [DataProxy dataProxyForURL:url], @"data",
 											   url, @"URL",
 											   nil]
 								waitUntilDone:YES];

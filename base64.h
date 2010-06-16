@@ -20,16 +20,15 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import <WebKit/WebKit.h>
 
-@interface Dazip : NSPersistentDocument {
-	IBOutlet WebView *detailsView;
-}
+@interface NSData (base64)
 
-- (void)detailsDidLoad;
+- (NSMutableString *)base64;
 
-- (void)detailsCommand:(NSString*)command;
+@end
 
-- (IBAction)install:(id)sender;
+@interface NSString (base64)
+
+- (NSMutableData*)debase64;
 
 @end
