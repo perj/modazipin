@@ -27,8 +27,10 @@
 
 #include <magick/MagickCore.h>
 
-@interface MagickImageRep : NSImageRep
+@interface MagickImageRep : NSBitmapImageRep
 {
+	NSInteger nplanes;
+	unsigned char **planes;
 }
 
 + (BOOL)canInitWithData:(NSData *)data;

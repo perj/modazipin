@@ -26,7 +26,7 @@
 
 + (void)load
 {
-	[self registerImageRepClass:self];
+	[NSImageRep registerImageRepClass:[MagickImageRep self]];
 	MagickCoreGenesis([[[NSBundle mainBundle] bundlePath] fileSystemRepresentation], MagickFalse);
 }
 
@@ -45,6 +45,11 @@
 	return image ? YES : NO;
 }
 
++ (NSArray *)imageRepsWithData:(NSData *)data
+{
+	return [NSArray arrayWithObject:[self imageRepWithData:data]];
+}
+
 + (id)imageRepWithData:(NSData*)data
 {
 	ExceptionInfo *exception = AcquireExceptionInfo();
@@ -60,7 +65,7 @@
 	
 	strlcpy(image->magick, "rgba", sizeof (image->magick));
 	
-	size_t sz = 1024 * 1024; /* XXX arbitrary */
+	size_t sz;
 	unsigned char *blob = ImageToBlob(info, image, &sz, exception);
 	
 	if (!blob)
@@ -71,13 +76,48 @@
 		return nil;
 	}
 	
-	NSBitmapImageRep *res = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:&blob pixelsWide:image->columns pixelsHigh:image->rows bitsPerSample:8 samplesPerPixel:4 hasAlpha:YES isPlanar:NO colorSpaceName:NSCalibratedRGBColorSpace bytesPerRow:image->columns * 4 bitsPerPixel:8 * 4];
-	//free(blob); XXX leaking memory here.
+	unsigned char **blobs = malloc(sizeof(*blobs));
+	if (!blobs)
+	{
+		RelinquishMagickMemory(blob);
+		DestroyImage(image);
+		DestroyImageInfo(info);
+		DestroyExceptionInfo(exception);
+		return nil;
+	}
+	
+	*blobs = blob;
+	
+	MagickImageRep *res = [[MagickImageRep alloc] initWithBitmapDataPlanes:blobs pixelsWide:image->columns pixelsHigh:image->rows bitsPerSample:8 samplesPerPixel:4 hasAlpha:YES isPlanar:NO colorSpaceName:NSCalibratedRGBColorSpace bytesPerRow:image->columns * 4 bitsPerPixel:8 * 4];
 	
 	DestroyImage(image);
 	DestroyImageInfo(info);
 	DestroyExceptionInfo(exception);
 	return res;
+}
+
+- (id)initWithBitmapDataPlanes:(unsigned char **)pns pixelsWide:(NSInteger)width pixelsHigh:(NSInteger)height bitsPerSample:(NSInteger)bps samplesPerPixel:(NSInteger)spp hasAlpha:(BOOL)alpha isPlanar:(BOOL)isPlanar colorSpaceName:(NSString *)colorSpaceName bytesPerRow:(NSInteger)rBytes bitsPerPixel:(NSInteger)pBits
+{
+	self = [super initWithBitmapDataPlanes:pns pixelsWide:width pixelsHigh:height bitsPerSample:bps samplesPerPixel:spp hasAlpha:alpha isPlanar:isPlanar colorSpaceName:colorSpaceName bytesPerRow:rBytes bitsPerPixel:pBits];
+	if (self)
+	{
+		planes = pns;
+		if (isPlanar)
+			nplanes = spp;
+		else
+			nplanes = 1;
+	}
+	return self;
+}
+
+- (void)finalize
+{
+	NSInteger i;
+	
+	for (i = 0 ; i < nplanes ; i++)
+		RelinquishMagickMemory(planes[i]);
+	free(planes);
+	[super finalize];
 }
 
 @end
