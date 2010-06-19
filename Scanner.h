@@ -28,9 +28,10 @@
 	AddInsList *document;
 	NSURL *startURL;
 	NSString *message;
+	BOOL split;
 }
 
-- (id)initWithDocument:(AddInsList*)doc URL:(NSURL*)url message:(NSString*)msg;
+- (id)initWithDocument:(AddInsList*)doc URL:(NSURL*)url message:(NSString*)msg split:(BOOL)splt;
 
 @property(copy) NSString *message;
 

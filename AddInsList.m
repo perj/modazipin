@@ -155,10 +155,10 @@ static NSPredicate *isREADME;
 	NSURL *scanDisabledPackagesURL = [myURL URLByAppendingPathComponent:@"packages (disabled)"];
 	
 	[operationQueue addObserver:self forKeyPath:@"operationCount" options:0 context:nil];
-	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanAddinsURL message:@"addins"]];
-	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanOffersURL message:@"offers"]];
-	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanPackagesURL message:@"packages"]];
-	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanDisabledPackagesURL message:@"disabled packages"]];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanAddinsURL message:@"addins" split:YES]];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanOffersURL message:@"offers" split:YES]];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanPackagesURL message:@"packages" split:NO]];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanDisabledPackagesURL message:@"disabled packages" split:NO]];
 	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	[backgroundImage setAlphaValue:[defaults floatForKey:@"backgroundAlpha"]];
@@ -325,6 +325,8 @@ static NSPredicate *isREADME;
 		}
 		
 		NSArray *msgs = [[operationQueue operations] valueForKey:@"message"];
+		/* Remove duplicates. */
+		msgs = [[[NSSet setWithArray:msgs] allObjects] sortedArrayUsingSelector:@selector(compare:)];
 		NSString *status = [NSString stringWithFormat:@"Scanning %@.", [msgs componentsJoinedByString:@", "]];
 		
 		if (![status isEqualToString:statusMessage])
