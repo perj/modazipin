@@ -168,13 +168,15 @@ static NSPredicate *isREADME;
 	[self addObserver:self forKeyPath:@"randomScreenshotURL" options:0 context:nil];
 }
 
-- (void)itemsControllerChanged
+- (void)reloadDetails
 {
 	NSArray *objects = [itemsController selectedObjects];
 	
 	if ([objects count] == 1)
 	{
-		NSMutableString *html = [[objects objectAtIndex:0] detailsHTML];
+		detailedItem = [objects objectAtIndex:0];
+		
+		NSMutableString *html = [detailedItem detailsHTML];
 		
 		[html replaceOccurrencesOfString:@"<!--dazip-->" withString:@"<!--" options:0 range:NSMakeRange(0, [html length])];
 		[html replaceOccurrencesOfString:@"<!--/dazip-->" withString:@"-->" options:0 range:NSMakeRange(0, [html length])];
@@ -182,9 +184,31 @@ static NSPredicate *isREADME;
 	}
 	else
 	{
+		detailedItem = nil;
+		
 		[[detailsView mainFrame] loadHTMLString:@"" baseURL:[[NSBundle mainBundle] resourceURL]];
 	}
+}
 
+- (void)itemsControllerChanged
+{
+	NSArray *objects = [itemsController selectedObjects];
+	
+	if ([objects count] == 1)
+	{
+		Item *item = [objects objectAtIndex:0];
+		
+		if (item != detailedItem)
+			[self reloadDetails];
+	}
+}
+
+- (void)reloadItem:(Item*)item
+{
+	[item updateInfo];
+	
+	if (item == detailedItem)
+		[self reloadDetails];
 }
 
 - (void)selectItemWithUid:(NSString *)uid
@@ -367,9 +391,7 @@ static NSPredicate *isREADME;
 			if ([missing count])
 			{
 				item.missingFiles = [missing componentsJoinedByString:@", "];
-				[item updateInfo];
-				if ([[itemsController selectedObjects] indexOfObject:item] != NSNotFound)
-					[self performSelectorOnMainThread:@selector(itemsControllerChanged) withObject:nil waitUntilDone:NO];
+				[self performSelectorOnMainThread:@selector(reloadItem:) withObject:item waitUntilDone:NO];
 			}
 		}
 	}

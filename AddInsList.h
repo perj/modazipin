@@ -48,11 +48,14 @@
 	NSMetadataQuery *screenshotSpotlightQuery;
 	NSURL *backgroundURL;
 	NSURL *randomScreenshotURL;
+	
+	Item *detailedItem;
 }
 
 + (AddInsList*)sharedAddInsList;
 
 - (void)itemsControllerChanged;
+- (void)reloadItem:(Item*)item;
 
 - (void)selectItemWithUid:(NSString*)uid;
 
