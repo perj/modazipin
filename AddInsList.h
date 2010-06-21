@@ -48,11 +48,14 @@
 	NSMetadataQuery *screenshotSpotlightQuery;
 	NSURL *backgroundURL;
 	NSURL *randomScreenshotURL;
+	
+	Item *detailedItem;
 }
 
 + (AddInsList*)sharedAddInsList;
 
 - (void)itemsControllerChanged;
+- (void)reloadItem:(Item*)item;
 
 - (void)selectItemWithUid:(NSString*)uid;
 
@@ -102,7 +105,7 @@
 - (void)assignPath:(Item*)unkPath toAddIn:(AddInItem*)addin;
 
 - (IBAction)toggleEnabled:(id)sender;
-- (void)enabledChanged:(Item*)item;
+- (void)enabledChanged:(Item*)item canInteract:(BOOL)canInteract;
 - (void)askOverrideGameVersion:(Item*)item;
 - (void)answerOverrideGameVersion:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo;
 

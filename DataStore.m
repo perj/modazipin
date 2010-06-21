@@ -662,6 +662,35 @@
 	return itemNode;
 }
 
+- (Item*)insertItemNode:(NSXMLElement*)node usingSelector:(SEL)sel error:(NSError **)error intoContext:(NSManagedObjectContext*)context
+{
+	node = [node copy];
+	
+	IMP imp = [self methodForSelector:sel];
+	if (!imp)
+		[NSException raise:NSInvalidArgumentException format:@"%s is not a method of this object.", (char*)sel];
+	
+	id res = (*imp)(self, sel, node, nil, error, ^(NSXMLElement *elem, NSString *entityName)
+			  {
+				  return [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
+			  }, ^(id obj, NSMutableDictionary *data)
+			  {
+				  for (NSString *key in data) {
+					  [obj setValue:[data objectForKey:key] forKey:key];
+				  }
+				  [context assignObject:obj toPersistentStore:self];
+				  if ([obj isKindOfClass:[Path self]])
+					  [obj setValue:[NSNumber numberWithBool:YES] forKey:@"verified"];
+				  return obj;
+			  });
+	
+	if (!res)
+		return nil;
+	
+	[[xmldoc rootElement] addChild:node];
+	return res;
+}
+
 @end
 
 
@@ -828,25 +857,7 @@
 
 - (AddInItem*)insertAddInNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context
 {
-	node = [node copy];
-	
-	id res = [self loadAddInItem:node forManifest:nil error:error usingCreateBlock:^(NSXMLElement *elem, NSString *entityName)
-			  {
-				  return [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
-			  } usingSetBlock:^(id obj, NSMutableDictionary *data)
-			  {
-				  for (NSString *key in data) {
-					  [obj setValue:[data objectForKey:key] forKey:key];
-				  }
-				  [context assignObject:obj toPersistentStore:self];    
-				  return obj;
-			  }];
-	
-	if (!res)
-		return nil;
-	
-	[[xmldoc rootElement] addChild:node];
-	return res;
+	return (AddInItem*)[self insertItemNode:node usingSelector:@selector(loadAddInItem:forManifest:error:usingCreateBlock:usingSetBlock:) error:error intoContext:context];
 }
 
 @end
@@ -915,25 +926,7 @@
 
 - (OfferItem*)insertOfferNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context
 {
-	node = [node copy];
-	
-	id res = [self loadOfferItem:node forManifest:nil error:error usingCreateBlock:^(NSXMLElement *elem, NSString *entityName)
-			  {
-				  return [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
-			  } usingSetBlock:^(id obj, NSMutableDictionary *data)
-			  {
-				  for (NSString *key in data) {
-					  [obj setValue:[data objectForKey:key] forKey:key];
-				  }
-				  [context assignObject:obj toPersistentStore:self];    
-				  return obj;
-			  }];
-	
-	if (!res)
-		return nil;
-	
-	[[xmldoc rootElement] addChild:node];
-	return res;
+	return (OfferItem*)[self insertItemNode:node usingSelector:@selector(loadOfferItem:forManifest:error:usingCreateBlock:usingSetBlock:) error:error intoContext:context];
 }
 
 @end

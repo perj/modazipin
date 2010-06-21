@@ -533,7 +533,7 @@
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx10.6;
 				SKIP_INSTALL = YES;
-				VERSION = 1.0;
+				VERSION = 1.0.1;
 				WARNING_CFLAGS = "-Wreturn-type";
 			};
 			name = Debug;
@@ -559,7 +559,7 @@
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx10.6;
-				VERSION = 1.0;
+				VERSION = 1.0.1;
 				WARNING_CFLAGS = "-Wreturn-type";
 			};
 			name = Release;

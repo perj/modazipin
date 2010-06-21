@@ -31,7 +31,7 @@ static NSPredicate *isERF;
 
 @synthesize message;
 
-- (id)initWithDocument:(AddInsList*)doc URL:(NSURL*)url message:(NSString*)msg
+- (id)initWithDocument:(AddInsList*)doc URL:(NSURL*)url message:(NSString*)msg split:(BOOL)splt
 {
 	self = [super init];
 	if (self)
@@ -39,6 +39,7 @@ static NSPredicate *isERF;
 		document = doc;
 		startURL = url;
 		message = msg;
+		split = splt;
 		if (!isERF)
 			isERF = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] '.erf'"];
 	}
@@ -109,7 +110,13 @@ static NSPredicate *isERF;
 	
 	while ((item = [enumer nextObject]) && ![self isCancelled])
 	{
-		[self handle:item];
+		if (split)
+		{
+			[[NSOperationQueue currentQueue] addOperation:[[Scanner alloc] initWithDocument:document URL:item message:message split:NO]];
+			[enumer skipDescendants];
+		}
+		else
+			[self handle:item];
 	}
 }
 
