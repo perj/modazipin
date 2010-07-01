@@ -497,6 +497,15 @@ static NSPredicate *isREADME;
 			offersStore = store;
 	}
 	
+	NSMutableArray *mainDirs = [NSMutableArray arrayWithCapacity:[items count]];
+	for (NSXMLElement *node in items)
+	{
+		if ([[node name] isEqualToString:@"AddInItem"])
+			[mainDirs addObject:[NSString stringWithFormat:@"Addins/%@", [[node attributeForName:@"UID"] stringValue]]];
+		else if ([[node name] isEqualToString:@"OfferItem"])
+			[mainDirs addObject:[NSString stringWithFormat:@"Offers/%@", [[node attributeForName:@"UID"] stringValue]]];
+	}
+	
 	[progressIndicator setMaxValue:sz];
 	[progressIndicator setDoubleValue:0];
 	[progressWindow setTitle:[NSString stringWithFormat:@"Installing %@", [url lastPathComponent]]];
@@ -506,10 +515,36 @@ static NSPredicate *isREADME;
 	
 	for (DazipArchiveMember *entry in archive)
 	{
+		NSString *path;
+		
 		if (entry.type == dmtManifest)
 			continue;
 		
-		NSURL *dst = [base URLByAppendingPathComponent:[entry.pathname substringFromIndex:sizeof("Contents/") - 1]];
+		path = [entry.pathname substringFromIndex:sizeof("Contents/") - 1];
+		
+		if ([path rangeOfString:@"Addins/" options:NSCaseInsensitiveSearch | NSAnchoredSearch].length != 0
+			|| [path rangeOfString:@"Offers/" options:NSCaseInsensitiveSearch | NSAnchoredSearch].length != 0)
+		{
+			BOOL matched = NO;
+			
+			for (NSString *dir in mainDirs)
+			{
+				if ([path rangeOfString:dir options:NSCaseInsensitiveSearch | NSAnchoredSearch].length != 0)
+				{
+					matched = YES;
+					break;
+				}
+			}
+			if (!matched && [mainDirs count])
+			{
+				/* Move the item into the first main dir. */
+				NSRange r = [path rangeOfString:@"/"];
+				
+				path = [NSString stringWithFormat:@"%@/%@", [mainDirs objectAtIndex:0], [path substringFromIndex:r.location + 1]];
+			}
+		}
+		
+		NSURL *dst = [base URLByAppendingPathComponent:path];
 		/* XXX delete all files on error. */
 		if (![entry extractToURL:dst createDirectories:YES error:error])
 			return NO;
@@ -835,14 +870,15 @@ static NSPredicate *isREADME;
 		dir = @"Addins";
 	else if ([item class] == [OfferItem self])
 		dir = @"Offers";
-	else
-		return YES;
 	
-	NSURL *itemURL = [[base URLByAppendingPathComponent:dir] URLByAppendingPathComponent:item.UID];
-	NSError *err = nil;
-	BOOL res = [[NSFileManager defaultManager] removeItemAtURL:itemURL error:&err];
-	if (!res)
-		[self presentError:err];
+	if (dir)
+	{
+		NSURL *itemURL = [[base URLByAppendingPathComponent:dir] URLByAppendingPathComponent:item.UID];
+		NSError *err = nil;
+		BOOL res = [[NSFileManager defaultManager] removeItemAtURL:itemURL error:&err];
+		if (!res)
+			[self presentError:err];
+	}
 
 	[[self managedObjectContext] deleteObject:item];
 	[self saveDocument:self];

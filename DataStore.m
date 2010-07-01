@@ -981,14 +981,13 @@
 		[files filterUsingPredicate:notInItem];
 		[dirs filterUsingPredicate:notInItem];
 		
-		NSPredicate *otherItems = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] 'Addins/' OR SELF BEGINSWITH[c] 'Offers/'"];
+		/* Also filter any items in Addins/ or Offers/ that are not in the main dir, since they'll be moved there
+		 * when installing.
+		 */
+		NSPredicate *otherItems = [NSPredicate predicateWithFormat:@"NOT (SELF BEGINSWITH[c] 'Addins/' OR SELF BEGINSWITH[c] 'Offers/')"];
 		
-		if ([[files filteredSetUsingPredicate:otherItems] count] || [[dirs filteredSetUsingPredicate:otherItems] count])
-		{
-			/* XXX No followers autolevel has a readme in addins/. Handle it somehow. */
-			loadError = [self dataStoreError:14 msg:@"Cannot install into other items"];
-			return self;
-		}
+		[files filterUsingPredicate:otherItems];
+		[dirs filterUsingPredicate:otherItems];
 		
 		NSXMLElement *modNode = [self makeModazipinNodeForFiles:files dirs:dirs];
 		
