@@ -66,7 +66,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 2A37F4A9FDCFA73011CA2CEA /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 66A57F5D11C951F800787850 /* ImageMagick */;
+			remoteGlobalIDString = 66A57F5D11C951F800787850;
 			remoteInfo = ImageMagick;
 		};
 		66B2D87A1102648600997830 /* PBXContainerItemProxy */ = {

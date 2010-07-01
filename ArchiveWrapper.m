@@ -299,7 +299,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	{
 		NSURL *dir = [dst URLByDeletingLastPathComponent];
 		
-		if (![dst checkResourceIsReachableAndReturnError:nil])
+		if (![dir checkResourceIsReachableAndReturnError:nil])
 		{
 			if (![[NSFileManager defaultManager] createDirectoryAtPath:[dir path] withIntermediateDirectories:YES attributes:nil error:error])
 				return NO;
@@ -380,7 +380,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		archive = archive_read_new ();
 		archive_read_support_compression_all (archive);
 		archive_read_support_format_all (archive);
-		if ((r = archive_read_open_filename (archive, [[url path] cStringUsingEncoding:NSUTF8StringEncoding],
+		if ((r = archive_read_open_filename (archive, [[url path] fileSystemRepresentation],
 											10 * 1024) != ARCHIVE_OK))
 		{
 			if (error)
