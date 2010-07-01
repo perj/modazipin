@@ -595,28 +595,28 @@
 	return res;
 }
 
-- (NSXMLElement *)verifyManifestOfType:(NSString*)manifestType listNodeType:(NSString*)listNodeType error:(NSError**)error
+- (NSArray *)verifyManifestOfType:(NSString*)manifestType listNodeType:(NSString*)listNodeType error:(NSError**)error
 {
 	NSXMLElement *root = [xmldoc rootElement];
 	
 	if (![[[root attributeForName:@"Type"] stringValue] isEqualToString:manifestType])
 	{
 		if (error)
-			[self dataStoreError:6 msg:@"Manifest type is not %@", manifestType];
+			*error = [self dataStoreError:6 msg:@"Manifest type is not %@", manifestType];
 		return nil;
 	}
 	
 	if ([root childCount] < 1)
 	{
 		if (error)
-			[self dataStoreError:7 msg:@"No contents in manifest"];
+			*error = [self dataStoreError:7 msg:@"No contents in manifest"];
 		return nil;
 	}
 	
 	if ([root childCount] > 1)
 	{
 		if (error)
-			[self dataStoreError:8 msg:@"Unexpected contents in manifest"];
+			*error = [self dataStoreError:8 msg:@"Unexpected contents in manifest"];
 		return nil;
 	}
 	
@@ -625,41 +625,37 @@
 	if (![[listNode name] isEqualToString:listNodeType])
 	{
 		if (error)
-			[self dataStoreError:9 msg:@"Manifest contents is not %@", listNodeType];
+			*error = [self dataStoreError:9 msg:@"Manifest contents is not %@", listNodeType];
 		return nil;
 	}
 	
 	if ([listNode childCount] < 1)
 	{
 		if (error)
-			[self dataStoreError:10 msg:@"No contents in list"];
+			*error = [self dataStoreError:10 msg:@"No contents in list"];
 		return nil;
 	}
 	
-	if ([listNode childCount] > 1)
+	NSArray *itemNodes = [listNode children];
+	
+	for (NSXMLElement *itemNode in itemNodes)
 	{
-		if (error)
-			[self dataStoreError:11 msg:@"More than one item listed"];
-		return nil;
+		if (![[itemNode name] isEqualToString:[NSString stringWithFormat:@"%@Item", manifestType]])
+		{
+			if (error)
+				*error = [self dataStoreError:12 msg:@"Unexpected item kind"];
+			return nil;
+		}
+		
+		if (![[[itemNode attributeForName:@"UID"] stringValue] length])
+		{
+			if (error)
+				*error = [self dataStoreError:13 msg:@"No UID for item"];
+			return nil;
+		}
 	}
 	
-	NSXMLElement *itemNode = (NSXMLElement*)[listNode childAtIndex:0];
-	
-	if (![[itemNode name] isEqualToString:[NSString stringWithFormat:@"%@Item", manifestType]])
-	{
-		if (error)
-			[self dataStoreError:12 msg:@"Unexpected item kind"];
-		return nil;
-	}
-	
-	if (![[[itemNode attributeForName:@"UID"] stringValue] length])
-	{
-		if (error)
-			[self dataStoreError:13 msg:@"No UID for item"];
-		return nil;
-	}
-	
-	return itemNode;
+	return itemNodes;
 }
 
 - (Item*)insertItemNode:(NSXMLElement*)node usingSelector:(SEL)sel error:(NSError **)error intoContext:(NSManagedObjectContext*)context
@@ -970,16 +966,19 @@
 			return self;
 		}
 			
-		NSXMLElement *itemNode = [self verifyManifestOfType:manifestType listNodeType:listNodeType error:&loadError];
-		if (!itemNode)
+		NSArray *itemNodes = [self verifyManifestOfType:manifestType listNodeType:listNodeType error:&loadError];
+		if (!itemNodes)
 			return self;
 		
-		/* Filter files and dirs to only be those paths outside of the addin main directory. */
-		NSPredicate *notInItem = [NSPredicate predicateWithFormat:@"NOT (SELF ==[c] %@)",
-								   [NSString stringWithFormat:@"%@/%@", mainDirectory,
-									[[itemNode attributeForName:@"UID"] stringValue]]];
-		[files filterUsingPredicate:notInItem];
-		[dirs filterUsingPredicate:notInItem];
+		for (NSXMLElement *itemNode in itemNodes)
+		{
+			/* Filter files and dirs to only be those paths outside of the addin main directory. */
+			NSPredicate *notInItem = [NSPredicate predicateWithFormat:@"NOT (SELF ==[c] %@)",
+									   [NSString stringWithFormat:@"%@/%@", mainDirectory,
+										[[itemNode attributeForName:@"UID"] stringValue]]];
+			[files filterUsingPredicate:notInItem];
+			[dirs filterUsingPredicate:notInItem];
+		}
 		
 		/* Also filter any items in Addins/ or Offers/ that are not in the main dir, since they'll be moved there
 		 * when installing.
@@ -989,11 +988,102 @@
 		[files filterUsingPredicate:otherItems];
 		[dirs filterUsingPredicate:otherItems];
 		
-		NSXMLElement *modNode = [self makeModazipinNodeForFiles:files dirs:dirs];
+		if ([itemNodes count] > 1)
+		{
+			/*
+			 * This part is tricky. We need to figure out what path is connected to what item.
+			 * Heuristics, mostly.
+			 */
+			
+			NSMutableDictionary *assignedfiles = [NSMutableDictionary dictionaryWithCapacity:[itemNodes count]];
+			NSMutableDictionary *assigneddirs = [NSMutableDictionary dictionaryWithCapacity:[itemNodes count]];
+			
+			for (NSMutableSet *c in [NSArray arrayWithObjects:files, dirs, nil])
+			{
+				for (NSString *p in c)
+				{
+					int bestscore = 0;
+					NSString *bestUid = nil;
+					
+					for (NSXMLElement *itemNode in itemNodes)
+					{
+						NSString *uid = [[itemNode attributeForName:@"UID"] stringValue];
+						NSRange r = [p rangeOfString:[NSString stringWithFormat:@"/%@/", uid] options:NSCaseInsensitiveSearch];
+						int score = 0;
+						
+						if (r.length > 0)
+						{
+							score = 4;
+							goto scored;
+						}
+						r = [p rangeOfString:[NSString stringWithFormat:@"/%@.", uid] options:NSCaseInsensitiveSearch];
+						if (r.length > 0)
+						{
+							score = 3;
+							goto scored;
+						}
+						r = [p rangeOfString:[NSString stringWithFormat:@"/%@", uid] options:NSCaseInsensitiveSearch];
+						if (r.length > 0)
+						{
+							score = 2;
+							goto scored;
+						}
+						r = [p rangeOfString:[NSString stringWithFormat:@"%@", uid] options:NSCaseInsensitiveSearch];
+						if (r.length > 0)
+						{
+							score = 1;
+							goto scored;
+						}
+					scored:
+						if (score > bestscore)
+						{
+							bestscore = score;
+							bestUid = uid;
+						}
+					}
+					
+					if (!bestUid)
+					{
+						/* Fallback to first item. */
+						/* XXX think this over. */
+						bestUid = [[[itemNodes objectAtIndex:0] attributeForName:@"UID"] stringValue];
+					}
+					
+					NSMutableDictionary *tgt;
+					NSMutableArray *a;
+					
+					if (c == files)
+						tgt = assignedfiles;
+					else
+						tgt = assigneddirs;
+					
+					a = [tgt objectForKey:bestUid];
+					if (!a)
+					{
+						a = [NSMutableArray array];
+						[tgt setObject:a forKey:bestUid];
+					}
+					[a addObject:p];
+				}
+			}
+			
+			for (NSXMLElement *itemNode in itemNodes)
+			{
+				NSString *uid = [[itemNode attributeForName:@"UID"] stringValue];
+				NSXMLElement *modNode = [self makeModazipinNodeForFiles:[assignedfiles objectForKey:uid] dirs:
+										 [assigneddirs objectForKey:uid]];
+				
+				[itemNode addChild:modNode];
+			}
+		}
+		else
+		{
+			NSXMLElement *modNode = [self makeModazipinNodeForFiles:files dirs:dirs];
+			
+			[[itemNodes objectAtIndex:0] addChild:modNode];
+		}
 		
-		[itemNode addChild:modNode];
-		
-		self.identifier = [[itemNode attributeForName:@"UID"] stringValue];
+		self.identifier = [[[itemNodes objectAtIndex:0] attributeForName:@"UID"] stringValue];
 	}
 	return self;
 }
