@@ -49,6 +49,8 @@ static Game *sharedGame = nil;
 		[self updateLaunchButtonImage];
 	}
 	
+	sharedGame = self;
+	
 	return self;
 }
 
