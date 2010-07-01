@@ -205,6 +205,8 @@ static NSPredicate *isREADME;
 		if (item != detailedItem)
 			[self reloadDetails];
 	}
+	else if ([objects count] == 0)
+		[self reloadDetails];
 }
 
 - (void)reloadItem:(Item*)item
