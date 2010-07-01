@@ -28,6 +28,7 @@
 		665295EF10F2AC3D0095E65F /* DataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 665295EE10F2AC3D0095E65F /* DataStore.m */; };
 		665295FF10F2ADD20095E65F /* AddInsList.xib in Resources */ = {isa = PBXBuildFile; fileRef = 665295FE10F2ADD20095E65F /* AddInsList.xib */; };
 		6652961E10F2AF300095E65F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6652961D10F2AF300095E65F /* AppDelegate.m */; };
+		6652AD3311DCB0DB0004D59D /* Game.m in Sources */ = {isa = PBXBuildFile; fileRef = 6652AD3211DCB0DB0004D59D /* Game.m */; };
 		66581ED610F3A7C00088EC73 /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66581ED510F3A7C00088EC73 /* libarchive.dylib */; };
 		66581F0C10F3B0400088EC73 /* Dazip.m in Sources */ = {isa = PBXBuildFile; fileRef = 66581F0B10F3B0400088EC73 /* Dazip.m */; };
 		6662531E11C6B74500AA6A27 /* DataProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6662531D11C6B74500AA6A27 /* DataProxy.m */; };
@@ -96,6 +97,8 @@
 		665295EE10F2AC3D0095E65F /* DataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataStore.m; sourceTree = "<group>"; };
 		6652961C10F2AF300095E65F /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		6652961D10F2AF300095E65F /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		6652AD3111DCB0DB0004D59D /* Game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Game.h; sourceTree = "<group>"; };
+		6652AD3211DCB0DB0004D59D /* Game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Game.m; sourceTree = "<group>"; };
 		66581ECD10F3A7840088EC73 /* archive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = archive.h; path = include/archive.h; sourceTree = MacPorts; };
 		66581ED510F3A7C00088EC73 /* libarchive.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarchive.dylib; path = /usr/lib/libarchive.dylib; sourceTree = "<absolute>"; };
 		66581EE610F3AAFC0088EC73 /* archive_entry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = archive_entry.h; path = /opt/local/include/archive_entry.h; sourceTree = "<absolute>"; };
@@ -200,6 +203,7 @@
 				775BDEF0067A8BF0009058FE /* modazipin.xcdatamodel */,
 				2A37F4ABFDCFA73011CA2CEA /* Classes */,
 				2A37F4AFFDCFA73011CA2CEA /* Other Sources */,
+				6652AD4C11DCB2B80004D59D /* XIBs */,
 				2A37F4B8FDCFA73011CA2CEA /* Resources */,
 				2A37F4C3FDCFA73011CA2CEA /* Frameworks */,
 				19C28FB0FE9D524F11CA2CBB /* Products */,
@@ -210,6 +214,8 @@
 		2A37F4ABFDCFA73011CA2CEA /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				6652AD3111DCB0DB0004D59D /* Game.h */,
+				6652AD3211DCB0DB0004D59D /* Game.m */,
 				66B6A88B11C7DF9900C4457D /* base64.h */,
 				66B6A88811C7DF7C00C4457D /* base64.m */,
 				6643D44B11B3ADB000B5626D /* NullStore.h */,
@@ -262,12 +268,9 @@
 				66716B6E10FFB5CF009F0009 /* README.rtf */,
 				66726AEC10FD26EB001EB75C /* dragon_4_doc.icns */,
 				66893CB210FCF88900A29832 /* dragon_4.icns */,
-				2F7446A70DB6BCF400F9684A /* MainMenu.xib */,
-				665295FE10F2ADD20095E65F /* AddInsList.xib */,
 				2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */,
 				8D15AC360486D014006FF6A4 /* modazipin-Info.plist */,
 				089C165FFE840EACC02AAC07 /* InfoPlist.strings */,
-				6600E6FD11305DF7003B40E3 /* Dazip.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -290,6 +293,16 @@
 				1058C7A8FEA54F5311CA2CBB /* Other Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6652AD4C11DCB2B80004D59D /* XIBs */ = {
+			isa = PBXGroup;
+			children = (
+				665295FE10F2ADD20095E65F /* AddInsList.xib */,
+				6600E6FD11305DF7003B40E3 /* Dazip.xib */,
+				2F7446A70DB6BCF400F9684A /* MainMenu.xib */,
+			);
+			name = XIBs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -413,6 +426,7 @@
 				6662533011C6BA6000AA6A27 /* MagickImageRep.m in Sources */,
 				66B6A88911C7DF7C00C4457D /* base64.m in Sources */,
 				66B6A8F711C8006F00C4457D /* DetailsDelegate.m in Sources */,
+				6652AD3311DCB0DB0004D59D /* Game.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

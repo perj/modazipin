@@ -27,9 +27,6 @@
 
 @interface AddInsList : NSPersistentDocument
 {
-	NSMetadataQuery *gameSpotlightQuery;
-	NSMetadataItem *spotlightGameItem;
-	
 	NSOperationQueue *operationQueue;
 	BOOL isBusy;
 	NSString *statusMessage;
@@ -67,8 +64,6 @@
 @property(readonly) NSString *statusMessage;
 
 - (void)updateOperationCount;
-
-@property NSMetadataItem *spotlightGameItem;
 
 @property(copy) NSURL *backgroundURL;
 @property(copy) NSURL *randomScreenshotURL;
@@ -117,22 +112,5 @@
 - (IBAction)askUninstall:(id)sender;
 
 - (BOOL)uninstall:(Item*)item error:(NSError**)error;
-
-@end
-
-
-@interface AddInsList (GameLaunching)
-
-- (void)updateLaunchButtonImage;
-
-- (BOOL)searchSpotlightForGame;
-
-- (void)gameSpotlightQueryChanged;
-
-- (NSURL*)gameURL;
-
-- (IBAction)launchGame:(id)sender;
-
-- (NSString *)gameVersion;
 
 @end

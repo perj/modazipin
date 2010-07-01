@@ -23,6 +23,7 @@
 #import "DataStore.h"
 #import "DazipArchive.h"
 #import "Scanner.h"
+#import "Game.h"
 
 @implementation AddInsList
 
@@ -36,7 +37,6 @@ static NSPredicate *isREADME;
 	return sharedAddInsList;
 }
 
-@synthesize spotlightGameItem;
 @synthesize isBusy;
 @synthesize statusMessage;
 @synthesize randomScreenshotURL;
@@ -118,8 +118,8 @@ static NSPredicate *isREADME;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-	if (object == gameSpotlightQuery)
-		[self gameSpotlightQueryChanged];
+	if (object == [Game sharedGame])
+		[launchGameButton setImage:[Game sharedGame].gameAppImage];
 	else if (object == itemsController)
 		[self itemsControllerChanged];
 	else if ([keyPath isEqualToString:@"uncompressedOffset"])
@@ -149,9 +149,6 @@ static NSPredicate *isREADME;
 	
 	[assignAddInController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"Title.localizedValue" ascending:YES selector:@selector(caseInsensitiveCompare:)]]];
 	
-	//[launchGameButton setKeyEquivalent:@"\r"];
-	[self updateLaunchButtonImage];
-	
 	NSURL *myURL = [self fileURL];
 	NSURL *scanAddinsURL = [myURL URLByAppendingPathComponent:@"Addins"];
 	NSURL *scanOffersURL = [myURL URLByAppendingPathComponent:@"Offers"];
@@ -170,6 +167,9 @@ static NSPredicate *isREADME;
 	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.useCustomBackground" options:0 context:nil];
 	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.customBackgroundURL" options:0 context:nil];
 	[self addObserver:self forKeyPath:@"randomScreenshotURL" options:0 context:nil];
+	
+	[launchGameButton setImage:[Game sharedGame].gameAppImage];
+	[[Game sharedGame] addObserver:self forKeyPath:@"gameAppImage" options:0 context:nil];
 }
 
 - (void)reloadDetails
@@ -637,7 +637,7 @@ static NSPredicate *isREADME;
 {
 	if ([item.Enabled boolValue])
 	{
-		NSString *gameVersion = [self gameVersion];
+		NSString *gameVersion = [[Game sharedGame] gameVersion];
 		NSString *reqGameVersion = item.GameVersion;
 		
 		if (gameVersion && reqGameVersion && [reqGameVersion caseInsensitiveCompare:gameVersion] == NSOrderedDescending)
@@ -671,7 +671,7 @@ static NSPredicate *isREADME;
 
 - (void)askOverrideGameVersion:(Item*)item
 {
-	NSBeginAlertSheet(@"Override required game version", @"Override", @"Cancel", nil, [self windowForSheet], self, @selector(answerOverrideGameVersion:returnCode:contextInfo:), nil, item, @"\"%@\" requires game version %@, but you have %@. Override the required game version check?", item.Title.localizedValue, item.GameVersion, [self gameVersion]);
+	NSBeginAlertSheet(@"Override required game version", @"Override", @"Cancel", nil, [self windowForSheet], self, @selector(answerOverrideGameVersion:returnCode:contextInfo:), nil, item, @"\"%@\" requires game version %@, but you have %@. Override the required game version check?", item.Title.localizedValue, item.GameVersion, [[Game sharedGame] gameVersion]);
 }
 
 - (void)answerOverrideGameVersion:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
@@ -847,142 +847,6 @@ static NSPredicate *isREADME;
 	[[self managedObjectContext] deleteObject:item];
 	[self saveDocument:self];
 	return YES;
-}
-
-@end
-
-
-@implementation AddInsList (GameLaunching)
-
-- (void)updateLaunchButtonImage
-{
-	NSURL *url = [self gameURL];
-	
-	if (!url)
-	{
-		[self searchSpotlightForGame];
-		return;
-	}
-	
-	NSBundle *gameBundle = [NSBundle bundleWithURL:url];
-	NSDictionary *gameInfo = [gameBundle infoDictionary];
-	NSString *imageName = [gameInfo objectForKey:@"CFBundleIconFile"];
-	NSURL *imageURL = [gameBundle URLForImageResource:imageName];
-	NSImage *img = [[NSImage alloc] initByReferencingURL:imageURL];
-	if (img)
-		[launchGameButton setImage:img];
-}
-
-- (BOOL)searchSpotlightForGame
-{
-	NSAssert(spotlightGameItem == nil, @"Already have spotlightGameItem!");
-	
-	if (gameSpotlightQuery)
-		return [gameSpotlightQuery isGathering];
-	
-	gameSpotlightQuery = [[NSMetadataQuery alloc] init];
-	[gameSpotlightQuery setPredicate:[NSPredicate predicateWithFormat:@"kMDItemContentType == 'com.apple.application-bundle' AND (kMDItemCFBundleIdentifier == 'com.transgaming.cider.dragonageorigins' OR kMDItemFSName == 'DragonAgeOrigins.app')"]];
-	[gameSpotlightQuery setSearchScopes:[NSArray arrayWithObject:NSMetadataQueryLocalComputerScope]];
-	
-	[gameSpotlightQuery addObserver:self forKeyPath:@"results" options:0 context:nil];
-	
-	if (![gameSpotlightQuery startQuery])
-	{
-		gameSpotlightQuery = nil;
-		return NO;
-	}
-	return YES;
-}
-
-- (void)gameSpotlightQueryChanged
-{
-	[gameSpotlightQuery disableUpdates];
-	
-	if ([gameSpotlightQuery resultCount] > 0)
-	{
-		self.spotlightGameItem = [gameSpotlightQuery resultAtIndex:0];
-		[self updateLaunchButtonImage];
-	}
-	
-	[gameSpotlightQuery enableUpdates];
-	return;
-}
-
-- (NSURL*)gameURL
-{
-	NSURL *url;
-	NSArray *maybeRunning = [NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.transgaming.cider.dragonageorigins"];
-	NSRunningApplication *running = nil;
-	NSString *path;
-	
-	if ([maybeRunning count])
-	{
-		running = [maybeRunning objectAtIndex:0];
-		return [running bundleURL];
-	}
-		
-	if ((url = [[NSUserDefaults standardUserDefaults] URLForKey:@"game url"]))
-	{
-		if ([url checkResourceIsReachableAndReturnError:nil])
-			return url;
-	}
-	
-	if ((url = [[NSWorkspace sharedWorkspace] URLForApplicationWithBundleIdentifier:@"com.transgaming.cider.dragonageorigins"]))
-		return url;
-	
-	for (running in [[NSWorkspace sharedWorkspace] runningApplications])
-	{
-		url = [running bundleURL];
-		if ([[url lastPathComponent] isEqualToString:@"DragonAgeOrigins.app"])
-			return url;
-	}
-	
-	if ((path = [[NSWorkspace sharedWorkspace] fullPathForApplication:@"DragonAgeOrigins.app"]))
-		return [NSURL fileURLWithPath:path];
-	
-	if (spotlightGameItem)
-		return [NSURL fileURLWithPath:[spotlightGameItem valueForAttribute:@"kMDItemPath"]];
-	
-	/* Phew, exhausted */
-	return nil;
-}
-
-- (IBAction)launchGame:(id)sender
-{
-	NSURL *url;
-	
-	if ((url = [self gameURL]))
-	{
-		NSError *err;
-		NSRunningApplication *running;
-		
-		running = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:url options:NSWorkspaceLaunchDefault configuration:nil error:&err];
-		
-		if (running)
-		{
-			[[NSUserDefaults standardUserDefaults] setURL:[running bundleURL] forKey:@"game url"];
-			if ([[NSUserDefaults standardUserDefaults] boolForKey:@"quitOnGameLaunch"])
-				[NSApp terminate:self];
-			return;
-		}
-	}
-	
-	/* -gameURL works very hard to find the URL, so assume it is not there if it fails. */
-}
-
-- (NSString*)gameVersion;
-{
-	NSURL *url = [self gameURL];
-	
-	if (!url)
-	{
-		[self searchSpotlightForGame];
-		return nil;
-	}
-	
-	NSBundle *gameBundle = [NSBundle bundleWithURL:url];
-	NSDictionary *gameInfo = [gameBundle infoDictionary];
-	return [gameInfo objectForKey:@"CFBundleShortVersionString"];
 }
 
 @end
