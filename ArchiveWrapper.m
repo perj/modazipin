@@ -108,7 +108,8 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 
 - (void)finalize
 {
-	archive_entry_free (entry);
+	if (entry)
+		archive_entry_free (entry);
 	
 	[super finalize];
 }

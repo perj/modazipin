@@ -20,6 +20,8 @@
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>org.morth.per.dazip</string>
+				<string>public.folder</string>
+				<string>com.pkware.zip-archive</string>
 			</array>
 			<key>LSTypeIsPackage</key>
 			<false/>

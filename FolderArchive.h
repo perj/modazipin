@@ -19,50 +19,27 @@
  * THE SOFTWARE.
  */
 
-/*
- * Simple subclass for dazips that filters out bad filenames and determines
- * the entry type.
- */
+#import "ArchiveWrapper.h"
 
-#import <Cocoa/Cocoa.h>
-#import "FolderArchive.h"
-
-enum DazipMemberType
+@interface FolderArchiveMember : ArchiveMember
 {
-	dmtManifest,
-	dmtERF,
-	dmtFile
-};
-
-enum DazipMemberContentType
-{
-	dmctFile,
-	dmctDirectory
-};
-
-@interface DazipArchiveMember : FolderArchiveMember
-{
-	enum DazipMemberType type;
-	
-	NSString *contentPath;
-	enum DazipMemberContentType contentType;
-	NSString *contentName;
+	NSURL *url;
+	NSUInteger level;
+	NSDictionary *resources;
 }
-
-@property enum DazipMemberType type;
-@property(retain) NSString *contentPath;
-@property enum DazipMemberContentType contentType;
-@property(retain) NSString *contentName;
 
 @end
 
-
-@interface DazipArchive : FolderArchive {
-
+@interface FolderArchive : ArchiveWrapper
+{
+	NSNumber *isDir;
+	
+	NSDirectoryEnumerator *enumerator;
+	NSError **errPtr;
 }
 
-- (Class)memberClass;
+- (id)initForReadingFromURL:(NSURL *)url encoding:(NSStringEncoding)enc error:(NSError **)error;
 
-- (DazipArchiveMember *)nextMemberWithError:(NSError**)error;
+- (ArchiveMember *)nextMemberWithError:(NSError**)error;
 
 @end
