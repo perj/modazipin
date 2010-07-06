@@ -22,7 +22,7 @@
 #import <Cocoa/Cocoa.h>
 #import "DataStoreObject.h"
 
-typedef id (^createObjBlock)(NSXMLElement *elem, NSString *entityName);
+typedef id (^createObjBlock)(NSXMLNode *elem, NSString *entityName);
 typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 
 @interface DataStore : NSAtomicStore
@@ -35,7 +35,7 @@ typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 
 @property(copy) NSString *identifier;
 
-- (id)makeCacheNode:(NSXMLElement*)elem forEntityName:(NSString*)name;
+- (id)makeCacheNode:(NSXMLNode*)elem forEntityName:(NSString*)name;
 
 @end
 
@@ -56,13 +56,27 @@ typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 
 @end
 
-@interface DazipStore : DataStore
+@interface ArchiveStore : DataStore
 {
 	int64_t uncompressedSize;
 }
 
-- (NSDictionary*)loadDazip:(NSURL *)url error:(NSError**)error;
+- (NSDictionary*)loadArchive:(NSURL *)url class:(Class)archClass error:(NSError**)error;
 
 @property(readonly) int64_t uncompressedSize;
+
+@end
+
+
+@interface DazipStore : ArchiveStore
+{
+}
+
+@end
+
+
+@interface OverrideStore : ArchiveStore
+{
+}
 
 @end

@@ -98,7 +98,7 @@ static NSPredicate *isREADME;
 	return YES;
 }
 
-- (NSString *)windowNibName 
+- (NSString *)windowNibName
 {
     return @"AddInsList";
 }

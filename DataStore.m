@@ -153,7 +153,7 @@
 /*
  * Load a text node with DefaultText and language codes.
  */
-- (id)loadText:(NSXMLElement*)node forItem:(id)item error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+- (id)loadText:(NSXMLNode*)node forItem:(id)item error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
 	NSMutableDictionary *data = [NSMutableDictionary dictionary];
 	id res = createBlock(node, @"Text");
@@ -164,7 +164,7 @@
 	[data setObject:node forKey:@"node"];
 	[data setObject:item forKey:@"item"];
 	
-	for (NSXMLNode *attr in [node attributes])
+	for (NSXMLNode *attr in [(NSXMLElement*)node attributes])
 	{
 		if ([[attr name] isEqualToString:@"DefaultText"])
 		{
@@ -174,8 +174,15 @@
 	}
 	
 	NSMutableSet *langset = [NSMutableSet set];
-	for (NSXMLElement *subnode in [node children])
+	for (NSXMLNode *subnode in [node children])
 	{
+		if ([subnode kind] == NSXMLTextKind)
+		{
+			/* Short circuit for simple text. */
+			[data setObject:[subnode stringValue] forKey:@"DefaultText"];
+			continue;
+		}
+		
 		NSMutableDictionary *subdata = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 										[subnode name], @"langcode",
 										[[subnode stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]], @"value",
@@ -539,14 +546,75 @@
 	return [self loadOfferList:(NSXMLElement*)[node childAtIndex:0] error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
 }
 
+/*
+ * Load a single OverrideItem node.
+ */
+- (id)loadOverrideItem:(NSXMLElement *)node forManifest:(id)manifest error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+{
+	NSMutableDictionary *data;
+	id res;
+	
+	if (![[node name] isEqualToString:@"OverrideItem"])
+	{
+		if (error)
+			*error = [self dataStoreError:5 msg:@"Node is not an OverrideItem"];
+		return nil;
+	}
+	
+	res = createBlock(node, @"OverrideItem");
+	if (!res)
+		return nil;
+	
+	data = [self loadItem:res node:node forManifest:manifest error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+	if (!data)
+		return nil;
+	
+	[data setObject:[NSNumber numberWithBool:YES] forKey:@"displayed"];
+	[data setObject:[NSDecimalNumber one] forKey:@"Enabled"];
+	
+	for (NSXMLNode *attr in [node attributes])
+	{
+		if ([[attr name] isEqualToString:@"Name"])
+		{
+			[data setObject:[attr stringValue] forKey:@"UID"];
+			continue;
+		}
+	}
+	
+	return setBlock(res, data);
+}
 
-- (NSString*)uniqueForNode:(NSXMLNode*)node
+/*
+ * Load an OverrideList node
+ */
+- (BOOL)loadOverrideList:(NSXMLElement *)node error:(NSError **)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+{
+	if (![[node name] isEqualToString:@"OverrideList"])
+	{
+		if (error)
+			*error = [self dataStoreError:5 msg:@"Node is not an OverrideList"];
+		return NO;
+	}
+	
+	for (NSXMLElement *subnode in [node children]) {
+		id res = [self loadOverrideItem:subnode forManifest:nil error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+		
+		if (!res)
+			return NO;
+	}
+	
+	return YES;
+}
+
+- (NSString*)uniqueForNode:(NSXMLElement*)node
 {
 	NSXMLNode *parent = [node parent];
 	NSString *me = [node name];
 	
 	if ([me isEqualToString:@"AddInItem"] || [me isEqualToString:@"OfferItem"] || [me isEqualToString:@"DisabledOfferItem"])
 		return [[(NSXMLElement *)node attributeForName:@"UID"] stringValue];
+	if ([me isEqualToString:@"OverrideItem"])
+		return [[(NSXMLElement *)node attributeForName:@"Name"] stringValue];
 	
 	if ([me isEqualToString:@"file"] || [me isEqualToString:@"dir"])
 		me = [NSString stringWithFormat:@"%@:%@", me, [[(NSXMLElement*)node attributeForName:@"path"] stringValue]];
@@ -556,7 +624,7 @@
 	if ([node level] == 1 || !parent)
 		return me;
 	
-	return [[self uniqueForNode:parent] stringByAppendingFormat:@"/%@", me];
+	return [[self uniqueForNode:(NSXMLElement*)parent] stringByAppendingFormat:@"/%@", me];
 }
 
 - (id)makeCacheNode:(NSXMLElement*)elem forEntityName:(NSString*)name
@@ -753,7 +821,7 @@
 {
 	DataStoreObject *obj = (DataStoreObject*)managedObject;
 	
-	return [self uniqueForNode:obj.node];
+	return [self uniqueForNode:(NSXMLElement*)obj.node];
 }
 
 - (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject
@@ -820,7 +888,7 @@
 	
 	NSMutableSet *set = [NSMutableSet set];
 	BOOL res = [self loadAddInsList:[xmldoc rootElement] error:error usingCreateBlock:
-						  ^(NSXMLElement *elem, NSString *entityName)
+						  ^(NSXMLNode *elem, NSString *entityName)
 						  {
 							  id cnode = [self makeCacheNode:elem forEntityName:entityName];
 							  
@@ -889,7 +957,7 @@
 	
 	NSMutableSet *set = [NSMutableSet set];
 	BOOL res = [self loadOfferList:[xmldoc rootElement] error:error usingCreateBlock:
-				^(NSXMLElement *elem, NSString *entityName)
+				^(NSXMLNode *elem, NSString *entityName)
 				{
 					id cnode = [self makeCacheNode:elem forEntityName:entityName];
 					
@@ -927,13 +995,96 @@
 
 @end
 
+
+@implementation ArchiveStore
+
+- (NSDictionary*)loadArchive:(NSURL *)url class:(Class)archClass error:(NSError**)error
+{
+	/* XXX guessing encoding. */
+	id archive = [archClass archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
+	NSData *xmldata = nil;
+	
+	if (!archive)
+		return nil;
+	
+	NSMutableSet *files = [NSMutableSet set];
+	NSMutableSet *dirs = [NSMutableSet set];
+	NSMutableSet *contents = [NSMutableSet set];
+	
+	for (DazipArchiveMember *entry in archive)
+	{
+		switch (entry.type)
+		{
+			case dmtManifest:
+				xmldata = [entry data];
+				break;
+			case dmtERF:
+			{
+				NSData *erfdata = entry.data;
+				
+				parse_erf_data([erfdata bytes], [erfdata length],
+							   ^(struct erf_header *header, struct erf_file *file)
+							   {
+								   int len = 0;
+								   
+								   while (len < ERF_FILENAME_MAXLEN && file->entry->name[len] != 0)
+									   len++;
+								   
+								   [contents addObject:[[NSString alloc] initWithBytes:file->entry->name
+																				length:len * 2
+																			  encoding:NSUTF16LittleEndianStringEncoding]];
+							   });
+			}
+				/* Fall through */
+				if (0)
+				{
+				case dmtFile:
+					[contents addObject:entry.contentName];
+				}
+				switch (entry.contentType)
+			{
+				case dmctFile:
+					[files addObject:entry.contentPath];
+					break;
+				case dmctDirectory:
+					[dirs addObject:entry.contentPath];
+					break;
+			}
+				break;
+		}
+	}
+	
+	[self willChangeValueForKey:@"uncompressedSize"];
+	uncompressedSize = ((ArchiveWrapper*)archive).uncompressedOffset;
+	[self didChangeValueForKey:@"uncompressedSize"];
+	
+	if (!xmldata)
+	{
+		if (error)
+			*error = [self dataStoreError:2 msg:@"Could not find manifest"];
+		return nil;
+	}
+	
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+			xmldata, @"manifest",
+			files, @"files",
+			dirs, @"directories",
+			contents, @"contents",
+			nil];
+}
+
+@synthesize uncompressedSize;
+
+@end
+
+
 @implementation DazipStore
 
 - (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator configurationName:(NSString *)configurationName URL:(NSURL *)url options:(NSDictionary *)options {
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self)
 	{
-		NSDictionary *dazipData = [self loadDazip:url error:&loadError];
+		NSDictionary *dazipData = [self loadArchive:url class:[DazipArchive self] error:&loadError];
 		
 		if (!dazipData)
 			return self;
@@ -1088,81 +1239,6 @@
 	return self;
 }
 
-- (NSDictionary*)loadDazip:(NSURL *)url error:(NSError**)error
-{
-	/* XXX guessing encoding. */
-	DazipArchive *archive = [DazipArchive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
-	NSData *xmldata = nil;
-	
-	if (!archive)
-		return nil;
-	
-	NSMutableSet *files = [NSMutableSet set];
-	NSMutableSet *dirs = [NSMutableSet set];
-	NSMutableSet *contents = [NSMutableSet set];
-	
-	for (DazipArchiveMember *entry in archive)
-	{
-		switch (entry.type)
-		{
-		case dmtManifest:
-			xmldata = [entry data];
-			break;
-		case dmtERF:
-			{
-				NSData *erfdata = entry.data;
-				
-				parse_erf_data([erfdata bytes], [erfdata length],
-							   ^(struct erf_header *header, struct erf_file *file)
-							   {
-								   int len = 0;
-								   
-								   while (len < ERF_FILENAME_MAXLEN && file->entry->name[len] != 0)
-									   len++;
-								   
-								   [contents addObject:[[NSString alloc] initWithBytes:file->entry->name
-																				length:len * 2
-																			  encoding:NSUTF16LittleEndianStringEncoding]];
-							   });
-			}
-			/* Fall through */
-			if (0)
-			{
-		case dmtFile:
-				[contents addObject:entry.contentName];
-			}
-			switch (entry.contentType)
-			{
-			case dmctFile:
-				[files addObject:entry.contentPath];
-				break;
-			case dmctDirectory:
-				[dirs addObject:entry.contentPath];
-				break;
-			}
-			break;
-		}
-	}
-	
-	[self willChangeValueForKey:@"uncompressedSize"];
-	uncompressedSize = archive.uncompressedOffset;
-	[self didChangeValueForKey:@"uncompressedSize"];
-	
-	if (!xmldata)
-	{
-		if (error)
-			*error = [self dataStoreError:2 msg:@"Could not find manifest"];
-		return nil;
-	}
-	
-	return [NSDictionary dictionaryWithObjectsAndKeys:
-			xmldata, @"manifest",
-			files, @"files",
-			dirs, @"directories",
-			contents, @"contents",
-			nil];
-}
-
 - (BOOL)load:(NSError **)error
 {
 	if (loadError)
@@ -1180,7 +1256,7 @@
 	NSMutableSet *set = [NSMutableSet set];
 	BOOL res;
 	
-	createObjBlock createBlock = ^(NSXMLElement *elem, NSString *entityName)
+	createObjBlock createBlock = ^(NSXMLNode *elem, NSString *entityName)
 	{
 		id cnode = [self makeCacheNode:elem forEntityName:entityName];
 		
@@ -1211,6 +1287,99 @@
     return @"DazipStore";
 }
 
-@synthesize uncompressedSize;
-
 @end
+
+@implementation OverrideStore
+
+- (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator configurationName:(NSString *)configurationName URL:(NSURL *)url options:(NSDictionary *)options
+{
+	self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
+	if (self)
+	{
+		NSDictionary *overrideData = [self loadArchive:url class:[OverrideArchive self] error:&loadError];
+		
+		NSData *xmldata = [overrideData objectForKey:@"manifest"];
+		NSMutableSet *files = [overrideData objectForKey:@"files"];
+		NSMutableSet *dirs = [overrideData objectForKey:@"directories"];
+		//NSMutableSet *contents = [overrideData objectForKey:@"contents"];
+		
+		if (![self loadXML:xmldata ofType:@"OverrideList" error:&loadError])
+			return self;
+		
+		NSXMLElement *root = [xmldoc rootElement];
+		
+		if ([root childCount] < 1)
+		{
+			loadError = [self dataStoreError:14 msg:@"No contents in manifest"];
+			return self;
+		}
+		
+		if ([root childCount] > 1)
+		{
+			loadError = [self dataStoreError:15 msg:@"More than one item in manifest"];
+			return self;
+		}
+		
+		NSXMLElement *itemNode = (NSXMLElement*)[root childAtIndex:0];
+		NSString *uid = [[itemNode attributeForName:@"Name"] stringValue];
+		
+		if (!uid || ![uid length])
+		{
+			loadError = [self dataStoreError:16 msg:@"No UID for override"];
+			return self;
+		}
+		
+		NSXMLElement *modazipinNode = [self makeModazipinNodeForFiles:files dirs:dirs];
+		[itemNode addChild:modazipinNode];
+		
+		self.identifier = uid;
+	}
+	return self;
+}
+
+- (BOOL)load:(NSError**)error
+{
+	if (loadError)
+	{
+		if (error)
+			*error = loadError;
+		loadError = nil;
+		return NO;
+	}
+	
+	if (!xmldoc)
+		return YES;
+	
+	NSMutableSet *set = [NSMutableSet set];
+	BOOL res;
+	
+	createObjBlock createBlock = ^(NSXMLNode *elem, NSString *entityName)
+	{
+		id cnode = [self makeCacheNode:elem forEntityName:entityName];
+		
+		[set addObject:cnode];
+		return cnode;
+	};
+	
+	setDataBlock setBlock = ^(id obj, NSMutableDictionary *data)
+	{
+		[obj setPropertyCache:data];
+		
+		return obj;
+	};
+	
+	res = [self loadOverrideList:[xmldoc rootElement] error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+	
+	if (!res)
+		return NO;
+	
+	[self addCacheNodes:set];
+	return YES;
+}
+
+- (NSString *)type {
+	return @"OverrideStore";
+}		 
+		 
+@end
+

@@ -7,10 +7,6 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>dazip</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>dragon_4_doc.icns</string>
 			<key>CFBundleTypeName</key>
@@ -29,6 +25,26 @@
 			<string>Dazip</string>
 			<key>NSPersistentStoreTypeKey</key>
 			<string>DazipStore</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeIconFile</key>
+			<string>dragon_4_doc.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Dragon Age Override</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.morth.per.daoverride</string>
+				<string>public.folder</string>
+				<string>com.pkware.zip-archive</string>
+			</array>
+			<key>LSTypeIsPackage</key>
+			<false/>
+			<key>NSDocumentClass</key>
+			<string>Dazip</string>
+			<key>NSPersistentStoreTypeKey</key>
+			<string>OverrideStore</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
@@ -73,6 +89,25 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>dazip</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>org.morth.per.daoverride</string>
+			<key>UTTypeDescription</key>
+			<string>Dragon Age Override</string>
+			<key>UTTypeIconFile</key>
+			<string>dragon_4_doc.icns</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>com.pkware.zip-archive</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>override</string>
 				</array>
 			</dict>
 		</dict>

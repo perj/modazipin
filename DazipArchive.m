@@ -135,3 +135,89 @@ static NSPredicate *isERF;
 }
 
 @end
+
+
+@implementation OverrideArchive
+
+- (id)init
+{
+	self = [super init];
+	
+	if (self)
+	{
+		if (!isDirectory)
+			isDirectory = [NSPredicate predicateWithFormat:@"SELF ENDSWITH '/'"];
+		if (!startsWithDot)
+			startsWithDot = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH '.'"];
+		if (!isERF)
+			isERF = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] '.erf'"];
+	}
+	return self;
+}
+
+- (Class)memberClass
+{
+	return [DazipArchiveMember class];
+}
+
+- (DazipArchiveMember *)nextMemberWithError:(NSError**)error
+{
+	DazipArchiveMember *next;
+	
+	while ((next = (DazipArchiveMember*)[super nextMemberWithError:error]))
+	{
+		NSString *path = [next pathname];
+		NSArray *comps = [path pathComponents];
+		
+		/* Whitelist Manifest. */
+		if ([path caseInsensitiveCompare:@"Manifest.xml"] == NSOrderedSame)
+		{
+			next.type = dmtManifest;
+			return next;
+		}
+		
+		/* We only care about files currently. */
+		if ([isDirectory evaluateWithObject:path])
+			continue;
+		
+		/* Disallow full paths and anything starting with . */
+		if ([path characterAtIndex:0] == '/')
+			continue;
+		if ([[comps filteredArrayUsingPredicate:startsWithDot] count])
+			continue;
+		
+		/* Find the override folder. */
+		NSUInteger overrideIdx = 0;
+		for (NSString *part in comps)
+		{
+			if ([part caseInsensitiveCompare:@"override"] == NSOrderedSame)
+				break;
+			overrideIdx++;
+		}
+		if (overrideIdx >= [comps count] - 1)
+			continue;
+		
+		/* Determine contents path. */
+		next.contentPath = [NSString stringWithFormat:@"packages/core/override/%@", [comps objectAtIndex:overrideIdx + 1]];
+		
+		/* Determine contentType */
+		if ([comps count] > overrideIdx + 1)
+			next.contentType = dmctDirectory;
+		else
+			next.contentType = dmctFile;
+		
+		/* Determine type. */
+		if ([isERF evaluateWithObject:path])
+			next.type = dmtERF;
+		else
+			next.type = dmtFile;
+		
+		/* Determine name. */
+		next.contentName = [comps objectAtIndex:[comps count] - 1];
+		
+		return next;
+	}
+	return nil;
+}
+
+@end

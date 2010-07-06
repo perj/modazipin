@@ -36,6 +36,30 @@
     return self;
 }
 
+#if 0
+- (BOOL)readFromURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)error
+{
+	return [super readFromURL:absoluteURL ofType:typeName error:error];
+}
+#endif
+
+- (NSString *)persistentStoreTypeForFileType:(NSString *)fileType
+{
+	/*
+	 * Not sure if it should be considered a bug or not, but the system implementation
+	 * will look at the registered documents types in order and check if they can open
+	 * the type given. This doesn't work, since daoverride conforms to zip, and dazip
+	 * registers that it can open zip.
+	 *
+	 * This is probably faster anyway.
+	 */
+	if ([fileType isEqualToString:@"org.morth.per.dazip"])
+		return @"DazipStore";
+	if ([fileType isEqualToString:@"org.morth.per.daoverride"])
+		return @"OverrideStore";
+	return [super persistentStoreTypeForFileType:fileType];
+}
+
 - (NSString *)windowNibName 
 {
     return @"Dazip";

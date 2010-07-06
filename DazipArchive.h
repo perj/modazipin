@@ -58,7 +58,17 @@ enum DazipMemberContentType
 
 
 @interface DazipArchive : FolderArchive {
+	
+}
 
+- (Class)memberClass;
+
+- (DazipArchiveMember *)nextMemberWithError:(NSError**)error;
+
+@end
+
+@interface OverrideArchive : FolderArchive {
+	
 }
 
 - (Class)memberClass;

@@ -43,6 +43,7 @@ static BOOL fatal = NO;
 	[NSPersistentStoreCoordinator registerStoreClass:[OfferListStore self] forStoreType:@"OfferListStore"];
 	[NSPersistentStoreCoordinator registerStoreClass:[DazipStore self] forStoreType:@"DazipStore"];
 	[NSPersistentStoreCoordinator registerStoreClass:[NullStore self] forStoreType:@"NullStore"];
+	[NSPersistentStoreCoordinator registerStoreClass:[OverrideStore self] forStoreType:@"OverrideStore"];
 	
 	[self setupDefaults];
 	
