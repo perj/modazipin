@@ -39,16 +39,6 @@ static NSPredicate *isERF;
 
 @implementation DAArchive
 
-- (Class)memberClass
-{
-	return [DAArchiveMember class];
-}
-
-@end
-
-
-@implementation DazipArchive
-
 - (id)init
 {
 	self = [super init];
@@ -68,6 +58,16 @@ static NSPredicate *isERF;
 	}
 	return self;
 }
+
+- (Class)memberClass
+{
+	return [DAArchiveMember class];
+}
+
+@end
+
+
+@implementation DazipArchive
 
 - (DAArchiveMember *)nextMemberWithError:(NSError**)error
 {
@@ -147,27 +147,6 @@ static NSPredicate *isERF;
 
 
 @implementation OverrideArchive
-
-- (id)init
-{
-	self = [super init];
-	
-	if (self)
-	{
-		if (!isDirectory)
-			isDirectory = [NSPredicate predicateWithFormat:@"SELF ENDSWITH '/'"];
-		if (!startsWithDot)
-			startsWithDot = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH '.'"];
-		if (!isERF)
-			isERF = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] '.erf'"];
-	}
-	return self;
-}
-
-- (Class)memberClass
-{
-	return [DAArchiveMember class];
-}
 
 - (DAArchiveMember *)nextMemberWithError:(NSError**)error
 {
