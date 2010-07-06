@@ -52,7 +52,7 @@
 		66B6A88911C7DF7C00C4457D /* base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 66B6A88811C7DF7C00C4457D /* base64.m */; };
 		66B6A8F711C8006F00C4457D /* DetailsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 66B6A8F611C8006F00C4457D /* DetailsDelegate.m */; };
 		66BBE8F4110C704100F4B94A /* DataStoreObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 66BBE8F3110C704100F4B94A /* DataStoreObject.m */; };
-		66C74A0E111F0BEF0084E7AC /* DazipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C749EF111EFB360084E7AC /* DazipArchive.m */; };
+		66C74A0E111F0BEF0084E7AC /* DAArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C749EF111EFB360084E7AC /* DAArchive.m */; };
 		66D0F66210F677F400C5B31A /* erf.c in Sources */ = {isa = PBXBuildFile; fileRef = 66D0F66110F677F400C5B31A /* erf.c */; };
 		66D0F76A10F8F54100C5B31A /* ArchiveWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 66D0F76910F8F54100C5B31A /* ArchiveWrapper.m */; };
 		775BDEF1067A8BF0009058FE /* modazipin.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 775BDEF0067A8BF0009058FE /* modazipin.xcdatamodel */; };
@@ -139,8 +139,8 @@
 		66B6A8F611C8006F00C4457D /* DetailsDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailsDelegate.m; sourceTree = "<group>"; };
 		66BBE8F2110C704100F4B94A /* DataStoreObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataStoreObject.h; sourceTree = "<group>"; };
 		66BBE8F3110C704100F4B94A /* DataStoreObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataStoreObject.m; sourceTree = "<group>"; };
-		66C749EE111EFB360084E7AC /* DazipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DazipArchive.h; sourceTree = "<group>"; };
-		66C749EF111EFB360084E7AC /* DazipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DazipArchive.m; sourceTree = "<group>"; };
+		66C749EE111EFB360084E7AC /* DAArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAArchive.h; sourceTree = "<group>"; };
+		66C749EF111EFB360084E7AC /* DAArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DAArchive.m; sourceTree = "<group>"; };
 		66D0F65E10F66F2100C5B31A /* erf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = erf.h; sourceTree = "<group>"; };
 		66D0F66110F677F400C5B31A /* erf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = erf.c; sourceTree = "<group>"; };
 		66D0F76810F8F54100C5B31A /* ArchiveWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveWrapper.h; sourceTree = "<group>"; };
@@ -229,8 +229,8 @@
 				66A067B4113AC18400A68244 /* Scanner.m */,
 				66BBE8F2110C704100F4B94A /* DataStoreObject.h */,
 				66BBE8F3110C704100F4B94A /* DataStoreObject.m */,
-				66C749EE111EFB360084E7AC /* DazipArchive.h */,
-				66C749EF111EFB360084E7AC /* DazipArchive.m */,
+				66C749EE111EFB360084E7AC /* DAArchive.h */,
+				66C749EF111EFB360084E7AC /* DAArchive.m */,
 				66D0F76810F8F54100C5B31A /* ArchiveWrapper.h */,
 				66D0F76910F8F54100C5B31A /* ArchiveWrapper.m */,
 				66581F0A10F3B0400088EC73 /* Dazip.h */,
@@ -424,7 +424,7 @@
 				66D0F66210F677F400C5B31A /* erf.c in Sources */,
 				66D0F76A10F8F54100C5B31A /* ArchiveWrapper.m in Sources */,
 				66BBE8F4110C704100F4B94A /* DataStoreObject.m in Sources */,
-				66C74A0E111F0BEF0084E7AC /* DazipArchive.m in Sources */,
+				66C74A0E111F0BEF0084E7AC /* DAArchive.m in Sources */,
 				668DA1CA113AF21800A66EA8 /* Scanner.m in Sources */,
 				6643D44D11B3ADB000B5626D /* NullStore.m in Sources */,
 				6662531E11C6B74500AA6A27 /* DataProxy.m in Sources */,

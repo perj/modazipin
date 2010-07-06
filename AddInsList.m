@@ -21,7 +21,7 @@
 
 #import "AddInsList.h"
 #import "DataStore.h"
-#import "DazipArchive.h"
+#import "DAArchive.h"
 #import "Scanner.h"
 #import "Game.h"
 
@@ -65,6 +65,7 @@ static NSPredicate *isREADME;
 {
 	NSURL *addinsURL = [absoluteURL URLByAppendingPathComponent:@"Settings/AddIns.xml"];
 	NSURL *offersURL = [absoluteURL URLByAppendingPathComponent:@"Settings/Offers.xml"];
+	NSURL *overridesURL = [absoluteURL URLByAppendingPathComponent:@"Settings/ModazipinOverrides.xml"];
 	NSURL *nullURL = [NSURL URLWithString:@"file:///dev/null"];
 	
 	if (![self configurePersistentStoreCoordinatorForURL:addinsURL ofType:@"AddInsListStore" 
@@ -75,6 +76,12 @@ static NSPredicate *isREADME;
 	}
 	if (![self configurePersistentStoreCoordinatorForURL:offersURL ofType:@"OfferListStore" 
 									  modelConfiguration:@"offers" storeOptions:nil error:error])
+	{
+		sharedAddInsList = nil;
+		return NO;
+	}
+	if (![self configurePersistentStoreCoordinatorForURL:overridesURL ofType:@"OverrideListStore" 
+									  modelConfiguration:@"overrides" storeOptions:nil error:error])
 	{
 		sharedAddInsList = nil;
 		return NO;
@@ -480,12 +487,12 @@ static NSPredicate *isREADME;
 
 @implementation AddInsList (Installing)
 
-- (BOOL)installItems:(NSArray*)items withArchive:(NSURL*)url uncompressedSize:(int64_t)sz error:(NSError**)error
+- (BOOL)installItems:(NSArray*)items withArchive:(DAArchive*)archive name:(NSString*)name uncompressedSize:(int64_t)sz error:(NSError**)error
 {
-	DazipArchive *archive = [DazipArchive archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
 	NSURL *base = [self fileURL];
 	AddInsListStore *addinsStore = nil;
 	OfferListStore *offersStore = nil;
+	OverrideListStore *overridesStore = nil;
 	
 	if (!archive)
 		return NO;
@@ -497,6 +504,8 @@ static NSPredicate *isREADME;
 			addinsStore = store;
 		else if ([store class] == [OfferListStore self])
 			offersStore = store;
+		else if ([store class] == [OverrideListStore self])
+			overridesStore = store;
 	}
 	
 	NSMutableArray *mainDirs = [NSMutableArray arrayWithCapacity:[items count]];
@@ -510,19 +519,19 @@ static NSPredicate *isREADME;
 	
 	[progressIndicator setMaxValue:sz];
 	[progressIndicator setDoubleValue:0];
-	[progressWindow setTitle:[NSString stringWithFormat:@"Installing %@", [url lastPathComponent]]];
+	[progressWindow setTitle:[NSString stringWithFormat:@"Installing %@", name]];
 	NSModalSession modal = [NSApp beginModalSessionForWindow:progressWindow];
 	
 	[archive addObserver:self forKeyPath:@"uncompressedOffset" options:0 context:modal];
 	
-	for (DazipArchiveMember *entry in archive)
+	for (DAArchiveMember *entry in archive)
 	{
 		NSString *path;
 		
 		if (entry.type == dmtManifest)
 			continue;
 		
-		path = [entry.pathname substringFromIndex:sizeof("Contents/") - 1];
+		path = entry.installPath;
 		
 		if ([path rangeOfString:@"Addins/" options:NSCaseInsensitiveSearch | NSAnchoredSearch].length != 0
 			|| [path rangeOfString:@"Offers/" options:NSCaseInsensitiveSearch | NSAnchoredSearch].length != 0)
@@ -580,6 +589,13 @@ static NSPredicate *isREADME;
 					item.Enabled = [NSDecimalNumber zero];
 			}
 			item.displayed = [NSNumber numberWithBool:![related count]];
+		}
+		else if ([[node name] isEqualToString:@"OverrideItem"])
+		{
+			item = [overridesStore insertOverrideNode:node error:error intoContext:[self managedObjectContext]];
+			
+			if (!item)
+				return NO;
 		}
 		
 		if (item)

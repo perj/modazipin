@@ -41,6 +41,7 @@ static BOOL fatal = NO;
 {
 	[NSPersistentStoreCoordinator registerStoreClass:[AddInsListStore self] forStoreType:@"AddInsListStore"];
 	[NSPersistentStoreCoordinator registerStoreClass:[OfferListStore self] forStoreType:@"OfferListStore"];
+	[NSPersistentStoreCoordinator registerStoreClass:[OverrideListStore self] forStoreType:@"OverrideListStore"];
 	[NSPersistentStoreCoordinator registerStoreClass:[DazipStore self] forStoreType:@"DazipStore"];
 	[NSPersistentStoreCoordinator registerStoreClass:[NullStore self] forStoreType:@"NullStore"];
 	[NSPersistentStoreCoordinator registerStoreClass:[OverrideStore self] forStoreType:@"OverrideStore"];

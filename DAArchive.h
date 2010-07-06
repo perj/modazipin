@@ -27,52 +27,57 @@
 #import <Cocoa/Cocoa.h>
 #import "FolderArchive.h"
 
-enum DazipMemberType
+enum DAMemberType
 {
 	dmtManifest,
 	dmtERF,
 	dmtFile
 };
 
-enum DazipMemberContentType
+enum DAMemberContentType
 {
 	dmctFile,
 	dmctDirectory
 };
 
-@interface DazipArchiveMember : FolderArchiveMember
+@interface DAArchiveMember : FolderArchiveMember
 {
-	enum DazipMemberType type;
+	enum DAMemberType type;
+	NSString *installPath;
 	
 	NSString *contentPath;
-	enum DazipMemberContentType contentType;
+	enum DAMemberContentType contentType;
 	NSString *contentName;
 }
 
-@property enum DazipMemberType type;
+@property enum DAMemberType type;
+@property(retain) NSString *installPath;
 @property(retain) NSString *contentPath;
-@property enum DazipMemberContentType contentType;
+@property enum DAMemberContentType contentType;
 @property(retain) NSString *contentName;
 
 @end
 
-
-@interface DazipArchive : FolderArchive {
-	
+@interface DAArchive : FolderArchive
+{
 }
 
 - (Class)memberClass;
-
-- (DazipArchiveMember *)nextMemberWithError:(NSError**)error;
 
 @end
 
-@interface OverrideArchive : FolderArchive {
-	
+@interface DazipArchive : DAArchive
+{
 }
 
-- (Class)memberClass;
+- (DAArchiveMember *)nextMemberWithError:(NSError**)error;
 
-- (DazipArchiveMember *)nextMemberWithError:(NSError**)error;
+@end
+
+@interface OverrideArchive : DAArchive
+{
+}
+
+- (DAArchiveMember *)nextMemberWithError:(NSError**)error;
 
 @end

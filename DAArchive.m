@@ -19,7 +19,7 @@
  * THE SOFTWARE.
  */
 
-#import "DazipArchive.h"
+#import "DAArchive.h"
 
 static NSPredicate *isDirectory;
 static NSPredicate *startsWithDot;
@@ -27,12 +27,22 @@ static NSPredicate *isBlacklisted;
 static NSPredicate *isDisabled;
 static NSPredicate *isERF;
 
-@implementation DazipArchiveMember
+@implementation DAArchiveMember
 
 @synthesize type;
+@synthesize installPath;
 @synthesize contentPath;
 @synthesize contentType;
 @synthesize contentName;
+
+@end
+
+@implementation DAArchive
+
+- (Class)memberClass
+{
+	return [DAArchiveMember class];
+}
 
 @end
 
@@ -59,16 +69,11 @@ static NSPredicate *isERF;
 	return self;
 }
 
-- (Class)memberClass
+- (DAArchiveMember *)nextMemberWithError:(NSError**)error
 {
-	return [DazipArchiveMember class];
-}
-
-- (DazipArchiveMember *)nextMemberWithError:(NSError**)error
-{
-	DazipArchiveMember *next;
+	DAArchiveMember *next;
 	
-	while ((next = (DazipArchiveMember*)[super nextMemberWithError:error]))
+	while ((next = (DAArchiveMember*)[super nextMemberWithError:error]))
 	{
 		NSString *path = [next pathname];
 		NSArray *comps = [path pathComponents];
@@ -114,6 +119,10 @@ static NSPredicate *isERF;
 			continue;
 		next.contentPath = [NSString pathWithComponents:[comps subarrayWithRange:cr]];
 		
+		cr.location = 1;
+		cr.length = [comps count] - 1;
+		next.installPath = [NSString pathWithComponents:[comps subarrayWithRange:cr]];
+					 
 		/* Determine contentType */
 		if ([comps count] > cr.location + cr.length)
 			next.contentType = dmctDirectory;
@@ -157,17 +166,18 @@ static NSPredicate *isERF;
 
 - (Class)memberClass
 {
-	return [DazipArchiveMember class];
+	return [DAArchiveMember class];
 }
 
-- (DazipArchiveMember *)nextMemberWithError:(NSError**)error
+- (DAArchiveMember *)nextMemberWithError:(NSError**)error
 {
-	DazipArchiveMember *next;
+	DAArchiveMember *next;
 	
-	while ((next = (DazipArchiveMember*)[super nextMemberWithError:error]))
+	while ((next = (DAArchiveMember*)[super nextMemberWithError:error]))
 	{
 		NSString *path = [next pathname];
 		NSArray *comps = [path pathComponents];
+		NSRange cr;
 		
 		/* Whitelist Manifest. */
 		if ([path caseInsensitiveCompare:@"Manifest.xml"] == NSOrderedSame)
@@ -199,6 +209,10 @@ static NSPredicate *isERF;
 		
 		/* Determine contents path. */
 		next.contentPath = [NSString stringWithFormat:@"packages/core/override/%@", [comps objectAtIndex:overrideIdx + 1]];
+		
+		cr.location = overrideIdx;
+		cr.length = [comps count] - overrideIdx;
+		next.installPath = [NSString stringWithFormat:@"packages/core/%@", [NSString pathWithComponents:[comps subarrayWithRange:cr]]];
 		
 		/* Determine contentType */
 		if ([comps count] > overrideIdx + 1)

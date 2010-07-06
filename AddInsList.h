@@ -25,6 +25,8 @@
 #import "DataStoreObject.h"
 #import "ArchiveWrapper.h"
 
+@class DAArchive;
+
 @interface AddInsList : NSPersistentDocument
 {
 	NSOperationQueue *operationQueue;
@@ -85,7 +87,7 @@
 
 @interface AddInsList (Installing)
 
-- (BOOL)installItems:(NSArray *)items withArchive:(NSURL*)url uncompressedSize:(int64_t)sz error:(NSError**)error;
+- (BOOL)installItems:(NSArray*)items withArchive:(DAArchive*)archive name:(NSString*)name uncompressedSize:(int64_t)sz error:(NSError**)error;
 - (void)progressChanged:(ArchiveWrapper*)archive session:(NSModalSession)session;
 
 @end

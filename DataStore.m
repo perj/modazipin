@@ -21,7 +21,7 @@
 
 #import "DataStore.h"
 #import "DataStoreObject.h"
-#import "DazipArchive.h"
+#import "DAArchive.h"
 
 #include "erf.h"
 
@@ -579,6 +579,12 @@
 			[data setObject:[attr stringValue] forKey:@"UID"];
 			continue;
 		}
+		
+		if ([[attr name] isEqualToString:@"Enabled"])
+		{
+			[data setObject:[NSDecimalNumber decimalNumberWithString:[attr stringValue]] forKey:[attr name]];
+			continue;
+		}
 	}
 	
 	return setBlock(res, data);
@@ -772,7 +778,8 @@
 	{
 		Item *item = (Item*)managedObject;
 		
-		if ([[[managedObject entity] name] isEqualToString:@"AddInItem"])
+		if ([[[managedObject entity] name] isEqualToString:@"AddInItem"]
+			|| [[[managedObject entity] name] isEqualToString:@"OverrideItem"])
 		{
 			attr = [elem attributeForName:@"Enabled"];
 			if ([item.Enabled intValue])
@@ -996,12 +1003,91 @@
 @end
 
 
+@implementation OverrideListStore
+
+- (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator configurationName:(NSString *)configurationName URL:(NSURL *)url options:(NSDictionary *)options {
+    self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
+	if (self && url)
+	{
+		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&loadError];
+		
+		if (xmldata)
+			[self loadXML:xmldata ofType:@"OverrideList" error:&loadError];
+		else if ([loadError domain] == NSCocoaErrorDomain && [loadError code] == NSFileReadNoSuchFileError)
+		{
+			loadError = nil;
+			xmldoc = [NSXMLNode documentWithRootElement:[NSXMLElement elementWithName:@"OverrideList"]];
+			[xmldoc setVersion:@"1.0"];
+			[xmldoc setCharacterEncoding:@"UTF-8"];
+			[xmldoc setStandalone:YES];
+			[self save:&loadError];
+		}
+		
+		self.identifier = @"OverrideList";
+	}
+	return self;
+}
+
+- (BOOL)load:(NSError **)error
+{
+	if (loadError)
+	{
+		if (error)
+			*error = loadError;
+		loadError = nil;
+		return NO;
+	}
+	
+	if (!xmldoc)
+		return YES;
+	
+	NSMutableSet *set = [NSMutableSet set];
+	BOOL res = [self loadOverrideList:[xmldoc rootElement] error:error usingCreateBlock:
+				^(NSXMLNode *elem, NSString *entityName)
+				{
+					id cnode = [self makeCacheNode:elem forEntityName:entityName];
+					
+					[set addObject:cnode];
+					return cnode;
+				} usingSetBlock:
+				^(id obj, NSMutableDictionary *data)
+				{
+					[obj setPropertyCache:data];
+					
+					return obj;
+				}];
+	if (!res)
+		return NO;
+	
+	[self addCacheNodes:set];
+	return YES;
+}
+
+- (NSString *)type {
+    return @"OverrideListStore";
+}
+
+- (BOOL)save:(NSError **)error
+{
+	BOOL res = [[xmldoc XMLDataWithOptions:NSXMLNodePrettyPrint] writeToURL:[self URL] options:0 error:error];
+	
+	return res;
+}
+
+- (Item*)insertOverrideNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context
+{
+	return [self insertItemNode:node usingSelector:@selector(loadOverrideItem:forManifest:error:usingCreateBlock:usingSetBlock:) error:error intoContext:context];
+}
+
+@end
+
+
 @implementation ArchiveStore
 
-- (NSDictionary*)loadArchive:(NSURL *)url class:(Class)archClass error:(NSError**)error
+- (NSDictionary*)loadArchive:(NSURL *)url error:(NSError**)error
 {
 	/* XXX guessing encoding. */
-	id archive = [archClass archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
+	DAArchive *archive = [[self archiveClass] archiveForReadingFromURL:url encoding:NSWindowsCP1252StringEncoding error:error];
 	NSData *xmldata = nil;
 	
 	if (!archive)
@@ -1011,7 +1097,7 @@
 	NSMutableSet *dirs = [NSMutableSet set];
 	NSMutableSet *contents = [NSMutableSet set];
 	
-	for (DazipArchiveMember *entry in archive)
+	for (DAArchiveMember *entry in archive)
 	{
 		switch (entry.type)
 		{
@@ -1055,7 +1141,7 @@
 	}
 	
 	[self willChangeValueForKey:@"uncompressedSize"];
-	uncompressedSize = ((ArchiveWrapper*)archive).uncompressedOffset;
+	uncompressedSize = archive.uncompressedOffset;
 	[self didChangeValueForKey:@"uncompressedSize"];
 	
 	if (!xmldata)
@@ -1073,6 +1159,11 @@
 			nil];
 }
 
+- (Class)archiveClass
+{
+	return [DAArchive self];
+}
+
 @synthesize uncompressedSize;
 
 @end
@@ -1084,7 +1175,7 @@
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self)
 	{
-		NSDictionary *dazipData = [self loadArchive:url class:[DazipArchive self] error:&loadError];
+		NSDictionary *dazipData = [self loadArchive:url error:&loadError];
 		
 		if (!dazipData)
 			return self;
@@ -1287,6 +1378,11 @@
     return @"DazipStore";
 }
 
+- (Class)archiveClass
+{
+	return [DazipArchive self];
+}
+
 @end
 
 @implementation OverrideStore
@@ -1296,7 +1392,7 @@
 	self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self)
 	{
-		NSDictionary *overrideData = [self loadArchive:url class:[OverrideArchive self] error:&loadError];
+		NSDictionary *overrideData = [self loadArchive:url error:&loadError];
 		
 		NSData *xmldata = [overrideData objectForKey:@"manifest"];
 		NSMutableSet *files = [overrideData objectForKey:@"files"];
@@ -1379,7 +1475,12 @@
 
 - (NSString *)type {
 	return @"OverrideStore";
-}		 
-		 
+}
+
+- (Class)archiveClass
+{
+	return [OverrideArchive self];
+}
+
 @end
 

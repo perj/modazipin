@@ -56,12 +56,22 @@ typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 
 @end
 
+@interface OverrideListStore : DataStore
+{
+}
+
+- (Item*)insertOverrideNode:(NSXMLElement*)node error:(NSError **)error intoContext:(NSManagedObjectContext*)context;
+
+@end
+
 @interface ArchiveStore : DataStore
 {
 	int64_t uncompressedSize;
 }
 
-- (NSDictionary*)loadArchive:(NSURL *)url class:(Class)archClass error:(NSError**)error;
+- (NSDictionary*)loadArchive:(NSURL *)url error:(NSError**)error;
+
+- (Class)archiveClass;
 
 @property(readonly) int64_t uncompressedSize;
 

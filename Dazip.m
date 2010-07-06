@@ -23,7 +23,7 @@
 #import "AddInsList.h"
 #import "AppDelegate.h"
 #import "DataStore.h"
-
+#import "ArchiveWrapper.h"
 
 @implementation Dazip
 
@@ -171,8 +171,20 @@
 		return;
 	}
 	
-	DazipStore *store = (DazipStore*)[[[arr objectAtIndex:0] objectID] persistentStore];
-	[list installItems:[arr valueForKey:@"node"] withArchive:[self fileURL] uncompressedSize:store.uncompressedSize error:&err];
+	ArchiveStore *store = (ArchiveStore*)[[[arr objectAtIndex:0] objectID] persistentStore];
+	DAArchive *archive = [[store archiveClass] archiveForReadingFromURL:[self fileURL] encoding:NSWindowsCP1252StringEncoding error:&err];
+	
+	if (!archive)
+	{
+		[self presentError:err];
+		return;
+	}
+	
+	if (![list installItems:[arr valueForKey:@"node"] withArchive:archive name:[[self fileURL] lastPathComponent] uncompressedSize:store.uncompressedSize error:&err])
+	{
+		[self presentError:err];
+		return;
+	}
 	
 	[list selectItemWithUid:[[arr objectAtIndex:0] UID]];
 	[list saveDocument:self];
