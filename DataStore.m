@@ -636,7 +636,8 @@
 - (id)makeCacheNode:(NSXMLElement*)elem forEntityName:(NSString*)name
 {
 	NSEntityDescription *entity = [[[[self persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:name];
-	NSManagedObjectID *objid = [self objectIDForEntity:entity referenceObject:[self uniqueForNode:elem]];
+	NSString *unique = [self uniqueForNode:elem];
+	NSManagedObjectID *objid = [self objectIDForEntity:entity referenceObject:unique];
 	NSAtomicStoreCacheNode *cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:objid];
 	
 	return cnode;
@@ -761,6 +762,50 @@
 	return res;
 }
 
+- (BOOL)loadUsingSelector:(SEL)sel error:(NSError **)error
+{
+	if (loadError)
+	{
+		if (error)
+			*error = loadError;
+		loadError = nil;
+		return NO;
+	}
+	
+	if (!xmldoc)
+		return YES;
+	
+	NSMutableSet *set = [NSMutableSet set];
+	
+	createObjBlock createBlock = ^(NSXMLNode *elem, NSString *entityName)
+	{
+		id cnode = [self makeCacheNode:elem forEntityName:entityName];
+		
+		[set addObject:cnode];
+		return cnode;
+	};
+	
+	setDataBlock setBlock = ^(id obj, NSMutableDictionary *data)
+	{
+		[obj setPropertyCache:data];
+		
+		return obj;
+	};	
+	
+	BOOL (*imp)(id, SEL, NSXMLElement*, NSError**, createObjBlock, setDataBlock) = (void*)[self methodForSelector:sel];
+	if (!imp)
+		[NSException raise:NSInvalidArgumentException format:@"%s is not a method of this object.", (char*)sel];
+	
+	BOOL res = (*imp)(self, sel, [xmldoc rootElement], error, createBlock, setBlock);
+	
+	if (!res)
+		return NO;
+	
+	[self addCacheNodes:set];
+	return YES;
+}
+
+
 @end
 
 
@@ -882,37 +927,7 @@
 
 - (BOOL)load:(NSError **)error
 {
-	if (loadError)
-	{
-		if (error)
-			*error = loadError;
-		loadError = nil;
-		return NO;
-	}
-	
-	if (!xmldoc)
-		return YES;
-	
-	NSMutableSet *set = [NSMutableSet set];
-	BOOL res = [self loadAddInsList:[xmldoc rootElement] error:error usingCreateBlock:
-						  ^(NSXMLNode *elem, NSString *entityName)
-						  {
-							  id cnode = [self makeCacheNode:elem forEntityName:entityName];
-							  
-							  [set addObject:cnode];
-							  return cnode;
-						  } usingSetBlock:
-						  ^(id obj, NSMutableDictionary *data)
-						  {
-							  [obj setPropertyCache:data];
-							  
-							  return obj;
-						  }];
-	if (!res)
-		return NO;
-	
-	[self addCacheNodes:set];
-	return YES;
+	return [self loadUsingSelector:@selector(loadAddInsList:error:usingCreateBlock:usingSetBlock:) error:error];
 }
 
 - (NSString *)type {
@@ -951,37 +966,7 @@
 
 - (BOOL)load:(NSError **)error
 {
-	if (loadError)
-	{
-		if (error)
-			*error = loadError;
-		loadError = nil;
-		return NO;
-	}
-	
-	if (!xmldoc)
-		return YES;
-	
-	NSMutableSet *set = [NSMutableSet set];
-	BOOL res = [self loadOfferList:[xmldoc rootElement] error:error usingCreateBlock:
-				^(NSXMLNode *elem, NSString *entityName)
-				{
-					id cnode = [self makeCacheNode:elem forEntityName:entityName];
-					
-					[set addObject:cnode];
-					return cnode;
-				} usingSetBlock:
-				^(id obj, NSMutableDictionary *data)
-				{
-					[obj setPropertyCache:data];
-					
-					return obj;
-				}];
-	if (!res)
-		return NO;
-	
-	[self addCacheNodes:set];
-	return YES;
+	return [self loadUsingSelector:@selector(loadOfferList:error:usingCreateBlock:usingSetBlock:) error:error];
 }
 
 - (NSString *)type {
@@ -1028,39 +1013,9 @@
 	return self;
 }
 
-- (BOOL)load:(NSError **)error
+- (BOOL)load:(NSError**)error
 {
-	if (loadError)
-	{
-		if (error)
-			*error = loadError;
-		loadError = nil;
-		return NO;
-	}
-	
-	if (!xmldoc)
-		return YES;
-	
-	NSMutableSet *set = [NSMutableSet set];
-	BOOL res = [self loadOverrideList:[xmldoc rootElement] error:error usingCreateBlock:
-				^(NSXMLNode *elem, NSString *entityName)
-				{
-					id cnode = [self makeCacheNode:elem forEntityName:entityName];
-					
-					[set addObject:cnode];
-					return cnode;
-				} usingSetBlock:
-				^(id obj, NSMutableDictionary *data)
-				{
-					[obj setPropertyCache:data];
-					
-					return obj;
-				}];
-	if (!res)
-		return NO;
-	
-	[self addCacheNodes:set];
-	return YES;
+	return [self loadUsingSelector:@selector(loadOverrideList:error:usingCreateBlock:usingSetBlock:) error:error];
 }
 
 - (NSString *)type {
@@ -1332,46 +1287,15 @@
 
 - (BOOL)load:(NSError **)error
 {
-	if (loadError)
-	{
-		if (error)
-			*error = loadError;
-		loadError = nil;
-		return NO;
-	}
-	
-	if (!xmldoc)
-		return YES;
-	
 	NSString *manifestType = [[[xmldoc rootElement] attributeForName:@"Type"] stringValue];
-	NSMutableSet *set = [NSMutableSet set];
-	BOOL res;
-	
-	createObjBlock createBlock = ^(NSXMLNode *elem, NSString *entityName)
-	{
-		id cnode = [self makeCacheNode:elem forEntityName:entityName];
-		
-		[set addObject:cnode];
-		return cnode;
-	};
-	
-	setDataBlock setBlock = ^(id obj, NSMutableDictionary *data)
-	{
-		[obj setPropertyCache:data];
-		
-		return obj;
-	};
+	SEL sel;
 	
 	if ([manifestType isEqualToString:@"AddIn"])
-		res = [self loadAddInManifest:[xmldoc rootElement] error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+		sel = @selector(loadAddInManifest:error:usingCreateBlock:usingSetBlock:);
 	else
-		res = [self loadOfferManifest:[xmldoc rootElement] error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
-	
-	if (!res)
-		return NO;
-	
-	[self addCacheNodes:set];
-	return YES;
+		sel = @selector(loadOfferManifest:error:usingCreateBlock:usingSetBlock:);
+
+	return [self loadUsingSelector:sel error:error];
 }
 
 - (NSString *)type {
@@ -1435,42 +1359,7 @@
 
 - (BOOL)load:(NSError**)error
 {
-	if (loadError)
-	{
-		if (error)
-			*error = loadError;
-		loadError = nil;
-		return NO;
-	}
-	
-	if (!xmldoc)
-		return YES;
-	
-	NSMutableSet *set = [NSMutableSet set];
-	BOOL res;
-	
-	createObjBlock createBlock = ^(NSXMLNode *elem, NSString *entityName)
-	{
-		id cnode = [self makeCacheNode:elem forEntityName:entityName];
-		
-		[set addObject:cnode];
-		return cnode;
-	};
-	
-	setDataBlock setBlock = ^(id obj, NSMutableDictionary *data)
-	{
-		[obj setPropertyCache:data];
-		
-		return obj;
-	};
-	
-	res = [self loadOverrideList:[xmldoc rootElement] error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
-	
-	if (!res)
-		return NO;
-	
-	[self addCacheNodes:set];
-	return YES;
+	return [self loadUsingSelector:@selector(loadOverrideList:error:usingCreateBlock:usingSetBlock:) error:error];
 }
 
 - (NSString *)type {
@@ -1484,3 +1373,170 @@
 
 @end
 
+@implementation OverrideConfigStore
+
+- (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator configurationName:(NSString *)configurationName URL:(NSURL *)url options:(NSDictionary *)options
+{
+	self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
+	if (self)
+	{
+		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&loadError];
+		
+		if (xmldata)
+			[self loadXML:xmldata ofType:@"OverrideConfig" error:&loadError];
+		
+		item = [options objectForKey:@"item"];
+		self.identifier = [NSString stringWithFormat:@"%@:OverrideConfig", item.UID];
+	}
+	return self;
+}
+
+- (id)loadOverrideConfigValue:(NSXMLElement*)node withIndex:(int)index forKey:(id)key error:(NSError**)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+{
+	NSMutableDictionary *data = [NSMutableDictionary dictionary];
+	id res = createBlock(node, @"ConfigValue");
+	
+	if (!res)
+		return nil;
+	
+	[data setObject:node forKey:@"node"];
+	[data setObject:key forKey:@"key"];
+	[data setObject:[NSNumber numberWithInt:index] forKey:@"index"];
+	
+	for (NSXMLNode *attr in [node attributes])
+	{
+		if ([[attr name] isEqualToString:@"Value"]
+			|| [[attr name] isEqualToString:@"OptionsFile"])
+		{
+			[data setObject:[attr stringValue] forKey:[attr name]];
+			continue;
+		}
+	}
+	
+	return setBlock(res, data);
+}
+
+- (id)loadOverrideConfigKey:(NSXMLElement*)node withIndex:(int)index forSection:(id)sect error:(NSError**)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+{
+	NSMutableDictionary *data = [NSMutableDictionary dictionary];
+	id res = createBlock(node, @"ConfigKey");
+	
+	if (!res)
+		return nil;
+	
+	[data setObject:node forKey:@"node"];
+	[data setObject:sect forKey:@"section"];
+	[data setObject:[NSNumber numberWithInt:index] forKey:@"index"];
+	
+	for (NSXMLNode *attr in [node attributes])
+	{
+		if ([[attr name] isEqualToString:@"Name"]
+			|| [[attr name] isEqualToString:@"DefaultValue"]
+			|| [[attr name] isEqualToString:@"OriginalFile"])
+		{
+			[data setObject:[attr stringValue] forKey:[attr name]];
+			continue;
+		}
+	}
+	
+	NSMutableSet *values = [NSMutableSet set];
+	for (NSXMLElement *subnode in [node children])
+	{
+		if ([[subnode name] isEqualToString:@"Description"])
+		{
+			/* XXX Could be multiple children */
+			NSString *desc = [[subnode childAtIndex:0] stringValue];
+			
+			if (desc)
+				[data setObject:desc forKey:[subnode name]];
+			continue;
+		}
+		
+		NSRange r = [[subnode name] rangeOfString:@"Value_" options:NSAnchoredSearch];
+		if (r.length)
+		{
+			id vnode = [self loadOverrideConfigValue:subnode withIndex:[[[subnode name] substringFromIndex:r.length] intValue] forKey:res error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+			
+			if (!vnode)
+				return NO;
+			
+			[values addObject:vnode];
+		}
+	}
+	if ([values count])
+		[data setObject:values forKey:@"values"];
+	
+	return setBlock(res, data);
+}
+
+- (id)loadOverrideConfigSection:(NSXMLElement*)node withIndex:(int)index error:(NSError**)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+{
+	NSMutableDictionary *data = [NSMutableDictionary dictionary];
+	id res = createBlock(node, @"ConfigSection");
+	
+	if (!res)
+		return nil;
+	
+	[data setObject:node forKey:@"node"];
+	[data setObject:item forKey:@"item"];
+	[data setObject:[NSNumber numberWithInt:index] forKey:@"index"];
+	
+	for (NSXMLNode *attr in [node attributes])
+	{
+		if ([[attr name] isEqualToString:@"Name"])
+		{
+			[data setObject:[attr stringValue] forKey:[attr name]];
+			continue;
+		}
+	}
+	
+	NSMutableSet *keys = [NSMutableSet set];
+	for (NSXMLElement *subnode in [node children])
+	{
+		NSRange r = [[subnode name] rangeOfString:@"Key_" options:NSAnchoredSearch];
+		if (r.length)
+		{
+			id knode = [self loadOverrideConfigKey:subnode withIndex:[[[subnode name] substringFromIndex:r.length] intValue] forSection:res error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+			
+			if (!knode)
+				return NO;
+			
+			[keys addObject:knode];
+		}
+	}
+	if ([keys count])
+		[data setObject:keys forKey:@"keys"];
+	
+	return setBlock(res, data);
+}
+
+- (BOOL)loadOverrideConfig:(NSXMLElement*)node error:(NSError**)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+{
+	if (![[node name] isEqualToString:@"OverrideConfig"])
+	{
+		if (error)
+			*error = [self dataStoreError:5 msg:@"Node is not an OfferList"];
+		return NO;
+	}
+	
+	for (NSXMLElement *subnode in [node children])
+	{
+		NSRange r = [[subnode name] rangeOfString:@"Section_" options:NSAnchoredSearch];
+		if (r.length)
+		{
+			id res = [self loadOverrideConfigSection:subnode withIndex:[[[subnode name] substringFromIndex:r.length] intValue] error:error usingCreateBlock:createBlock usingSetBlock:setBlock];
+			
+			if (!res)
+				return NO;
+		}
+	}
+	
+	return YES;
+}
+
+- (BOOL)load:(NSError**)error
+{
+	return [self loadUsingSelector:@selector(loadOverrideConfig:error:usingCreateBlock:usingSetBlock:) error:error];
+}
+
+@end

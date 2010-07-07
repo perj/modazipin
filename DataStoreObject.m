@@ -501,3 +501,36 @@
 @dynamic AddInsList;
 
 @end
+
+@implementation ConfigSection
+
+@synthesize keysController;
+
+- (void)createController
+{
+	if (!self.keysController)
+	{
+		NSArrayController *ctrl = [[NSArrayController alloc] init];
+		
+		[ctrl setContent:[self valueForKey:@"keys"]];
+		//[ctrl setManagedObjectContext:[self managedObjectContext]];
+		//[ctrl setEntityName:@"ConfigKey"];
+		//[ctrl setFetchPredicate:[NSPredicate predicateWithFormat:@"section == %@", self]];
+		
+		self.keysController = ctrl;
+	}
+}
+
+- (void)awakeFromFetch
+{
+	[super awakeFromFetch];
+	[self createController];
+}
+
+- (void)awakeFromInsert
+{
+	[super awakeFromInsert];
+	[self createController];
+}
+
+@end

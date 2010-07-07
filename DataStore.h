@@ -90,3 +90,10 @@ typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 }
 
 @end
+
+@interface OverrideConfigStore : DataStore
+{
+	Item *item;
+}
+
+@end

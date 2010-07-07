@@ -338,14 +338,25 @@ static NSPredicate *isREADME;
 		}
 	}
 	
-	/* Check if this is the image. */
-	if (item && contents && item.Image && [item.Image isEqualToString:[contents stringByDeletingPathExtension]])
+	if (item && contents)
 	{
-		NSImage *img = [[NSImage alloc] initWithData:data];
-		[item setValue:[img TIFFRepresentation] forKey:@"imageData"];
-		[item updateInfo];
-		if ([[itemsController selectedObjects] indexOfObject:item] != NSNotFound)
-			[self performSelectorOnMainThread:@selector(itemsControllerChanged) withObject:nil waitUntilDone:NO];
+		/* Check if this is the image. */
+		if (item.Image && [item.Image isEqualToString:[contents stringByDeletingPathExtension]])
+		{
+			NSImage *img = [[NSImage alloc] initWithData:data];
+			[item setValue:[img TIFFRepresentation] forKey:@"imageData"];
+			[item updateInfo];
+			if ([[itemsController selectedObjects] indexOfObject:item] != NSNotFound)
+				[self performSelectorOnMainThread:@selector(itemsControllerChanged) withObject:nil waitUntilDone:NO];
+		}
+		else if ([contents caseInsensitiveCompare:@"OverrideConfig.xml"] == NSOrderedSame)
+		{
+			[self configurePersistentStoreCoordinatorForURL:[url fileReferenceURL] ofType:@"OverrideConfigStore" modelConfiguration:@"overrideconfig" storeOptions:[NSDictionary dictionaryWithObject:item forKey:@"item"] error:nil];
+			req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"configSectionsForItem" substitutionVariables:[NSDictionary dictionaryWithObject:item forKey:@"item"]];
+			NSArray *sections = [[self managedObjectContext] executeFetchRequest:req error:nil];
+			
+			[item setValue:[NSSet setWithArray:sections] forKey:@"configSections"];
+		}
 	}
 }
 

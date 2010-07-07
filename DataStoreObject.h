@@ -219,3 +219,13 @@
 - (void)removeOfferList:(NSSet *)value;
 
 @end
+
+@interface ConfigSection : DataStoreObject
+{
+	NSArrayController *keysController;
+}
+
+@property (retain) NSArrayController *keysController;
+
+@end
+
