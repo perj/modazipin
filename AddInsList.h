@@ -49,9 +49,14 @@
 	NSURL *randomScreenshotURL;
 	
 	Item *detailedItem;
+	int detailsTabSelected;
+	
+	IBOutlet NSScrollView *optionsContainer;
 }
 
 + (AddInsList*)sharedAddInsList;
+
+@property (readonly) Item *detailedItem;
 
 - (void)itemsControllerChanged;
 - (void)reloadItem:(Item*)item;
@@ -105,6 +110,8 @@
 - (void)enabledChanged:(Item*)item canInteract:(BOOL)canInteract;
 - (void)askOverrideGameVersion:(Item*)item;
 - (void)answerOverrideGameVersion:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo;
+
+@property int detailsTabSelected;
 
 @end
 

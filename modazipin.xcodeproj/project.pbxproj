@@ -36,6 +36,8 @@
 		6662533011C6BA6000AA6A27 /* MagickImageRep.m in Sources */ = {isa = PBXBuildFile; fileRef = 6662532F11C6BA6000AA6A27 /* MagickImageRep.m */; };
 		6662533C11C6C19A00AA6A27 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6662533A11C6C19A00AA6A27 /* Quartz.framework */; };
 		6662533D11C6C19A00AA6A27 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6662533B11C6C19A00AA6A27 /* QuartzCore.framework */; };
+		666F424611E4E129005CFFD7 /* ConfigSection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 666F424511E4E129005CFFD7 /* ConfigSection.xib */; };
+		666F43D511E4FBB2005CFFD7 /* ConfigKey.xib in Resources */ = {isa = PBXBuildFile; fileRef = 666F43D411E4FBB2005CFFD7 /* ConfigKey.xib */; };
 		66726AED10FD26EB001EB75C /* dragon_4_doc.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66726AEC10FD26EB001EB75C /* dragon_4_doc.icns */; };
 		6675043D113191C2002BA240 /* ItemInfo.rtfd in Resources */ = {isa = PBXBuildFile; fileRef = 6675043C113191C2002BA240 /* ItemInfo.rtfd */; };
 		667505391131A26D002BA240 /* ItemDetails.html in Resources */ = {isa = PBXBuildFile; fileRef = 667505381131A26D002BA240 /* ItemDetails.html */; };
@@ -115,6 +117,8 @@
 		6662532F11C6BA6000AA6A27 /* MagickImageRep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagickImageRep.m; sourceTree = "<group>"; };
 		6662533A11C6C19A00AA6A27 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
 		6662533B11C6C19A00AA6A27 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
+		666F424311E4E11C005CFFD7 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/ConfigSection.xib; sourceTree = "<group>"; };
+		666F43D211E4FBAB005CFFD7 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/ConfigKey.xib; sourceTree = "<group>"; };
 		66716B6D10FFB550009F0009 /* TODO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
 		66716B6E10FFB5CF009F0009 /* README.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = README.rtf; sourceTree = "<group>"; };
 		66726AEC10FD26EB001EB75C /* dragon_4_doc.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = dragon_4_doc.icns; sourceTree = "<group>"; };
@@ -303,9 +307,11 @@
 		6652AD4C11DCB2B80004D59D /* XIBs */ = {
 			isa = PBXGroup;
 			children = (
+				666F424511E4E129005CFFD7 /* ConfigSection.xib */,
 				665295FE10F2ADD20095E65F /* AddInsList.xib */,
 				6600E6FD11305DF7003B40E3 /* Dazip.xib */,
 				2F7446A70DB6BCF400F9684A /* MainMenu.xib */,
+				666F43D411E4FBB2005CFFD7 /* ConfigKey.xib */,
 			);
 			name = XIBs;
 			sourceTree = "<group>";
@@ -385,6 +391,8 @@
 				6675096E113331E2002BA240 /* grad.png in Resources */,
 				668DA283113B084200A66EA8 /* ToolbarDeleteIcon.icns in Resources */,
 				66A5800A11C96F3B00787850 /* LICENSE in Resources */,
+				666F424611E4E129005CFFD7 /* ConfigSection.xib in Resources */,
+				666F43D511E4FBB2005CFFD7 /* ConfigKey.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -490,6 +498,22 @@
 				2F7446AA0DB6BCF400F9684A /* English */,
 			);
 			name = AddInsList.xib;
+			sourceTree = "<group>";
+		};
+		666F424511E4E129005CFFD7 /* ConfigSection.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				666F424311E4E11C005CFFD7 /* English */,
+			);
+			name = ConfigSection.xib;
+			sourceTree = "<group>";
+		};
+		666F43D411E4FBB2005CFFD7 /* ConfigKey.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				666F43D211E4FBAB005CFFD7 /* English */,
+			);
+			name = ConfigKey.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

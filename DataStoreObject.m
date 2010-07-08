@@ -23,6 +23,9 @@
 #import "DataStore.h"
 #import "base64.h"
 
+/* XXX layering violation */
+#import "AddInsList.h"
+
 @implementation DataStoreObject
 
 @dynamic node;
@@ -267,6 +270,16 @@
 @dynamic displayed;
 @dynamic missingFiles;
 
++ (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString *)key
+{
+	NSSet *res = [super keyPathsForValuesAffectingValueForKey:key];
+	
+	if ([key isEqualToString:@"hasConfigSections"])
+		res = [res setByAddingObject:@"configSections"];
+	
+	return res;
+}
+
 - (NSMutableString*)replaceProperties:(NSMutableString*)str
 {
 	NSEntityDescription *textEntity = [NSEntityDescription entityForName:@"Text" inManagedObjectContext:[self managedObjectContext]];
@@ -462,6 +475,67 @@
 	[self didChangeValueForKey:@"detailsHTML"];
 }
 
+- (void)updateConfigView
+{
+	if (!configView)
+	{
+		configView = [[NSView alloc] initWithFrame:(NSRect){{0, 0}, {0, 0}}];
+		[self addObserver:self forKeyPath:@"configSections" options:0 context:nil];
+	}
+	
+	NSSet *sections = [self valueForKey:@"configSections"];
+	/* Sort reverse to get index 0 at top. */
+	NSArray *sortedSections = [[sections allObjects] sortedArrayUsingComparator:^NSComparisonResult(id a, id b)
+							   {
+								   int idxa = [[a valueForKey:@"index"] intValue];
+								   int idxb = [[b valueForKey:@"index"] intValue];
+								   
+								   if (idxa < idxb)
+									   return NSOrderedDescending;
+								   if (idxa > idxb)
+									   return NSOrderedAscending;
+								   return NSOrderedSame;
+							   }];
+	
+	NSPoint loc = {0, 0};
+	NSInteger width = 0;
+	for (NSView *newSub in [sortedSections valueForKey:@"view"])
+	{
+		if ([newSub superview] != configView)
+			[configView addSubview:newSub];
+		
+		[newSub setFrameOrigin:loc];
+		
+		NSRect subFrame = [newSub frame];
+		loc.y += subFrame.size.height;
+		if (subFrame.size.width > width)
+			width = subFrame.size.width;
+	}
+	[configView setFrame:(NSRect){{0, 0}, {width, 0}}];
+	[[configView animator] setFrame:(NSRect){{0, 0}, {width, loc.y}}];
+}
+
+- (BOOL)hasConfigSections
+{
+	return [[self valueForKey:@"configSections"] count] > 0;
+}
+
+- (NSView*)configView
+{
+	if (!configView)
+		[self updateConfigView];
+	
+	return configView;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if (object == self && [keyPath isEqualToString:@"configSections"])
+		[self updateConfigView];
+	else
+		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+}
+
 @end
 
 
@@ -504,33 +578,112 @@
 
 @implementation ConfigSection
 
-@synthesize keysController;
-
-- (void)createController
+- (NSArray*)sortedKeys
 {
-	if (!self.keysController)
+	return [[[self valueForKey:@"keys"] allObjects] sortedArrayUsingComparator:^NSComparisonResult(id a, id b)
+	 {
+		 int idxa = [[a valueForKey:@"index"] intValue];
+		 int idxb = [[b valueForKey:@"index"] intValue];
+		 
+		 if (idxa < idxb)
+			 return NSOrderedDescending;
+		 if (idxa > idxb)
+			 return NSOrderedAscending;
+		 return NSOrderedSame;
+	 }];
+}
+
+- (NSView*)view
+{
+	if (!view)
 	{
-		NSArrayController *ctrl = [[NSArrayController alloc] init];
+		[NSBundle loadNibNamed:@"ConfigSection" owner:self];
+		NSPoint loc = {8, 10};
+		NSInteger width = 0;
 		
-		[ctrl setContent:[self valueForKey:@"keys"]];
-		//[ctrl setManagedObjectContext:[self managedObjectContext]];
-		//[ctrl setEntityName:@"ConfigKey"];
-		//[ctrl setFetchPredicate:[NSPredicate predicateWithFormat:@"section == %@", self]];
-		
-		self.keysController = ctrl;
+		for (NSView *newSub in [[self sortedKeys] valueForKey:@"view"])
+		{
+			if ([newSub superview] != box)
+				[box addSubview:newSub];
+			
+			[newSub setFrameOrigin:loc];
+			
+			NSRect subFrame = [newSub frame];
+			loc.y += subFrame.size.height;
+			if (subFrame.size.width > width)
+				width = subFrame.size.width;
+		}
+		[view setFrame:(NSRect){{0, 0}, {width + 22, loc.y + 34}}];
 	}
-}
-
-- (void)awakeFromFetch
-{
-	[super awakeFromFetch];
-	[self createController];
-}
-
-- (void)awakeFromInsert
-{
-	[super awakeFromInsert];
-	[self createController];
+	return view;
 }
 
 @end
+
+
+@implementation ConfigKey
+
+- (NSArray*)sortedValues
+{
+	return [[[self valueForKey:@"values"] allObjects] sortedArrayUsingComparator:^NSComparisonResult(id a, id b)
+			{
+				int idxa = [[a valueForKey:@"index"] intValue];
+				int idxb = [[b valueForKey:@"index"] intValue];
+				
+				if (idxa < idxb)
+					return NSOrderedAscending;
+				if (idxa > idxb)
+					return NSOrderedDescending;
+				return NSOrderedSame;
+			}];
+}
+
+- (NSAttributedString*)attributedDescription
+{
+	NSString *desc = [self valueForKey:@"Description"];
+	
+	if (!desc)
+		return nil;
+	
+	return [[NSAttributedString alloc] initWithString:desc];
+}
+
+- (NSView*)view
+{
+	if (!view)
+	{
+		[NSBundle loadNibNamed:@"ConfigKey" owner:self];
+		NSRect r = [view frame];
+		
+		r.size.height = 28;
+		
+		NSString *desc = [self valueForKey:@"Description"];
+		if (desc)
+		{
+			[[descView textContainer] setHeightTracksTextView:NO];
+			[descView sizeToFit];
+			r.size.height += [descView frame].size.height + 16;
+		}
+		
+		[view setFrameSize:r.size];
+	}
+	return view;
+}
+
+- (IBAction)valueChanged:(id)sender
+{
+	/* XXX layering violation */
+	[[AddInsList sharedAddInsList] saveDocument:self];
+}
+
+@end
+
+@implementation ControlKeyScrollView
+
+- (void)scrollWheel:(NSEvent *)theEvent
+{
+	[[self superview] scrollWheel:theEvent];
+}
+
+@end
+

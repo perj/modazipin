@@ -52,6 +52,8 @@ static NSPredicate *isREADME;
 			operationQueue = [[NSOperationQueue alloc] init];
 		[[self managedObjectContext] setUndoManager:nil];
 		
+		detailsTabSelected = 1;
+		
 		if (!isDisabled)
 			isDisabled = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] ' (disabled)'"];
 		if (!isREADME)
@@ -179,26 +181,38 @@ static NSPredicate *isREADME;
 	[[Game sharedGame] addObserver:self forKeyPath:@"gameAppImage" options:0 context:nil];
 }
 
+@synthesize detailedItem;
+
 - (void)reloadDetails
 {
 	NSArray *objects = [itemsController selectedObjects];
 	
 	if ([objects count] == 1)
 	{
+		[self willChangeValueForKey:@"detailedItem"];
 		detailedItem = [objects objectAtIndex:0];
+		[self didChangeValueForKey:@"detailedItem"];
 		
 		NSMutableString *html = [detailedItem detailsHTML];
 		
 		[html replaceOccurrencesOfString:@"<!--dazip-->" withString:@"<!--" options:0 range:NSMakeRange(0, [html length])];
 		[html replaceOccurrencesOfString:@"<!--/dazip-->" withString:@"-->" options:0 range:NSMakeRange(0, [html length])];
 		[[detailsView mainFrame] loadHTMLString:html baseURL:[[NSBundle mainBundle] resourceURL]];
+		
+		[optionsContainer setDocumentView:[detailedItem valueForKey:@"configView"]];
 	}
 	else
 	{
+		[self willChangeValueForKey:@"detailedItem"];
 		detailedItem = nil;
+		[self didChangeValueForKey:@"detailedItem"];
 		
 		[[detailsView mainFrame] loadHTMLString:@"" baseURL:[[NSBundle mainBundle] resourceURL]];
+		
+		[[optionsContainer contentView] setDocumentView:nil];
 	}
+	if (detailsTabSelected == 2 && ![detailedItem hasConfigSections])
+		[self setDetailsTabSelected:1];
 }
 
 - (void)itemsControllerChanged
@@ -765,6 +779,18 @@ static NSPredicate *isREADME;
 		
 		[self enabledChanged:item canInteract:NO];
 	}
+}
+
+- (int)detailsTabSelected
+{
+	return detailsTabSelected;
+}
+
+- (void)setDetailsTabSelected:(int)value
+{
+	detailsTabSelected = value;
+	[detailsView setHidden:detailsTabSelected != 1];
+	[optionsContainer setHidden:detailsTabSelected != 2];
 }
 
 @end

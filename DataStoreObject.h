@@ -103,6 +103,8 @@
 {
 	NSMutableAttributedString *cachedInfo;
 	NSMutableString *cachedDetails;
+	
+	NSView *configView;
 }
 
 @property (nonatomic, retain) NSDecimalNumber * BioWare;
@@ -133,6 +135,9 @@
 @property (readonly) NSMutableString * detailsHTML;
 
 - (void)updateInfo;
+
+- (NSView*)configView;
+- (BOOL)hasConfigSections;
 
 @end
 
@@ -222,10 +227,27 @@
 
 @interface ConfigSection : DataStoreObject
 {
-	NSArrayController *keysController;
+	IBOutlet NSView *view;
+	IBOutlet NSBox *box;
 }
 
-@property (retain) NSArrayController *keysController;
+- (NSView*)view;
 
 @end
 
+
+@interface ConfigKey : DataStoreObject
+{
+	IBOutlet NSView *view;
+	IBOutlet NSTextView *descView;
+}
+
+- (IBAction)valueChanged:(id)sender;
+
+@end
+
+@interface ControlKeyScrollView : NSScrollView
+{
+}
+
+@end

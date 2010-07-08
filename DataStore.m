@@ -867,6 +867,13 @@
 			}
 		}
 	}
+	else if ([[[managedObject entity] name] isEqualToString:@"ConfigKey"])
+	{
+		attr = [elem attributeForName:@"DefaultValue"];
+		
+		[attr setStringValue:[managedObject valueForKey:@"DefaultValue"]];
+		[node setValue:[managedObject valueForKey:@"DefaultValue"] forKey:@"DefaultValue"];
+	}
 }
 
 - (id)newReferenceObjectForManagedObject:(NSManagedObject *)managedObject
@@ -1445,9 +1452,9 @@
 		if ([[subnode name] isEqualToString:@"Description"])
 		{
 			/* XXX Could be multiple children */
-			NSString *desc = [[subnode childAtIndex:0] stringValue];
+			NSString *desc = [[[subnode childAtIndex:0] stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 			
-			if (desc)
+			if ([desc length])
 				[data setObject:desc forKey:[subnode name]];
 			continue;
 		}
@@ -1537,6 +1544,13 @@
 - (BOOL)load:(NSError**)error
 {
 	return [self loadUsingSelector:@selector(loadOverrideConfig:error:usingCreateBlock:usingSetBlock:) error:error];
+}
+
+- (BOOL)save:(NSError **)error
+{
+	BOOL res = [[xmldoc XMLDataWithOptions:NSXMLNodePrettyPrint] writeToURL:[self URL] options:0 error:error];
+	
+	return res;
 }
 
 @end
