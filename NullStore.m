@@ -20,7 +20,7 @@
  */
 
 #import "NullStore.h"
-
+#import "base64.h"
 
 @implementation NullStore
 
@@ -35,7 +35,7 @@
 		uuid_t uuid;
 		
 		uuid_generate(uuid);
-		self.identifier = [[NSString alloc] initWithBytes:uuid length:sizeof (uuid) encoding:NSASCIIStringEncoding];
+		self.identifier = [[NSData dataWithBytes:uuid length:sizeof(uuid)] base64];
 		cntr = 0;
 	}
 	return self;
@@ -76,6 +76,9 @@
 		id value = [managedObject valueForKey:key];
 		
 		/* Simplest possible for now. */
+		if ([value isKindOfClass:[NSManagedObject self]])
+			value = [(NSAtomicStore*)[[value objectID] persistentStore] cacheNodeForObjectID:[value objectID]];
+		
 		[node setValue:value forKey:key];
 	}
 }

@@ -24,6 +24,9 @@
 #import "DAArchive.h"
 #import "Scanner.h"
 #import "Game.h"
+#import "NullStore.h"
+
+#include <sys/stat.h>
 
 @implementation AddInsList
 
@@ -259,6 +262,7 @@ static NSPredicate *isREADME;
 	NSArray *mparts = [[self fileURL] pathComponents];
 	NSFetchRequest *req;
 	Item *item = nil;
+	Path *pathObj;
 	
 	for (NSString *p in mparts) {
 		if (![[cparts objectAtIndex:0] isEqualToString:p])
@@ -277,8 +281,7 @@ static NSPredicate *isREADME;
 		{
 			item = [items objectAtIndex:0];
 			
-			if (contents)
-				[item.modazipin addContent:contents];
+			/* XXX add contents here. */
 		}
 		else
 		{
@@ -315,21 +318,21 @@ static NSPredicate *isREADME;
 		
 		if ([paths count])
 		{
-			Path *p = [paths objectAtIndex:0];
+			pathObj = [paths objectAtIndex:0];
 			
-			p.verified = [NSNumber numberWithBool:YES];
-			item = p.modazipin.item;
+			pathObj.verified = [NSNumber numberWithBool:YES];
+			item = pathObj.modazipin.item;
 		}
 		else
 		{
 			/* An unknown path. */
 			item = [NSEntityDescription insertNewObjectForEntityForName:@"UnknownPath" inManagedObjectContext:[self managedObjectContext]];
+			pathObj = [NSEntityDescription insertNewObjectForEntityForName:@"Path" inManagedObjectContext:[self managedObjectContext]];
 			Text *title = [NSEntityDescription insertNewObjectForEntityForName:@"Text" inManagedObjectContext:[self managedObjectContext]];
-			Path *p = [NSEntityDescription insertNewObjectForEntityForName:@"Path" inManagedObjectContext:[self managedObjectContext]];
 			
-			p.path = path;
-			p.type = pathType;
-			p.verified = [NSNumber numberWithBool:YES];
+			pathObj.path = path;
+			pathObj.type = pathType;
+			pathObj.verified = [NSNumber numberWithBool:YES];
 			title.DefaultText = [cparts lastObject];
 			[title updateLocalizedValue:nil];
 			title.item = item;
@@ -337,11 +340,33 @@ static NSPredicate *isREADME;
 			item.modazipin = [NSEntityDescription insertNewObjectForEntityForName:@"Modazipin" inManagedObjectContext:[self managedObjectContext]];
 			item.Enabled = disabled ? [NSDecimalNumber zero] : [NSDecimalNumber one];
 			item.displayed = [NSNumber numberWithBool:YES];
-			[item.modazipin addPathsObject:p];
+			[item.modazipin addPathsObject:pathObj];
 		}
 		
-		if (contents)
-			[item.modazipin addContent:contents];
+		if (contents && pathObj)
+		{
+			NSManagedObject *contentObj = [NSEntityDescription insertNewObjectForEntityForName:@"Content" inManagedObjectContext:[self managedObjectContext]];
+			
+			[contentObj setValue:contents forKey:@"name"];
+			[contentObj setValue:[url fileReferenceURL] forKey:@"URL"];
+			[contentObj setValue:pathObj forKey:@"path"];
+			
+			NullStore *nullStore = nil;
+			if (!nullStore)
+			{
+				for (NSAtomicStore *store in [[[self managedObjectContext] persistentStoreCoordinator] persistentStores])
+				{
+					if ([store isKindOfClass:[NullStore self]])
+					{
+						nullStore = (NullStore*)store;
+						break;
+					}
+				}
+			}
+			[[self managedObjectContext] assignObject:contentObj toPersistentStore:nullStore];
+			
+			[pathObj addContentsObject:contentObj];
+		}
 		
 		Text *desc = !item.Description && readme ? [NSEntityDescription insertNewObjectForEntityForName:@"Text" inManagedObjectContext:[self managedObjectContext]] : nil;
 		if (desc)
@@ -832,17 +857,91 @@ static NSPredicate *isREADME;
 				(void)0; /* XXX do something here. */
 		}
 	}
+	
+	NSArray *configkeys = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"allConfigKeys"] error:error];
+	
+	if (!configkeys)
+		return NO;
+	
+	for (ConfigKey *key in configkeys)
+	{
+		NSString *selectedValue = [key valueForKey:@"DefaultValue"];
+		NSString *originalFile = [key valueForKey:@"OriginalFile"];
+		
+		NSFetchRequest *selectedValueReq = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"configValueWithValueAndKey" substitutionVariables:[NSDictionary dictionaryWithObjectsAndKeys:selectedValue, @"value", key, @"key", nil]];
+		NSArray *selectedValues = [[self managedObjectContext] executeFetchRequest:selectedValueReq error:error];
+		
+		if (![selectedValues count])
+		{
+			NSLog(@"Can't find selected value object for key '%@' selectedValue '%@'", [key valueForKey:@"Name"], selectedValue);
+			continue; /* XXX error handling */
+		}
+		if (![selectedValues count] > 1)
+			NSLog(@"Multipe selected value object for key '%@' selectedValue '%@'", [key valueForKey:@"Name"], selectedValue);
+
+		
+		DataStoreObject *selectedValueObj = [selectedValues objectAtIndex:0];
+		
+		NSFetchRequest *selectedReq = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"contentWithNameAndItem" substitutionVariables:[NSDictionary dictionaryWithObjectsAndKeys:[selectedValueObj valueForKey:@"OptionsFile"], @"name", [[key valueForKey:@"section"] valueForKey:@"item"], @"item", nil]];
+		NSArray *selectedContents = [[self managedObjectContext] executeFetchRequest:selectedReq error:error];
+		
+		NSFetchRequest *originalReq = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"contentWithNameAndItem" substitutionVariables:[NSDictionary dictionaryWithObjectsAndKeys:originalFile, @"name", [[key valueForKey:@"section"] valueForKey:@"item"], @"item", nil]];
+		NSArray *originalContents = [[self managedObjectContext] executeFetchRequest:originalReq error:error];
+		
+		if (![selectedContents count])
+		{
+			NSLog(@"Can't find selected contents for key '%@' selectedValue '%@'", [key valueForKey:@"Name"], selectedValue);
+			continue;
+		}
+		if ([selectedContents count] > 1)
+			NSLog(@"Multiple contents for key '%@' selectedValue '%@'", [key valueForKey:@"Name"], selectedValue);
+		if (![originalContents count])
+		{
+			NSLog(@"Can't find original contents for key '%@' originalFile '%@'", [key valueForKey:@"Name"], originalFile);
+			continue; /* XXX error handling. */
+		}
+		if ([originalContents count] > 1)
+			NSLog(@"Multiple contents for key '%@' originalFile '%@'", [key valueForKey:@"Name"], originalFile);
+		
+		NSManagedObject *selectedContent = [selectedContents objectAtIndex:0];
+		NSManagedObject *originalContent = [originalContents objectAtIndex:0];
+		
+		NSURL *selectedURL = [[selectedContent valueForKey:@"URL"] filePathURL];
+		NSURL *originalURL = [[originalContent valueForKey:@"URL"] filePathURL];
+		
+		struct stat origSt;
+		struct stat selectedSt;
+		
+		if (!stat([[selectedURL path] fileSystemRepresentation], &selectedSt)
+			&& !stat([[originalURL path] fileSystemRepresentation], &origSt))
+		{
+			if (origSt.st_dev == selectedSt.st_dev && origSt.st_ino == selectedSt.st_ino)
+			{
+				continue;
+			}
+		}
+		
+		[[NSFileManager defaultManager] removeItemAtURL:originalURL error:error];
+		if (![[NSFileManager defaultManager] linkItemAtURL:selectedURL toURL:originalURL error:error])
+			(void)0; /* XXX do something here. */
+		NSLog(@"linked %@ to %@", originalURL, selectedURL);
+		
+		/* Need to clear its cached fileReferenceURL */
+		originalURL = [NSURL URLWithString:[originalURL absoluteString]];
+		[originalContent setValue:[originalURL fileReferenceURL] forKey:@"URL"];
+	}
+	
 	return YES;
 }
 
 - (BOOL)writeSafelyToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation error:(NSError **)outError
 {
-	BOOL res = [[self managedObjectContext] save:outError];
+	BOOL res =  [self syncFilesFromContext:outError];
 	
 	if (!res)
 		return NO;
 	
-	return [self syncFilesFromContext:outError];
+	return [[self managedObjectContext] save:outError];
 }
 
 @end

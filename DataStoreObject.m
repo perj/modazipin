@@ -44,6 +44,7 @@
 
 @implementation Path
 
+@dynamic contents;
 @dynamic modazipin;
 @dynamic path;
 @dynamic type;
@@ -61,35 +62,9 @@
 
 @implementation Modazipin
 
-@dynamic contents;
 @dynamic item;
 @dynamic paths;
 @dynamic origGameVersion;
-
-- (void)awakeFromInsert
-{
-	[super awakeFromInsert];
-	
-	self.contents = [NSMutableSet set];
-}
-
-- (void)awakeFromFetch
-{
-	[super awakeFromFetch];
-	
-	self.contents = [NSMutableSet set];
-}
-
-
-- (void)addContent:(NSString *)value
-{
-	[self.contents addObject:value];
-}
-
-- (void)removeContent:(NSString *)value
-{
-	[self.contents removeObject:value];
-}
 
 - (void)addPathNodes:(NSSet*)paths
 {

@@ -29,7 +29,7 @@
 
 - (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject
 {
-	/* This function is completely generic. */
+	/* This function is completely generic, except it requires all stores to be NSAtomicStore */
 	NSMutableDictionary *data = [NSMutableDictionary dictionary];
 	NSAtomicStoreCacheNode *cnode;
 	
@@ -51,12 +51,12 @@
 				
 				for (NSManagedObject *o in value)
 				{
-					cnode = [self cacheNodeForObjectID:[o objectID]];
+					cnode = [(NSAtomicStore*)[[o objectID] persistentStore] cacheNodeForObjectID:[o objectID]];
 					
 					if (!cnode)
 					{
 						cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[o objectID]];
-						[self addCacheNodes:[NSSet setWithObject:cnode]];
+						[(NSAtomicStore*)[[o objectID] persistentStore] addCacheNodes:[NSSet setWithObject:cnode]];
 					}
 					[set addObject:cnode];
 				}
@@ -66,11 +66,11 @@
 			{
 				NSManagedObject *o = value;
 				
-				cnode = [self cacheNodeForObjectID:[o objectID]];
+				cnode = [(NSAtomicStore*)[[o objectID] persistentStore] cacheNodeForObjectID:[o objectID]];
 				if (!cnode)
 				{
 					cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[o objectID]];
-					[self addCacheNodes:[NSSet setWithObject:cnode]];
+					[(NSAtomicStore*)[[o objectID] persistentStore] addCacheNodes:[NSSet setWithObject:cnode]];
 				}
 				[data setObject:cnode forKey:key];
 			}

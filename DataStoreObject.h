@@ -36,10 +36,20 @@
 {
 }
 
+@property (nonatomic, retain) NSSet* contents;
 @property (nonatomic, retain) Modazipin * modazipin;
 @property (nonatomic, retain) NSString * path;
 @property (nonatomic, retain) NSString * type;
 @property (nonatomic, retain) NSNumber * verified;
+
+@end
+
+// coalesce these into one @interface Path (CoreDataGeneratedAccessors) section
+@interface Path (CoreDataGeneratedAccessors)
+- (void)addContentsObject:(NSManagedObject *)value;
+- (void)removeContentsObject:(NSManagedObject *)value;
+- (void)addContents:(NSSet *)value;
+- (void)removeContents:(NSSet *)value;
 
 @end
 
@@ -48,13 +58,9 @@
 {
 }
 
-@property (nonatomic, retain) NSMutableSet* contents;
 @property (nonatomic, retain) Item * item;
 @property (nonatomic, retain) NSSet* paths;
 @property (nonatomic, retain) NSString *origGameVersion;
-
-- (void)addContent:(NSString *)value;
-- (void)removeContent:(NSString *)value;
 
 @end
 
