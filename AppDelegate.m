@@ -26,8 +26,6 @@
 
 @implementation AppDelegate
 
-static BOOL fatal = NO;
-
 - (void)setupDefaults
 {
 	[[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -55,27 +53,73 @@ static BOOL fatal = NO;
 	return NO;
 }
 
+- (IBAction)chooseDragonAgeFolder:(id)sender
+{
+	static BOOL running = NO;
+	NSOpenPanel *panel = [NSOpenPanel openPanel];
+	NSURL *oldUrl = [[NSUserDefaults standardUserDefaults] URLForKey:@"baseurl"];
+	NSError *err;
+	
+	if (running)
+		return;
+	running = YES;
+	
+	if (!oldUrl)
+		oldUrl = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:NULL];
+	
+	if (oldUrl)
+		[panel setDirectoryURL:oldUrl];
+	
+	[panel setMessage:@"Please locate the \"Dragon Age\" folder usually within the \"BioWare\" folder in Documents."];
+	[panel setCanChooseDirectories:YES];
+	[panel setCanChooseFiles:NO];
+	
+	NSInteger result = [panel runModal];
+	if (result == NSFileHandlingPanelOKButton)
+	{
+		NSURL *baseurl = [panel URL];
+		NSDocument *doc = [[AddInsList alloc] initWithContentsOfURL:baseurl
+															 ofType:@"Dragon Age AddIns List"
+															  error:&err];
+		
+		if (doc)
+		{
+			[[NSDocumentController sharedDocumentController] addDocument:doc];
+			[doc makeWindowControllers];
+			[doc showWindows];
+			[[NSUserDefaults standardUserDefaults] setURL:baseurl forKey:@"baseurl"];
+		}
+		else
+			[NSApp presentError:err]; 
+	}
+	running = NO;
+}
+
 - (IBAction)openAddInsList:(id)sender
 {
 	NSError *err = nil;
-	NSURL *documents = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:&err];
 	
-	if (fatal)
-		return;
+	NSURL *baseurl = [[NSUserDefaults standardUserDefaults] URLForKey:@"baseurl"];
 	
-	if (documents)
+	if (!baseurl)
+	{
+		NSURL *documents = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:&err];
+		
+		baseurl = [[NSURL URLWithString:@"BioWare/Dragon%20Age" relativeToURL:documents] standardizedURL];
+	}
+	
+	if (baseurl)
 	{
 		/* Manually open the AddIns.xml file, to avoid registering as opener of all .xml files */
-		NSURL *addins = [[NSURL URLWithString:@"BioWare/Dragon%20Age" relativeToURL:documents] standardizedURL];
 		NSDocument *doc;
 		
-		if ((doc = [[NSDocumentController sharedDocumentController] documentForURL:addins]))
+		if ((doc = [[NSDocumentController sharedDocumentController] documentForURL:baseurl]))
 			[doc showWindows];
 		else
 		{
 			doc = [AddInsList sharedAddInsList];
 			if (!doc)
-				doc = [[AddInsList alloc] initWithContentsOfURL:addins
+				doc = [[AddInsList alloc] initWithContentsOfURL:baseurl
 														 ofType:@"Dragon Age AddIns List"
 														  error:&err];
 			
@@ -84,16 +128,12 @@ static BOOL fatal = NO;
 				[[NSDocumentController sharedDocumentController] addDocument:doc];
 				[doc makeWindowControllers];
 				[doc showWindows];
+				[[NSUserDefaults standardUserDefaults] setURL:baseurl forKey:@"baseurl"];
 			}
 			else
-			{
-				fatal = YES;
-				NSRunCriticalAlertPanel(@"Error", @"Dragon Age addins data was not found. Make sure you have started the game at least once.", @"Quit", nil, nil);
-				[NSApp terminate:self];
-			}
+				[self chooseDragonAgeFolder:nil];
 		}
 	}
-	
 }
 
 - (IBAction)chooseCustomBackground:(id)sender
