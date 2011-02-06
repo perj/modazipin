@@ -348,7 +348,7 @@ static NSPredicate *isREADME;
 			NSManagedObject *contentObj = [NSEntityDescription insertNewObjectForEntityForName:@"Content" inManagedObjectContext:[self managedObjectContext]];
 			
 			[contentObj setValue:contents forKey:@"name"];
-			[contentObj setValue:[url fileReferenceURL] forKey:@"URL"];
+			[contentObj setValue:[url filePathURL] forKey:@"URL"]; /* fileReferenceURL gave problems with path lookups when configuring. */
 			[contentObj setValue:pathObj forKey:@"path"];
 			
 			NullStore *nullStore = nil;
@@ -906,8 +906,13 @@ static NSPredicate *isREADME;
 		NSManagedObject *selectedContent = [selectedContents objectAtIndex:0];
 		NSManagedObject *originalContent = [originalContents objectAtIndex:0];
 		
+		/* If using file reference URLs this sometimes gives the wrong value. Bad caching? */
 		NSURL *selectedURL = [[selectedContent valueForKey:@"URL"] filePathURL];
+		
 		NSURL *originalURL = [[originalContent valueForKey:@"URL"] filePathURL];
+		
+		if ([selectedURL isEqual:originalURL])
+			NSLog(@"Unexpected selected URL %@", selectedURL);
 		
 		struct stat origSt;
 		struct stat selectedSt;
