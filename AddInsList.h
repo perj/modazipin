@@ -36,6 +36,7 @@
 	IBOutlet NSToolbarItem *launchGameButton;
 	IBOutlet NSArrayController *itemsController;
 	IBOutlet WebView *detailsView;
+	IBOutlet NSButtonCell *detailsCell, *configCell, *galleryCell;
 	
 	IBOutlet NSWindow *progressWindow;
 	IBOutlet NSProgressIndicator *progressIndicator;
@@ -50,6 +51,7 @@
 	
 	Item *detailedItem;
 	int detailsTabSelected;
+	NSDictionary *contentsData;
 	
 	IBOutlet NSScrollView *optionsContainer;
 }
@@ -76,6 +78,8 @@
 @property(copy) NSURL *randomScreenshotURL;
 
 - (void)detailsCommand:(NSString*)command;
+
+- (NSData*)dataForContent:(NSString*)content;
 
 @end
 

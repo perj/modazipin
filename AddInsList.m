@@ -25,6 +25,7 @@
 #import "Scanner.h"
 #import "Game.h"
 #import "NullStore.h"
+#import "base64.h"
 
 #include <sys/stat.h>
 
@@ -162,13 +163,13 @@ static NSPredicate *isREADME;
 	[assignAddInController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"Title.localizedValue" ascending:YES selector:@selector(caseInsensitiveCompare:)]]];
 	
 	NSURL *myURL = [self fileURL];
-	NSURL *scanAddinsURL = [myURL URLByAppendingPathComponent:@"Addins"];
+	//NSURL *scanAddinsURL = [myURL URLByAppendingPathComponent:@"Addins"];
 	NSURL *scanOffersURL = [myURL URLByAppendingPathComponent:@"Offers"];
 	NSURL *scanPackagesURL = [myURL URLByAppendingPathComponent:@"packages"];
 	NSURL *scanDisabledPackagesURL = [myURL URLByAppendingPathComponent:@"packages (disabled)"];
 	
 	[operationQueue addObserver:self forKeyPath:@"operationCount" options:0 context:nil];
-	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanAddinsURL message:@"addins" split:YES]];
+	//[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanAddinsURL message:@"addins" split:YES]];
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanOffersURL message:@"offers" split:YES]];
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanPackagesURL message:@"packages" split:NO]];
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanDisabledPackagesURL message:@"disabled packages" split:NO]];
@@ -182,6 +183,19 @@ static NSPredicate *isREADME;
 	
 	[launchGameButton setImage:[Game sharedGame].gameAppImage];
 	[[Game sharedGame] addObserver:self forKeyPath:@"gameAppImage" options:0 context:nil];
+	
+	NSMutableDictionary *mattrs = [NSMutableDictionary dictionaryWithDictionary:[[detailsCell attributedTitle] attributesAtIndex:0 effectiveRange:NULL]];
+	[mattrs setObject:[NSColor colorWithCalibratedRed:0xC0/256. green:0xB0/256. blue:0x80/256. alpha:1] forKey:NSForegroundColorAttributeName];
+	NSDictionary *activeAttrs = [NSDictionary dictionaryWithDictionary:mattrs];
+	[mattrs setObject:[NSColor colorWithCalibratedRed:0x80/256. green:0x70/256. blue:0x40/256. alpha:1] forKey:NSForegroundColorAttributeName];
+	NSDictionary *inactiveAttrs = [NSDictionary dictionaryWithDictionary:mattrs];
+	
+	[detailsCell setAttributedTitle:[[NSAttributedString alloc] initWithString:[detailsCell title] attributes:inactiveAttrs]];
+	[detailsCell setAttributedAlternateTitle:[[NSAttributedString alloc] initWithString:[detailsCell title] attributes:activeAttrs]];
+	[configCell setAttributedTitle:[[NSAttributedString alloc] initWithString:[configCell title] attributes:inactiveAttrs]];
+	[configCell setAttributedAlternateTitle:[[NSAttributedString alloc] initWithString:[configCell title] attributes:activeAttrs]];
+	[galleryCell setAttributedTitle:[[NSAttributedString alloc] initWithString:[galleryCell title] attributes:inactiveAttrs]];
+	[galleryCell setAttributedAlternateTitle:[[NSAttributedString alloc] initWithString:[galleryCell title] attributes:activeAttrs]];
 }
 
 @synthesize detailedItem;
@@ -196,7 +210,7 @@ static NSPredicate *isREADME;
 		detailedItem = [objects objectAtIndex:0];
 		[self didChangeValueForKey:@"detailedItem"];
 		
-		NSMutableString *html = [detailedItem detailsHTML];
+		NSMutableString *html = detailsTabSelected == 3 ? [detailedItem galleryHTMLWithContents:&contentsData] : [detailedItem detailsHTML];
 		
 		[html replaceOccurrencesOfString:@"<!--dazip-->" withString:@"<!--" options:0 range:NSMakeRange(0, [html length])];
 		[html replaceOccurrencesOfString:@"<!--/dazip-->" withString:@"-->" options:0 range:NSMakeRange(0, [html length])];
@@ -485,6 +499,11 @@ static NSPredicate *isREADME;
 		if ([selected count] == 1)
 			[self askAssign:[selected objectAtIndex:0]];
 	}
+}
+
+- (NSData*)dataForContent:(NSString *)content
+{
+	return [contentsData objectForKey:content];
 }
 
 @end
@@ -814,8 +833,10 @@ static NSPredicate *isREADME;
 - (void)setDetailsTabSelected:(int)value
 {
 	detailsTabSelected = value;
-	[detailsView setHidden:detailsTabSelected != 1];
+	[detailsView setHidden:detailsTabSelected == 2];
 	[optionsContainer setHidden:detailsTabSelected != 2];
+	if (detailsTabSelected != 2)
+		[self reloadDetails];
 }
 
 @end

@@ -22,6 +22,7 @@
 #import "DataStoreObject.h"
 #import "DataStore.h"
 #import "base64.h"
+#import "erf.h"
 
 /* XXX layering violation */
 #import "AddInsList.h"
@@ -49,6 +50,54 @@
 @dynamic path;
 @dynamic type;
 @dynamic verified;
+
+static NSPredicate *isERF;
+
+- (NSMutableDictionary*)dataForContents:(NSArray*)contents
+{
+	NSMutableDictionary *res = [NSMutableDictionary dictionaryWithCapacity:[contents count]];
+	/* XXX layering violation */
+	NSURL *url = [[[AddInsList sharedAddInsList] fileURL] URLByAppendingPathComponent:self.path];
+	NSDirectoryEnumerator *enumer = [[NSFileManager defaultManager] enumeratorAtURL:url includingPropertiesForKeys:nil options:0 errorHandler:^(NSURL *u, NSError *error) { return YES; }];
+	NSURL *item;
+	NSArray *keys = [NSArray arrayWithObjects:NSURLNameKey, NSURLIsRegularFileKey, nil];
+	
+	if (!isERF)
+		isERF = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] '.erf'"];
+
+	while ((item = [enumer nextObject]))
+	{
+		NSDictionary *props = [item resourceValuesForKeys:keys error:nil];
+		
+		if (![[props objectForKey:NSURLIsRegularFileKey] boolValue])
+			continue;
+		
+		NSString *name = [props objectForKey:NSURLNameKey];
+		
+		if ([contents indexOfObject:name] != NSNotFound)
+			[res setObject:[NSData dataWithContentsOfURL:item] forKey:name];
+		else if ([isERF evaluateWithObject:name])
+		{
+			NSData *erfdata = [NSData dataWithContentsOfURL:item options:NSDataReadingMapped error:nil];
+			
+			parse_erf_data([erfdata bytes], [erfdata length], ^(struct erf_header *header, struct erf_file *file)
+						   {
+							   int len = 0;
+							   
+							   while (len < ERF_FILENAME_MAXLEN && file->entry->name[len] != 0)
+								   len++;
+							   
+							   NSString *n = [[NSString alloc] initWithBytes:file->entry->name
+																	  length:len * 2
+																	encoding:NSUTF16LittleEndianStringEncoding];
+							   
+							   if ([n caseInsensitiveCompare:name] == NSOrderedSame)
+								   [res setObject:[NSData dataWithBytes:(void*)file->data length:file->entry->length] forKey:name];
+						   });
+		}
+	}
+	return res;
+}
 
 @end
 
@@ -429,6 +478,47 @@
 		return nil;
 	
 	return [self replaceProperties:cachedDetails];
+}
+
+- (NSMutableString*)galleryHTMLWithContents:(NSDictionary**)outContents;
+{
+	NSError *err = nil;
+	NSFetchRequest *req = [[[self entity] managedObjectModel] fetchRequestFromTemplateWithName:@"contentsOfTypeForItem" substitutionVariables:[NSDictionary dictionaryWithObjectsAndKeys:@".dds", @"type", self, @"item", nil]];
+	NSArray *images = [[self managedObjectContext] executeFetchRequest:req error:&err];
+	
+	NSMutableString *res = [NSMutableString stringWithString:@"<html><body style='color: #b7a266;'>"];
+	/*XXX NSMapTable*/NSMutableDictionary *pcmap = [NSMutableDictionary dictionary];
+	
+	for (NSManagedObject *image in images)
+	{
+		Path *p = [image valueForKey:@"path"];
+		NSString *name = [image valueForKey:@"name"];
+		NSMutableArray *a = [pcmap objectForKey:p.path];
+		
+		if (a)
+			[a addObject:name];
+		else
+			[pcmap setObject:[NSMutableArray arrayWithObjects:p, name, nil] forKey:p.path];
+	}
+	
+	for (NSString *path in [pcmap allKeys])
+	{
+		NSMutableArray *a = [pcmap objectForKey:path];
+		NSMutableDictionary *cm = [NSMutableDictionary dictionary];
+		
+		Path *p = [a objectAtIndex:0];
+		[a removeObjectAtIndex:0];
+		
+		NSMutableDictionary *imgdata = [p dataForContents:[pcmap objectForKey:p]];
+		[imgdata enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop)
+		 {
+			 [cm setObject:obj forKey:key];
+			 [res appendFormat:@"<img style='max-width: 340px' src='content:%@'/><br/>", key];
+		 }];
+		*outContents = [NSDictionary dictionaryWithDictionary:cm];
+	}
+	[res appendString:@"</body></html>"];
+	return res;
 }
 
 - (void)didTurnIntoFault

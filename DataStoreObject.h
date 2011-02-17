@@ -140,6 +140,8 @@
 @property (readonly) NSMutableAttributedString * infoAttributedString;
 @property (readonly) NSMutableString * detailsHTML;
 
+- (NSMutableString*)galleryHTMLWithContents:(NSDictionary**)outContents;
+
 - (void)updateInfo;
 
 - (NSView*)configView;
