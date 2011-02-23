@@ -163,13 +163,13 @@ static NSPredicate *isREADME;
 	[assignAddInController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"Title.localizedValue" ascending:YES selector:@selector(caseInsensitiveCompare:)]]];
 	
 	NSURL *myURL = [self fileURL];
-	//NSURL *scanAddinsURL = [myURL URLByAppendingPathComponent:@"Addins"];
+	NSURL *scanAddinsURL = [myURL URLByAppendingPathComponent:@"Addins"];
 	NSURL *scanOffersURL = [myURL URLByAppendingPathComponent:@"Offers"];
 	NSURL *scanPackagesURL = [myURL URLByAppendingPathComponent:@"packages"];
 	NSURL *scanDisabledPackagesURL = [myURL URLByAppendingPathComponent:@"packages (disabled)"];
 	
 	[operationQueue addObserver:self forKeyPath:@"operationCount" options:0 context:nil];
-	//[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanAddinsURL message:@"addins" split:YES]];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanAddinsURL message:@"addins" split:YES]];
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanOffersURL message:@"offers" split:YES]];
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanPackagesURL message:@"packages" split:NO]];
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanDisabledPackagesURL message:@"disabled packages" split:NO]];
