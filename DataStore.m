@@ -870,6 +870,20 @@
 	{
 		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&loadError];
 		
+		if (loadError && [[loadError domain] isEqualToString:NSCocoaErrorDomain] && [loadError code] == NSFileReadNoSuchFileError)
+		{
+			/* Presumably AddIns.xml was already loaded correctly, so create a matching empty Offers.xml */
+			NSURL *emptyUrl = [[NSBundle mainBundle] URLForResource:@"EmptyOffers" withExtension:@"xml"];
+			
+			if (emptyUrl)
+			{
+				loadError = nil;
+				
+				if ([[NSFileManager defaultManager] copyItemAtURL:emptyUrl toURL:url error:&loadError])
+					xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&loadError];
+			}
+		}
+		
 		if (xmldata)
 			[self loadXML:xmldata ofType:@"OfferList" error:&loadError];
 		

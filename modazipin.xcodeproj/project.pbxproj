@@ -37,6 +37,7 @@
 		6675096E113331E2002BA240 /* grad.png in Resources */ = {isa = PBXBuildFile; fileRef = 6675096D113331E2002BA240 /* grad.png */; };
 		668DA1CA113AF21800A66EA8 /* Scanner.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A067B4113AC18400A68244 /* Scanner.m */; };
 		668DA283113B084200A66EA8 /* ToolbarDeleteIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 668DA23F113B02AD00A66EA8 /* ToolbarDeleteIcon.icns */; };
+		669DF41F13156351005236E3 /* EmptyOffers.xml in Resources */ = {isa = PBXBuildFile; fileRef = 669DF41E13156351005236E3 /* EmptyOffers.xml */; };
 		66B2D8611102644900997830 /* dragon_4.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66893CB210FCF88900A29832 /* dragon_4.icns */; };
 		66BBE8F4110C704100F4B94A /* DataStoreObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 66BBE8F3110C704100F4B94A /* DataStoreObject.m */; };
 		66C74A0E111F0BEF0084E7AC /* DazipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C749EF111EFB360084E7AC /* DazipArchive.m */; };
@@ -93,6 +94,7 @@
 		6675096D113331E2002BA240 /* grad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grad.png; sourceTree = "<group>"; };
 		66893CB210FCF88900A29832 /* dragon_4.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = dragon_4.icns; sourceTree = "<group>"; };
 		668DA23F113B02AD00A66EA8 /* ToolbarDeleteIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ToolbarDeleteIcon.icns; path = /System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/ToolbarDeleteIcon.icns; sourceTree = "<absolute>"; };
+		669DF41E13156351005236E3 /* EmptyOffers.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = EmptyOffers.xml; sourceTree = "<group>"; };
 		66A067B3113AC18400A68244 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scanner.h; sourceTree = "<group>"; };
 		66A067B4113AC18400A68244 /* Scanner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Scanner.m; sourceTree = "<group>"; };
 		66BBE8F2110C704100F4B94A /* DataStoreObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataStoreObject.h; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 		2A37F4B8FDCFA73011CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				669DF41E13156351005236E3 /* EmptyOffers.xml */,
 				668DA23F113B02AD00A66EA8 /* ToolbarDeleteIcon.icns */,
 				6675096D113331E2002BA240 /* grad.png */,
 				667505381131A26D002BA240 /* ItemDetails.html */,
@@ -287,6 +290,7 @@
 				667505391131A26D002BA240 /* ItemDetails.html in Resources */,
 				6675096E113331E2002BA240 /* grad.png in Resources */,
 				668DA283113B084200A66EA8 /* ToolbarDeleteIcon.icns in Resources */,
+				669DF41F13156351005236E3 /* EmptyOffers.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
