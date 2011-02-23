@@ -25,13 +25,15 @@
 
 #include "erf.h"
 
+#include <sqlite3.h>
+
 static NSPredicate *isERF;
 
 @implementation Scanner
 
 @synthesize message;
 
-- (id)initWithDocument:(AddInsList*)doc URL:(NSURL*)url message:(NSString*)msg split:(BOOL)splt
+- (id)initWithDocument:(AddInsList*)doc URL:(NSURL*)url message:(NSString*)msg disabled:(BOOL)dis
 {
 	self = [super init];
 	if (self)
@@ -39,11 +41,73 @@ static NSPredicate *isERF;
 		document = doc;
 		startURL = url;
 		message = msg;
-		split = splt;
 		if (!isERF)
 			isERF = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] '.erf'"];
+		mparts = [[document fileURL] pathComponents];
+		disabled = dis;
 	}
 	return self;
+}
+
+- (NSString*)basepathForURL:(NSURL*)url type:(NSString**)outType
+{
+	NSMutableArray *cparts = [NSMutableArray arrayWithArray:[url pathComponents]];
+	NSString *pathType;
+	NSString *path;
+		
+	for (NSString *p in mparts) {
+		if (![[cparts objectAtIndex:0] isEqualToString:p])
+			return nil;
+		
+		[cparts removeObjectAtIndex:0];
+	}
+	
+	if ([[cparts objectAtIndex:0] caseInsensitiveCompare:@"Addins"] == NSOrderedSame
+		|| [[cparts objectAtIndex:0] caseInsensitiveCompare:@"Offers"] == NSOrderedSame)
+	{
+		path = [NSString pathWithComponents:[cparts subarrayWithRange:NSMakeRange(0, 2)]];
+		pathType = @"addin";
+	}
+	else
+	{
+		if (disabled)
+		{
+			NSString *s = [cparts objectAtIndex:0];
+			
+			[cparts replaceObjectAtIndex:0 withObject:[s substringToIndex:[s length] - sizeof (" (disabled)") + 1]];
+		}
+		
+		if ([cparts count] > 4)
+		{
+			[cparts removeObjectsInRange:NSMakeRange(4, [cparts count] - 4)];
+			pathType = @"dir";
+		}
+		else
+			pathType = @"file";
+		
+		path = [NSString pathWithComponents:cparts];
+	}
+	
+	if (outType)
+		*outType = pathType;
+	return path;
+}
+
+- (void)sendResults
+{
+	if (currPath)
+	{
+		[document performSelectorOnMainThread:@selector(addContentsForPath:)
+								   withObject:[NSDictionary dictionaryWithObjectsAndKeys:
+											   currCont, @"contents",
+											   currData, @"data",
+											   currOrigURLs, @"origurls",
+											   currPath, @"path",
+											   currPathType, @"pathtype",
+											   [NSNumber numberWithBool:disabled], @"disabled",
+											   nil]
+								waitUntilDone:YES];
+	}
 }
 
 - (void)handle:(NSURL*)url
@@ -60,6 +124,21 @@ static NSPredicate *isERF;
 	NSString *name = [props objectForKey:NSURLNameKey];
 	if (!name || [name isEqualToString:@".DS_Store"])
 		return;
+
+	NSString *path;
+	NSString *pathType;
+	
+	path = [self basepathForURL:url type:&pathType];
+	if (![currPath isEqualToString:path])
+	{
+		[self sendResults];
+		
+		currPath = path;
+		currPathType = pathType;
+		currCont = [NSMutableArray array];
+		currData = [NSMutableArray array];
+		currOrigURLs = [NSMutableArray array];
+	}
 	
 	if ([isERF evaluateWithObject:name])
 	{
@@ -74,31 +153,20 @@ static NSPredicate *isERF;
 							   while (len < ERF_FILENAME_MAXLEN && file->entry->name[len] != 0)
 								   len++;
 							   
-							   [document performSelectorOnMainThread:@selector(addContentsForURL:)
-														  withObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																	  [[NSString alloc] initWithBytes:file->entry->name
-																								length:len * 2
-																							  encoding:NSUTF16LittleEndianStringEncoding], @"contents",
-																	  [NSData dataWithBytesNoCopy:(void*)file->data length:file->entry->length freeWhenDone:NO], @"data",
-																	  url, @"URL",
-																	  nil]
-													   waitUntilDone:YES];
+							   [currCont addObject:[[NSString alloc] initWithBytes:file->entry->name
+																		length:len * 2
+																	  encoding:NSUTF16LittleEndianStringEncoding]];
+							   [currData addObject:[erfdata subdataWithRange:NSMakeRange(file->data - [erfdata bytes], file->entry->length)]];
+							   [currOrigURLs addObject:url];
 						   });
 		}
-		[document performSelectorOnMainThread:@selector(addContentsForURL:)
-								   withObject:[NSDictionary dictionaryWithObjectsAndKeys:
-											   url, @"URL",
-											   nil]
-								waitUntilDone:YES];
 	}
 	else
-		[document performSelectorOnMainThread:@selector(addContentsForURL:)
-								   withObject:[NSDictionary dictionaryWithObjectsAndKeys:
-											   name, @"contents",
-											   [DataProxy dataProxyForURL:url], @"data",
-											   url, @"URL",
-											   nil]
-								waitUntilDone:YES];
+	{
+		[currCont addObject:name];
+		[currData addObject:[DataProxy dataProxyForURL:url]];
+		[currOrigURLs addObject:url];
+	}
 }
 
 - (void)main
@@ -110,14 +178,10 @@ static NSPredicate *isERF;
 	
 	while ((item = [enumer nextObject]) && ![self isCancelled])
 	{
-		if (split)
-		{
-			[[NSOperationQueue currentQueue] addOperation:[[Scanner alloc] initWithDocument:document URL:item message:message split:NO]];
-			[enumer skipDescendants];
-		}
-		else
-			[self handle:item];
+		[self handle:item];
 	}
+	
+	[self sendResults];
 }
 
 @end

@@ -65,8 +65,8 @@
 
 - (void)selectItemWithUid:(NSString*)uid;
 
-- (void)addContents:(NSString *)contents data:(NSData*)data forURL:(NSURL *)url;
-- (void)addContentsForURL:(NSDictionary*)data;
+- (void)addContents:(NSArray *)contents data:(NSArray*)data origURLs:(NSArray*)origURLs forPath:(NSString*)path type:(NSString*)pathType disabled:(BOOL)disabled;
+- (void)addContentsForPath:(NSDictionary*)data;
 
 @property(readonly) NSOperationQueue *queue;
 @property(readonly) BOOL isBusy;

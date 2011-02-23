@@ -169,10 +169,10 @@ static NSPredicate *isREADME;
 	NSURL *scanDisabledPackagesURL = [myURL URLByAppendingPathComponent:@"packages (disabled)"];
 	
 	[operationQueue addObserver:self forKeyPath:@"operationCount" options:0 context:nil];
-	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanAddinsURL message:@"addins" split:YES]];
-	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanOffersURL message:@"offers" split:YES]];
-	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanPackagesURL message:@"packages" split:NO]];
-	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanDisabledPackagesURL message:@"disabled packages" split:NO]];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanAddinsURL message:@"addins" disabled:NO]];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanOffersURL message:@"offers" disabled:NO]];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanPackagesURL message:@"packages" disabled:NO]];
+	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanDisabledPackagesURL message:@"disabled packages" disabled:YES]];
 	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	[backgroundImage setAlphaValue:[defaults floatForKey:@"backgroundAlpha"]];
@@ -270,23 +270,14 @@ static NSPredicate *isREADME;
 	}
 }
 
-- (void)addContents:(NSString *)contents data:(NSData*)data forURL:(NSURL *)url
+- (void)addContents:(NSArray *)contents data:(NSArray*)data origURLs:(NSArray*)origURLs forPath:(NSString*)path type:(NSString*)pathType disabled:(BOOL)disabled
 {
-	NSMutableArray *cparts = [NSMutableArray arrayWithArray:[url pathComponents]];
-	NSArray *mparts = [[self fileURL] pathComponents];
+	NSArray *cparts = [path pathComponents];
 	NSFetchRequest *req;
 	Item *item = nil;
-	Path *pathObj;
+	Path *pathObj = nil;
 	
-	for (NSString *p in mparts) {
-		if (![[cparts objectAtIndex:0] isEqualToString:p])
-			return; /* Exception */
-		
-		[cparts removeObjectAtIndex:0];
-	}
-	
-	if ([[cparts objectAtIndex:0] caseInsensitiveCompare:@"Addins"] == NSOrderedSame
-		|| [[cparts objectAtIndex:0] caseInsensitiveCompare:@"Offers"] == NSOrderedSame)
+	if ([pathType isEqualToString:@"addin"])
 	{
 		req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"itemWithUID" substitutionVariables:[NSDictionary dictionaryWithObject:[cparts objectAtIndex:1] forKey:@"UID"]];
 		
@@ -304,29 +295,6 @@ static NSPredicate *isREADME;
 	}
 	else
 	{
-		NSString *pathType = @"file";
-		NSString *readme = nil;
-		NSString *origPath = [NSString pathWithComponents:cparts];
-		BOOL disabled;
-		
-		if ((disabled = [isDisabled evaluateWithObject:[cparts objectAtIndex:0]]))
-		{
-			NSString *s = [cparts objectAtIndex:0];
-			
-			[cparts replaceObjectAtIndex:0 withObject:[s substringToIndex:[s length] - sizeof (" (disabled)") + 1]];
-		}
-		
-		if ([isREADME evaluateWithObject:origPath])
-			readme = [NSString stringWithFormat:@"README:\n\n%@", [NSString stringWithContentsOfURL:[[self fileURL] URLByAppendingPathComponent:origPath] encoding:NSWindowsCP1252StringEncoding error:nil]];
-		
-		if ([cparts count] > 4)
-		{
-			[cparts removeObjectsInRange:NSMakeRange(4, [cparts count] - 4)];
-			pathType = @"dir";
-		}
-		
-		NSString *path = [NSString pathWithComponents:cparts];
-		
 		req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"path" substitutionVariables:[NSDictionary dictionaryWithObject:path forKey:@"path"]];
 		NSArray *paths = [[self managedObjectContext] executeFetchRequest:req error:nil];
 		
@@ -356,13 +324,23 @@ static NSPredicate *isREADME;
 			item.displayed = [NSNumber numberWithBool:YES];
 			[item.modazipin addPathsObject:pathObj];
 		}
-		
-		if (contents && pathObj)
+	}
+	
+	NSEnumerator *cenum = [contents objectEnumerator];
+	NSEnumerator *denum = [data objectEnumerator];
+	NSEnumerator *uenum = [origURLs objectEnumerator];
+	NSString *content;
+	NSData *d;
+	NSURL *url;
+	
+	while ((content = [cenum nextObject]) && (d = [denum nextObject]) && (url = [uenum nextObject]))
+	{
+		if (pathObj)
 		{
 			NSManagedObject *contentObj = [NSEntityDescription insertNewObjectForEntityForName:@"Content" inManagedObjectContext:[self managedObjectContext]];
 			
-			[contentObj setValue:contents forKey:@"name"];
-			[contentObj setValue:[url filePathURL] forKey:@"URL"]; /* fileReferenceURL gave problems with path lookups when configuring. */
+			[contentObj setValue:content forKey:@"name"];
+			[contentObj setValue:[url filePathURL] forKey:@"URL"];
 			[contentObj setValue:pathObj forKey:@"path"];
 			
 			NullStore *nullStore = nil;
@@ -382,40 +360,48 @@ static NSPredicate *isREADME;
 			[pathObj addContentsObject:contentObj];
 		}
 		
-		Text *desc = !item.Description && readme ? [NSEntityDescription insertNewObjectForEntityForName:@"Text" inManagedObjectContext:[self managedObjectContext]] : nil;
-		if (desc)
+		if (item)
 		{
-			desc.DefaultText = readme;
-			desc.item = item;
-			item.Description = desc;
-		}
-	}
-	
-	if (item && contents)
-	{
-		/* Check if this is the image. */
-		if (item.Image && [item.Image isEqualToString:[contents stringByDeletingPathExtension]])
-		{
-			NSImage *img = [[NSImage alloc] initWithData:data];
-			[item setValue:[img TIFFRepresentation] forKey:@"imageData"];
-			[item updateInfo];
-			if ([[itemsController selectedObjects] indexOfObject:item] != NSNotFound)
-				[self performSelectorOnMainThread:@selector(itemsControllerChanged) withObject:nil waitUntilDone:NO];
-		}
-		else if ([contents caseInsensitiveCompare:@"OverrideConfig.xml"] == NSOrderedSame)
-		{
-			[self configurePersistentStoreCoordinatorForURL:[url fileReferenceURL] ofType:@"OverrideConfigStore" modelConfiguration:@"overrideconfig" storeOptions:[NSDictionary dictionaryWithObject:item forKey:@"item"] error:nil];
-			req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"configSectionsForItem" substitutionVariables:[NSDictionary dictionaryWithObject:item forKey:@"item"]];
-			NSArray *sections = [[self managedObjectContext] executeFetchRequest:req error:nil];
+			NSString *readme = nil;
 			
-			[item setValue:[NSSet setWithArray:sections] forKey:@"configSections"];
+			if ([isREADME evaluateWithObject:[url path]])
+			{
+				readme = [NSString stringWithFormat:@"README:\n\n%@", [NSString stringWithContentsOfURL:url encoding:NSWindowsCP1252StringEncoding error:nil]];
+			
+			
+				Text *desc = !item.Description && readme ? [NSEntityDescription insertNewObjectForEntityForName:@"Text" inManagedObjectContext:[self managedObjectContext]] : nil;
+				if (desc)
+				{
+					desc.DefaultText = readme;
+					desc.item = item;
+					item.Description = desc;
+				}
+			}
+			
+			/* Check if this is the image. */
+			if (item.Image && [item.Image isEqualToString:[content stringByDeletingPathExtension]])
+			{
+				NSImage *img = [[NSImage alloc] initWithData:d];
+				[item setValue:[img TIFFRepresentation] forKey:@"imageData"];
+				[item updateInfo];
+				if ([[itemsController selectedObjects] indexOfObject:item] != NSNotFound)
+					[self performSelectorOnMainThread:@selector(itemsControllerChanged) withObject:nil waitUntilDone:NO];
+			}
+			else if ([content caseInsensitiveCompare:@"OverrideConfig.xml"] == NSOrderedSame)
+			{
+				[self configurePersistentStoreCoordinatorForURL:[url fileReferenceURL] ofType:@"OverrideConfigStore" modelConfiguration:@"overrideconfig" storeOptions:[NSDictionary dictionaryWithObject:item forKey:@"item"] error:nil];
+				req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"configSectionsForItem" substitutionVariables:[NSDictionary dictionaryWithObject:item forKey:@"item"]];
+				NSArray *sections = [[self managedObjectContext] executeFetchRequest:req error:nil];
+				
+				[item setValue:[NSSet setWithArray:sections] forKey:@"configSections"];
+			}
 		}
 	}
 }
 
-- (void)addContentsForURL:(NSDictionary*)data
+- (void)addContentsForPath:(NSDictionary*)data;
 {
-	[self addContents:[data objectForKey:@"contents"] data:[data objectForKey:@"data"] forURL:[data objectForKey:@"URL"]];
+	[self addContents:[data objectForKey:@"contents"] data:[data objectForKey:@"data"] origURLs:[data objectForKey:@"origurls"] forPath:[data objectForKey:@"path"] type:[data objectForKey:@"pathtype"] disabled:[[data objectForKey:@"disabled"] boolValue]];
 }
 
 - (NSOperationQueue*)queue

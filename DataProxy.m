@@ -29,6 +29,11 @@
 	return [[self alloc] initWithURL:url];
 }
 
++ (id)dataProxyForURL:(NSURL*)url range:(NSRange)r
+{
+	return [[self alloc] initWithURL:url range:r];
+}
+
 - (id)initWithURL:(NSURL*)url
 {
 	self = [super init];
@@ -38,10 +43,26 @@
 	return self;
 }
 
+- (id)initWithURL:(NSURL*)url range:(NSRange)r
+{
+	self = [self initWithURL:url];
+	
+	if (self)
+	{
+		range = r;
+		hasRange = YES;
+	}
+	return self;
+}
+
 - (id)forwardingTargetForSelector:(SEL)aSelector
 {
 	if (!data)
+	{
 		data = [NSData dataWithContentsOfURL:dataUrl];
+		if (hasRange)
+			data = [data subdataWithRange:range];
+	}
 	return data;
 }
 

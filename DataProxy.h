@@ -26,10 +26,14 @@
 {
 	NSURL *dataUrl;
 	NSData *data;
+	NSRange range;
+	BOOL hasRange;
 }
 
 + (id)dataProxyForURL:(NSURL*)url;
++ (id)dataProxyForURL:(NSURL*)url range:(NSRange)r;
 
 - (id)initWithURL:(NSURL*)url;
+- (id)initWithURL:(NSURL*)url range:(NSRange)r;
 
 @end

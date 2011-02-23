@@ -28,10 +28,17 @@
 	AddInsList *document;
 	NSURL *startURL;
 	NSString *message;
-	BOOL split;
+	BOOL disabled;
+	NSArray *mparts;
+	
+	NSString *currPath;
+	NSString *currPathType;
+	NSMutableArray *currCont;
+	NSMutableArray *currData;
+	NSMutableArray *currOrigURLs;
 }
 
-- (id)initWithDocument:(AddInsList*)doc URL:(NSURL*)url message:(NSString*)msg split:(BOOL)splt;
+- (id)initWithDocument:(AddInsList*)doc URL:(NSURL*)url message:(NSString*)msg disabled:(BOOL)disabled;
 
 @property(copy) NSString *message;
 
