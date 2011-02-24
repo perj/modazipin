@@ -1398,7 +1398,7 @@
 	return self;
 }
 
-- (id)loadOverrideConfigValue:(NSXMLElement*)node withIndex:(int)index forKey:(id)key error:(NSError**)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+- (id)loadOverrideConfigValue:(NSXMLElement*)node withIndex:(int)idx forKey:(id)key error:(NSError**)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
 	NSMutableDictionary *data = [NSMutableDictionary dictionary];
 	id res = createBlock(node, @"ConfigValue");
@@ -1408,7 +1408,7 @@
 	
 	[data setObject:node forKey:@"node"];
 	[data setObject:key forKey:@"key"];
-	[data setObject:[NSNumber numberWithInt:index] forKey:@"index"];
+	[data setObject:[NSNumber numberWithInt:idx] forKey:@"index"];
 	
 	for (NSXMLNode *attr in [node attributes])
 	{
@@ -1423,7 +1423,7 @@
 	return setBlock(res, data);
 }
 
-- (id)loadOverrideConfigKey:(NSXMLElement*)node withIndex:(int)index forSection:(id)sect error:(NSError**)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+- (id)loadOverrideConfigKey:(NSXMLElement*)node withIndex:(int)idx forSection:(id)sect error:(NSError**)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
 	NSMutableDictionary *data = [NSMutableDictionary dictionary];
 	id res = createBlock(node, @"ConfigKey");
@@ -1433,7 +1433,7 @@
 	
 	[data setObject:node forKey:@"node"];
 	[data setObject:sect forKey:@"section"];
-	[data setObject:[NSNumber numberWithInt:index] forKey:@"index"];
+	[data setObject:[NSNumber numberWithInt:idx] forKey:@"index"];
 	
 	for (NSXMLNode *attr in [node attributes])
 	{
@@ -1476,7 +1476,7 @@
 	return setBlock(res, data);
 }
 
-- (id)loadOverrideConfigSection:(NSXMLElement*)node withIndex:(int)index error:(NSError**)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
+- (id)loadOverrideConfigSection:(NSXMLElement*)node withIndex:(int)idx error:(NSError**)error usingCreateBlock:(createObjBlock)createBlock usingSetBlock:(setDataBlock)setBlock
 {
 	NSMutableDictionary *data = [NSMutableDictionary dictionary];
 	id res = createBlock(node, @"ConfigSection");
@@ -1486,7 +1486,7 @@
 	
 	[data setObject:node forKey:@"node"];
 	[data setObject:item forKey:@"item"];
-	[data setObject:[NSNumber numberWithInt:index] forKey:@"index"];
+	[data setObject:[NSNumber numberWithInt:idx] forKey:@"index"];
 	
 	for (NSXMLNode *attr in [node attributes])
 	{
