@@ -52,6 +52,7 @@
 		66A57FCC11C967F900787850 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FCB11C967F900787850 /* libz.dylib */; };
 		66A57FE311C96A7500787850 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FBA11C967C700787850 /* OpenCL.framework */; };
 		66A5800A11C96F3B00787850 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 66A5800911C96F3B00787850 /* LICENSE */; };
+		669DF41F13156351005236E3 /* EmptyOffers.xml in Resources */ = {isa = PBXBuildFile; fileRef = 669DF41E13156351005236E3 /* EmptyOffers.xml */; };
 		66B2D8611102644900997830 /* dragon_4.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66893CB210FCF88900A29832 /* dragon_4.icns */; };
 		66B6A88911C7DF7C00C4457D /* base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 66B6A88811C7DF7C00C4457D /* base64.m */; };
 		66B6A8F711C8006F00C4457D /* DetailsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 66B6A8F611C8006F00C4457D /* DetailsDelegate.m */; };
@@ -133,6 +134,7 @@
 		6675096D113331E2002BA240 /* grad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grad.png; sourceTree = "<group>"; };
 		66893CB210FCF88900A29832 /* dragon_4.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = dragon_4.icns; sourceTree = "<group>"; };
 		668DA23F113B02AD00A66EA8 /* ToolbarDeleteIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ToolbarDeleteIcon.icns; path = /System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/ToolbarDeleteIcon.icns; sourceTree = "<absolute>"; };
+		669DF41E13156351005236E3 /* EmptyOffers.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = EmptyOffers.xml; sourceTree = "<group>"; };
 		66A067B3113AC18400A68244 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scanner.h; sourceTree = "<group>"; };
 		66A067B4113AC18400A68244 /* Scanner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Scanner.m; sourceTree = "<group>"; };
 		66A57F9811C965C700787850 /* delegates.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = delegates.xml; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -278,6 +280,7 @@
 			isa = PBXGroup;
 			children = (
 				6619883313031D8900CDF733 /* tab.png */,
+				669DF41E13156351005236E3 /* EmptyOffers.xml */,
 				668DA23F113B02AD00A66EA8 /* ToolbarDeleteIcon.icns */,
 				6675096D113331E2002BA240 /* grad.png */,
 				667505381131A26D002BA240 /* ItemDetails.html */,
@@ -402,6 +405,7 @@
 				666F424611E4E129005CFFD7 /* ConfigSection.xib in Resources */,
 				666F43D511E4FBB2005CFFD7 /* ConfigKey.xib in Resources */,
 				6619883413031D8900CDF733 /* tab.png in Resources */,
+				669DF41F13156351005236E3 /* EmptyOffers.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
