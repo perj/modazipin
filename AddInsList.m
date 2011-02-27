@@ -165,8 +165,8 @@ static NSPredicate *isREADME;
 	NSURL *myURL = [self fileURL];
 	NSURL *scanAddinsURL = [myURL URLByAppendingPathComponent:@"Addins"];
 	NSURL *scanOffersURL = [myURL URLByAppendingPathComponent:@"Offers"];
-	NSURL *scanPackagesURL = [myURL URLByAppendingPathComponent:@"packages"];
-	NSURL *scanDisabledPackagesURL = [myURL URLByAppendingPathComponent:@"packages (disabled)"];
+	NSURL *scanPackagesURL = [myURL URLByAppendingPathComponent:@"packages/core"];
+	NSURL *scanDisabledPackagesURL = [myURL URLByAppendingPathComponent:@"packages (disabled)/core"];
 	
 	[operationQueue addObserver:self forKeyPath:@"operationCount" options:0 context:nil];
 	[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:scanAddinsURL message:@"addins" disabled:NO]];
@@ -196,6 +196,11 @@ static NSPredicate *isREADME;
 	[configCell setAttributedAlternateTitle:[[NSAttributedString alloc] initWithString:[configCell title] attributes:activeAttrs]];
 	[galleryCell setAttributedTitle:[[NSAttributedString alloc] initWithString:[galleryCell title] attributes:inactiveAttrs]];
 	[galleryCell setAttributedAlternateTitle:[[NSAttributedString alloc] initWithString:[galleryCell title] attributes:activeAttrs]];
+	if (![[NSUserDefaults standardUserDefaults] boolForKey:@"enableGallery"])
+	{
+		[galleryCell setEnabled:NO];
+		[galleryCell setTransparent:YES];
+	}
 }
 
 @synthesize detailedItem;

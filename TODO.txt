@@ -1,9 +1,13 @@
 This is a file with thoughts on what should be implemented and for what version.
 This list is likely to change, no guarantees what so ever.
 
+1.1
+Config won't work if enabled is changed before configurating (wrong orig path for contents)
+Icons for dazips
+Remember contents in item main path
+Contents conflict check.
+
 Future
 Allow new addins to be created, empty or with unknown files.
 Keep track of files added or removed from the folders while running.
 Recreate dazip from addin (requires a zip writing lib).
-Support .override files
-Contents conflict check.
