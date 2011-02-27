@@ -2,7 +2,6 @@ This is a file with thoughts on what should be implemented and for what version.
 This list is likely to change, no guarantees what so ever.
 
 1.1
-Config won't work if enabled is changed before configurating (wrong orig path for contents)
 Icons for dazips
 Remember contents in item main path
 Contents conflict check.

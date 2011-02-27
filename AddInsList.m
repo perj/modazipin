@@ -338,31 +338,41 @@ static NSPredicate *isREADME;
 	NSData *d;
 	NSURL *url;
 	
+	NullStore *nullStore = nil;
+	for (NSAtomicStore *store in [[[self managedObjectContext] persistentStoreCoordinator] persistentStores])
+	{
+		if ([store isKindOfClass:[NullStore self]])
+		{
+			nullStore = (NullStore*)store;
+			break;
+		}
+	}
+	
 	while ((content = [cenum nextObject]) && (d = [denum nextObject]) && (url = [uenum nextObject]))
 	{
 		if (pathObj)
 		{
-			NSManagedObject *contentObj = [NSEntityDescription insertNewObjectForEntityForName:@"Content" inManagedObjectContext:[self managedObjectContext]];
+			NSManagedObject *contentObj;
+			req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"contentWithNameAndPath" substitutionVariables:[NSDictionary dictionaryWithObjectsAndKeys:pathObj, @"path", content, @"name", nil]];
+			NSArray *contentObjs = [[self managedObjectContext] executeFetchRequest:req error:nil];
 			
-			[contentObj setValue:content forKey:@"name"];
-			[contentObj setValue:[url filePathURL] forKey:@"URL"];
-			[contentObj setValue:pathObj forKey:@"path"];
-			
-			NullStore *nullStore = nil;
-			if (!nullStore)
+			if ([contentObjs count])
 			{
-				for (NSAtomicStore *store in [[[self managedObjectContext] persistentStoreCoordinator] persistentStores])
-				{
-					if ([store isKindOfClass:[NullStore self]])
-					{
-						nullStore = (NullStore*)store;
-						break;
-					}
-				}
+				contentObj = [contentObjs objectAtIndex:0];
 			}
-			[[self managedObjectContext] assignObject:contentObj toPersistentStore:nullStore];
+			else
+			{
+				contentObj = [NSEntityDescription insertNewObjectForEntityForName:@"Content" inManagedObjectContext:[self managedObjectContext]];
+				
+				[contentObj setValue:content forKey:@"name"];
+				[contentObj setValue:pathObj forKey:@"path"];
+				
+				[[self managedObjectContext] assignObject:contentObj toPersistentStore:nullStore];
+				
+				[pathObj addContentsObject:contentObj];
+			}
 			
-			[pathObj addContentsObject:contentObj];
+			[contentObj setValue:[url filePathURL] forKey:@"URL"];
 		}
 		
 		if (item)
@@ -659,7 +669,14 @@ static NSPredicate *isREADME;
 		}
 		
 		if (item)
+		{
+			for (Path *p in item.modazipin.paths)
+			{
+				NSURL *url = [[self fileURL] URLByAppendingPathComponent:p.path];
+				[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:url message:name disabled:NO]];
+			}
 			[self enabledChanged:item canInteract:NO];
+		}
 	}
 	
 	[NSApp endModalSession:modal];
@@ -761,6 +778,7 @@ static NSPredicate *isREADME;
 			{
 				item.Enabled = [NSDecimalNumber zero];
 				[self enabledChanged:item canInteract:NO];
+				return;
 			}
 		}
 	}
@@ -839,6 +857,7 @@ static NSPredicate *isREADME;
 {
 	NSURL *base = [self fileURL];	
 	NSArray *items = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"itemsWithAnyPath"] error:error];
+	NSMutableSet *movedItems = [NSMutableSet set];
 	
 	if (!items)
 		return NO;
@@ -867,6 +886,11 @@ static NSPredicate *isREADME;
 			[[NSFileManager defaultManager] createDirectoryAtPath:[dirURL path] withIntermediateDirectories:YES attributes:nil error:nil];
 			if (![[NSFileManager defaultManager] moveItemAtURL:otherURL toURL:expectedURL error:error])
 				(void)0; /* XXX do something here. */
+			else
+			{
+				[operationQueue addOperation:[[Scanner alloc] initWithDocument:self URL:expectedURL message:item.Title.localizedValue disabled:!isEnabled]];
+				[movedItems addObject:item];
+			}
 		}
 	}
 	
@@ -877,6 +901,12 @@ static NSPredicate *isREADME;
 	
 	for (ConfigKey *key in configkeys)
 	{
+		if ([movedItems containsObject:[[key valueForKey:@"section"] valueForKey:@"item"]])
+		{
+			/* Can't update these now, since the paths are incorrect, but shouldn't have changed anyway. */
+			continue;
+		}
+		
 		NSString *selectedValue = [key valueForKey:@"DefaultValue"];
 		NSString *originalFile = [key valueForKey:@"OriginalFile"];
 		
