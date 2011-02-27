@@ -535,9 +535,12 @@ static NSPredicate *isERF;
 	[self willChangeValueForKey:@"infoAttributedString"];
 	[self infoAttributedString];
 	[self didChangeValueForKey:@"infoAttributedString"];
+#if 0
+	/* Slow and unnecessary. */
 	[self willChangeValueForKey:@"detailsHTML"];
 	[self detailsHTML];
 	[self didChangeValueForKey:@"detailsHTML"];
+#endif
 }
 
 - (void)updateConfigView
