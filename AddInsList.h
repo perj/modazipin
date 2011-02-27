@@ -24,11 +24,17 @@
 #import "DataStore.h"
 #import "DataStoreObject.h"
 #import "ArchiveWrapper.h"
+#import "NullStore.h"
 
 @class DAArchive;
 
 @interface AddInsList : NSPersistentDocument
 {
+	AddInsListStore *addinsStore;
+	OfferListStore *offersStore;
+	OverrideListStore *overridesStore;
+	NullStore *nullStore;
+	
 	NSOperationQueue *operationQueue;
 	BOOL isBusy;
 	NSString *statusMessage;

@@ -99,6 +99,19 @@ static NSPredicate *isREADME;
 		return NO;
 	}
 	
+	/* Could use persistentStoreForURL:, but this works as well. */
+	for (id store in [[[self managedObjectContext] persistentStoreCoordinator] persistentStores])
+	{
+		if ([store class] == [AddInsListStore self])
+			addinsStore = store;
+		else if ([store class] == [OfferListStore self])
+			offersStore = store;
+		else if ([store class] == [OverrideListStore self])
+			overridesStore = store;
+		else if ([store class] == [NullStore self])
+			nullStore = store;
+	}
+	
 	/* Figure out what offers to show. */
 	NSArray *offers = [[self managedObjectContext] executeFetchRequest:[[self managedObjectModel] fetchRequestTemplateForName:@"allOffers"] error:nil];
 	for (OfferItem *offer in offers)
@@ -338,16 +351,6 @@ static NSPredicate *isREADME;
 	NSData *d;
 	NSURL *url;
 	
-	NullStore *nullStore = nil;
-	for (NSAtomicStore *store in [[[self managedObjectContext] persistentStoreCoordinator] persistentStores])
-	{
-		if ([store isKindOfClass:[NullStore self]])
-		{
-			nullStore = (NullStore*)store;
-			break;
-		}
-	}
-	
 	while ((content = [cenum nextObject]) && (d = [denum nextObject]) && (url = [uenum nextObject]))
 	{
 		if (pathObj)
@@ -392,17 +395,17 @@ static NSPredicate *isREADME;
 					item.Description = desc;
 				}
 			}
-			
+	
 			/* Check if this is the image. */
-			if (item.Image && [item.Image isEqualToString:[content stringByDeletingPathExtension]])
+			if (item.Image && ![item valueForKey:@"imageData"] && [item.Image isEqualToString:[content stringByDeletingPathExtension]])
 			{
 				NSImage *img = [[NSImage alloc] initWithData:d];
 				[item setValue:[img TIFFRepresentation] forKey:@"imageData"];
 				[item updateInfo];
 				if ([[itemsController selectedObjects] indexOfObject:item] != NSNotFound)
-					[self performSelectorOnMainThread:@selector(itemsControllerChanged) withObject:nil waitUntilDone:NO];
+					[self performSelectorOnMainThread:@selector(reloadDetails) withObject:nil waitUntilDone:NO];
 			}
-			else if ([content caseInsensitiveCompare:@"OverrideConfig.xml"] == NSOrderedSame)
+			if ([content caseInsensitiveCompare:@"OverrideConfig.xml"] == NSOrderedSame)
 			{
 				[self configurePersistentStoreCoordinatorForURL:[url fileReferenceURL] ofType:@"OverrideConfigStore" modelConfiguration:@"overrideconfig" storeOptions:[NSDictionary dictionaryWithObject:item forKey:@"item"] error:nil];
 				req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"configSectionsForItem" substitutionVariables:[NSDictionary dictionaryWithObject:item forKey:@"item"]];
@@ -560,23 +563,9 @@ static NSPredicate *isREADME;
 - (BOOL)installItems:(NSArray*)items withArchive:(DAArchive*)archive name:(NSString*)name uncompressedSize:(int64_t)sz error:(NSError**)error
 {
 	NSURL *base = [self fileURL];
-	AddInsListStore *addinsStore = nil;
-	OfferListStore *offersStore = nil;
-	OverrideListStore *overridesStore = nil;
 	
 	if (!archive)
 		return NO;
-	
-	/* Could use persistentStoreForURL:, but this works as well. */
-	for (id store in [[[self managedObjectContext] persistentStoreCoordinator] persistentStores])
-	{
-		if ([store class] == [AddInsListStore self])
-			addinsStore = store;
-		else if ([store class] == [OfferListStore self])
-			offersStore = store;
-		else if ([store class] == [OverrideListStore self])
-			overridesStore = store;
-	}
 	
 	NSMutableArray *mainDirs = [NSMutableArray arrayWithCapacity:[items count]];
 	for (NSXMLElement *node in items)

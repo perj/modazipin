@@ -47,12 +47,12 @@
 		6675096E113331E2002BA240 /* grad.png in Resources */ = {isa = PBXBuildFile; fileRef = 6675096D113331E2002BA240 /* grad.png */; };
 		668DA1CA113AF21800A66EA8 /* Scanner.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A067B4113AC18400A68244 /* Scanner.m */; };
 		668DA283113B084200A66EA8 /* ToolbarDeleteIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 668DA23F113B02AD00A66EA8 /* ToolbarDeleteIcon.icns */; };
+		669DF41F13156351005236E3 /* EmptyOffers.xml in Resources */ = {isa = PBXBuildFile; fileRef = 669DF41E13156351005236E3 /* EmptyOffers.xml */; };
 		66A57FB511C9678C00787850 /* libMagickCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FB411C9678C00787850 /* libMagickCore.a */; };
 		66A57FC811C967E500787850 /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FC711C967E500787850 /* libbz2.dylib */; };
 		66A57FCC11C967F900787850 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FCB11C967F900787850 /* libz.dylib */; };
 		66A57FE311C96A7500787850 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FBA11C967C700787850 /* OpenCL.framework */; };
 		66A5800A11C96F3B00787850 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 66A5800911C96F3B00787850 /* LICENSE */; };
-		669DF41F13156351005236E3 /* EmptyOffers.xml in Resources */ = {isa = PBXBuildFile; fileRef = 669DF41E13156351005236E3 /* EmptyOffers.xml */; };
 		66B2D8611102644900997830 /* dragon_4.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66893CB210FCF88900A29832 /* dragon_4.icns */; };
 		66B6A88911C7DF7C00C4457D /* base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 66B6A88811C7DF7C00C4457D /* base64.m */; };
 		66B6A8F711C8006F00C4457D /* DetailsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 66B6A8F611C8006F00C4457D /* DetailsDelegate.m */; };
