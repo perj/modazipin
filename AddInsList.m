@@ -405,7 +405,7 @@ static NSPredicate *isREADME;
 				if ([[itemsController selectedObjects] indexOfObject:item] != NSNotFound)
 					[self performSelectorOnMainThread:@selector(reloadDetails) withObject:nil waitUntilDone:NO];
 			}
-			if ([content caseInsensitiveCompare:@"OverrideConfig.xml"] == NSOrderedSame)
+			if ([content caseInsensitiveCompare:@"OverrideConfig.xml"] == NSOrderedSame && ![[item valueForKey:@"configSections"] count])
 			{
 				[self configurePersistentStoreCoordinatorForURL:[url fileReferenceURL] ofType:@"OverrideConfigStore" modelConfiguration:@"overrideconfig" storeOptions:[NSDictionary dictionaryWithObject:item forKey:@"item"] error:nil];
 				req = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"configSectionsForItem" substitutionVariables:[NSDictionary dictionaryWithObject:item forKey:@"item"]];
