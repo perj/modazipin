@@ -160,6 +160,7 @@ static Game *sharedGame = nil;
 		NSError *err;
 		NSRunningApplication *running;
 		
+		url = [url URLByAppendingPathComponent:@"Contents/MacOS/cider"];
 		running = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:url options:NSWorkspaceLaunchDefault configuration:nil error:&err];
 		
 		if (running)
