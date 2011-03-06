@@ -1087,14 +1087,8 @@
 				parse_erf_data([erfdata bytes], [erfdata length],
 							   ^(struct erf_header *header, struct erf_file *file)
 							   {
-								   int len = 0;
-								   
-								   while (len < ERF_FILENAME_MAXLEN && file->entry->name[len] != 0)
-									   len++;
-								   
-								   [contents addObject:[[NSString alloc] initWithBytes:file->entry->name
-																				length:len * 2
-																			  encoding:NSUTF16LittleEndianStringEncoding]];
+								   if (file->name)
+									   [contents addObject:[NSString stringWithCString:file->name encoding:NSASCIIStringEncoding]];
 							   });
 			}
 				/* Fall through */

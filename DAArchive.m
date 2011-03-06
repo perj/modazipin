@@ -54,7 +54,7 @@ static NSPredicate *isERF;
 		if (!isDisabled)
 			isDisabled = [NSPredicate predicateWithFormat:@"SELF MATCHES '(?i).* (disabled)/.*'"];
 		if (!isERF)
-			isERF = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] '.erf'"];
+			isERF = [NSPredicate predicateWithFormat:@"SELF MATCHES[c] '\\.[ce]rf'"];
 	}
 	return self;
 }

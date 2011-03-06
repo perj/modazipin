@@ -42,7 +42,7 @@ static NSPredicate *isERF;
 		startURL = url;
 		message = msg;
 		if (!isERF)
-			isERF = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] '.erf'"];
+			isERF = [NSPredicate predicateWithFormat:@"SELF MATCHES[c] '\\.[ce]rf'"];
 		mparts = [[document fileURL] pathComponents];
 		disabled = dis;
 	}
@@ -148,15 +148,11 @@ static NSPredicate *isERF;
 		{
 			parse_erf_data([erfdata bytes], [erfdata length], ^(struct erf_header *header, struct erf_file *file)
 						   {
-							   int len = 0;
-							   
-							   while (len < ERF_FILENAME_MAXLEN && file->entry->name[len] != 0)
-								   len++;
-							   
-							   [currCont addObject:[[NSString alloc] initWithBytes:file->entry->name
-																		length:len * 2
-																	  encoding:NSUTF16LittleEndianStringEncoding]];
-							   [currData addObject:[erfdata subdataWithRange:NSMakeRange(file->data - [erfdata bytes], file->entry->length)]];
+							   if (file->name)
+								   [currCont addObject:[NSString stringWithCString:file->name encoding:NSASCIIStringEncoding]];
+							   else
+								   [currCont addObject:[NSNull null]]; 
+							   [currData addObject:[erfdata subdataWithRange:NSMakeRange(file->data - [erfdata bytes], file->length)]];
 							   [currOrigURLs addObject:url];
 						   });
 		}

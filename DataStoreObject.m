@@ -63,7 +63,7 @@ static NSPredicate *isERF;
 	NSArray *keys = [NSArray arrayWithObjects:NSURLNameKey, NSURLIsRegularFileKey, nil];
 	
 	if (!isERF)
-		isERF = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] '.erf'"];
+		isERF = [NSPredicate predicateWithFormat:@"SELF MATCHES[c] '\\.[ce]rf'"];
 
 	while ((item = [enumer nextObject]))
 	{
@@ -82,17 +82,12 @@ static NSPredicate *isERF;
 			
 			parse_erf_data([erfdata bytes], [erfdata length], ^(struct erf_header *header, struct erf_file *file)
 						   {
-							   int len = 0;
-							   
-							   while (len < ERF_FILENAME_MAXLEN && file->entry->name[len] != 0)
-								   len++;
-							   
-							   NSString *n = [[NSString alloc] initWithBytes:file->entry->name
-																	  length:len * 2
-																	encoding:NSUTF16LittleEndianStringEncoding];
+							   if (!file->name)
+								   return;
+							   NSString *n = [NSString stringWithCString:file->name encoding:NSASCIIStringEncoding];
 							   
 							   if ([n caseInsensitiveCompare:name] == NSOrderedSame)
-								   [res setObject:[NSData dataWithBytes:(void*)file->data length:file->entry->length] forKey:name];
+								   [res setObject:[NSData dataWithBytes:(void*)file->data length:file->length] forKey:name];
 						   });
 		}
 	}
