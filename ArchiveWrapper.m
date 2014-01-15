@@ -106,12 +106,10 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	return self;
 }
 
-- (void)finalize
+- (void)dealloc
 {
 	if (entry)
 		archive_entry_free (entry);
-	
-	[super finalize];
 }
 
 @synthesize entry;
@@ -188,7 +186,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 			[mutableData replaceBytesInRange:(NSRange){(NSUInteger)offset, (NSUInteger)len} withBytes:buf];
 		
 			if (++idx % 300 == 0 && wrapper)
-				wrapper.uncompressedOffset = archive_position_uncompressed(archive);
+				wrapper.uncompressedOffset = archive_filter_bytes(archive, 0);
 		}
 	}
 	else
@@ -203,7 +201,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 			[mutableData appendBytes:buf length:len];
 			
 			if (++idx % 300 == 0 && wrapper)
-				wrapper.uncompressedOffset = archive_position_uncompressed(archive);
+				wrapper.uncompressedOffset = archive_filter_bytes(archive, 0);
 		}
 	}
 	
@@ -247,7 +245,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	[self didChangeValueForKey:@"dataAvailable"];
 	
 	if (wrapper)
-		wrapper.uncompressedOffset = archive_position_uncompressed(archive);
+		wrapper.uncompressedOffset = archive_filter_bytes(archive, 0);
 	
 	if (r != ARCHIVE_OK && r != ARCHIVE_WARN)
 	{
@@ -273,7 +271,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		
 		if (![self fetchDataWithError:&err])
 		{
-			if (!err)
+			if (err)
 				@throw [NSException exceptionWithName:ArchiveMemberDataNotAvailableException
 											   reason:@"loadData failed"
 											 userInfo:[NSDictionary dictionaryWithObject:err
@@ -331,7 +329,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 			[fh truncateFileAtOffset:offset];
 		[fh writeData:[NSData dataWithBytesNoCopy:(void*)buf length:len freeWhenDone:NO]];
 		if (++idx % 300 == 0 && wrapper)
-			wrapper.uncompressedOffset = archive_position_uncompressed(archive);
+			wrapper.uncompressedOffset = archive_filter_bytes(archive, 0);
 	}
 	[fh closeFile];
 	
@@ -379,7 +377,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		}
 		
 		archive = archive_read_new ();
-		archive_read_support_compression_all (archive);
+		archive_read_support_filter_all (archive);
 		archive_read_support_format_all (archive);
 		if ((r = archive_read_open_filename (archive, [[url path] fileSystemRepresentation],
 											10 * 1024) != ARCHIVE_OK))
@@ -394,16 +392,15 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		encoding = enc;
 		
 		lastMember = nil;
-		self.uncompressedOffset = archive_position_uncompressed(archive);
+		self.uncompressedOffset = archive_filter_bytes(archive, 0);
 	}
 	return self;
 }
 
-- (void)finalize
+- (void)dealloc
 {
 	if (archive)
-		archive_read_finish (archive);
-	[super finalize];
+		archive_read_free (archive);
 }
 
 - (Class)memberClass
@@ -417,7 +414,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 		[lastMember skipDataWithError:error];
 	
 	lastMember = [[[self memberClass] alloc] initWithWrapper:self archive:archive encoding:encoding error:error];
-	self.uncompressedOffset = archive_position_uncompressed(archive);
+	self.uncompressedOffset = archive_filter_bytes(archive, 0);
 
 	if (!lastMember)
 		archive_read_close (archive);
@@ -425,7 +422,7 @@ NSString * const ArchiveErrorDomain = @"ArchiveErrorDomain";
 	return lastMember;
 }
 
-- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id *)stackbuf count:(NSUInteger)len
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained [])stackbuf count:(NSUInteger)len
 {
 	ArchiveMember *res = [self nextMemberWithError:nil];
 	

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010 Per Johansson, per at morth.org
+/* Copyright (c) 2014 Per Johansson, per at morth.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,11 +19,10 @@
  * THE SOFTWARE.
  */
 
-#ifdef __OBJC__
-    #import <Foundation/Foundation.h>
-    #import <CoreData/CoreData.h>
-    #import <Cocoa/Cocoa.h>
-#endif
+#import <CoreData/CoreData.h>
 
-#define MAGICKCORE_QUANTUM_DEPTH 16
-#define MAGICKCORE_HDRI_ENABLE 0
+@interface GenericStore : NSAtomicStore
+
+- (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject;
+
+@end

@@ -37,10 +37,7 @@ static Game *sharedGame = nil;
 - (id)init
 {
 	if (sharedGame)
-	{
-		[self dealloc];
 		return sharedGame;
-	}
 	
 	self = [super init];
 	if (self)

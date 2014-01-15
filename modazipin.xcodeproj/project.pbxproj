@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -27,16 +27,20 @@
 		6604517D11DE373B00F531EB /* FolderArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 6604517C11DE373B00F531EB /* FolderArchive.m */; };
 		6619883413031D8900CDF733 /* tab.png in Resources */ = {isa = PBXBuildFile; fileRef = 6619883313031D8900CDF733 /* tab.png */; };
 		6643D44D11B3ADB000B5626D /* NullStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 6643D44C11B3ADB000B5626D /* NullStore.m */; };
+		664D4F6E18847E1A00721172 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 664D4F6D18847E1A00721172 /* libxml2.dylib */; };
+		664D4F7018847F5200721172 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 664D4F6F18847F5200721172 /* libarchive.a */; };
+		664D4F7318848A8200721172 /* GenericStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 664D4F7218848A8200721172 /* GenericStore.m */; };
+		664D4F7718873F7000721172 /* liblzma.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 664D4F7618873F7000721172 /* liblzma.a */; };
+		664D4F7918873FC200721172 /* liblzo2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 664D4F7818873FC200721172 /* liblzo2.a */; };
+		664D4F7D188740D100721172 /* libiconv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 664D4F7C188740D000721172 /* libiconv.a */; };
 		665295EF10F2AC3D0095E65F /* DataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 665295EE10F2AC3D0095E65F /* DataStore.m */; };
 		665295FF10F2ADD20095E65F /* AddInsList.xib in Resources */ = {isa = PBXBuildFile; fileRef = 665295FE10F2ADD20095E65F /* AddInsList.xib */; };
 		6652961E10F2AF300095E65F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6652961D10F2AF300095E65F /* AppDelegate.m */; };
 		66529BAF130851700095841B /* ContentProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 66529BAE130851700095841B /* ContentProtocol.m */; };
 		6652AD3311DCB0DB0004D59D /* Game.m in Sources */ = {isa = PBXBuildFile; fileRef = 6652AD3211DCB0DB0004D59D /* Game.m */; };
-		66581ED610F3A7C00088EC73 /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66581ED510F3A7C00088EC73 /* libarchive.dylib */; };
 		66581F0C10F3B0400088EC73 /* Dazip.m in Sources */ = {isa = PBXBuildFile; fileRef = 66581F0B10F3B0400088EC73 /* Dazip.m */; };
 		6662531E11C6B74500AA6A27 /* DataProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6662531D11C6B74500AA6A27 /* DataProxy.m */; };
 		6662533011C6BA6000AA6A27 /* MagickImageRep.m in Sources */ = {isa = PBXBuildFile; fileRef = 6662532F11C6BA6000AA6A27 /* MagickImageRep.m */; };
-		6662533C11C6C19A00AA6A27 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6662533A11C6C19A00AA6A27 /* Quartz.framework */; };
 		6662533D11C6C19A00AA6A27 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6662533B11C6C19A00AA6A27 /* QuartzCore.framework */; };
 		666F424611E4E129005CFFD7 /* ConfigSection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 666F424511E4E129005CFFD7 /* ConfigSection.xib */; };
 		666F43D511E4FBB2005CFFD7 /* ConfigKey.xib in Resources */ = {isa = PBXBuildFile; fileRef = 666F43D411E4FBB2005CFFD7 /* ConfigKey.xib */; };
@@ -48,7 +52,7 @@
 		668DA1CA113AF21800A66EA8 /* Scanner.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A067B4113AC18400A68244 /* Scanner.m */; };
 		668DA283113B084200A66EA8 /* ToolbarDeleteIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 668DA23F113B02AD00A66EA8 /* ToolbarDeleteIcon.icns */; };
 		669DF41F13156351005236E3 /* EmptyOffers.xml in Resources */ = {isa = PBXBuildFile; fileRef = 669DF41E13156351005236E3 /* EmptyOffers.xml */; };
-		66A57FB511C9678C00787850 /* libMagickCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FB411C9678C00787850 /* libMagickCore.a */; };
+		66A57FB511C9678C00787850 /* libMagickCore-6.Q16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FB411C9678C00787850 /* libMagickCore-6.Q16.a */; };
 		66A57FC811C967E500787850 /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FC711C967E500787850 /* libbz2.dylib */; };
 		66A57FCC11C967F900787850 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FCB11C967F900787850 /* libz.dylib */; };
 		66A57FE311C96A7500787850 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A57FBA11C967C700787850 /* OpenCL.framework */; };
@@ -102,6 +106,13 @@
 		6619883313031D8900CDF733 /* tab.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tab.png; sourceTree = "<group>"; };
 		6643D44B11B3ADB000B5626D /* NullStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NullStore.h; sourceTree = "<group>"; };
 		6643D44C11B3ADB000B5626D /* NullStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NullStore.m; sourceTree = "<group>"; };
+		664D4F6D18847E1A00721172 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		664D4F6F18847F5200721172 /* libarchive.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; name = libarchive.a; path = lib/libarchive.a; sourceTree = MacPorts; };
+		664D4F7118848A8200721172 /* GenericStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenericStore.h; sourceTree = "<group>"; };
+		664D4F7218848A8200721172 /* GenericStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenericStore.m; sourceTree = "<group>"; };
+		664D4F7618873F7000721172 /* liblzma.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; name = liblzma.a; path = lib/liblzma.a; sourceTree = MacPorts; };
+		664D4F7818873FC200721172 /* liblzo2.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; name = liblzo2.a; path = lib/liblzo2.a; sourceTree = MacPorts; };
+		664D4F7C188740D000721172 /* libiconv.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; name = libiconv.a; path = lib/libiconv.a; sourceTree = MacPorts; };
 		665295ED10F2AC3D0095E65F /* DataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataStore.h; sourceTree = "<group>"; };
 		665295EE10F2AC3D0095E65F /* DataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataStore.m; sourceTree = "<group>"; };
 		6652961C10F2AF300095E65F /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -111,8 +122,7 @@
 		6652AD3111DCB0DB0004D59D /* Game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Game.h; sourceTree = "<group>"; };
 		6652AD3211DCB0DB0004D59D /* Game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Game.m; sourceTree = "<group>"; };
 		66581ECD10F3A7840088EC73 /* archive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = archive.h; path = include/archive.h; sourceTree = MacPorts; };
-		66581ED510F3A7C00088EC73 /* libarchive.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarchive.dylib; path = /usr/lib/libarchive.dylib; sourceTree = "<absolute>"; };
-		66581EE610F3AAFC0088EC73 /* archive_entry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = archive_entry.h; path = /opt/local/include/archive_entry.h; sourceTree = "<absolute>"; };
+		66581EE610F3AAFC0088EC73 /* archive_entry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = archive_entry.h; path = include/archive_entry.h; sourceTree = MacPorts; };
 		66581F0410F3B0110088EC73 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Dazip.xib; sourceTree = "<group>"; };
 		66581F0A10F3B0400088EC73 /* Dazip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dazip.h; sourceTree = "<group>"; };
 		66581F0B10F3B0400088EC73 /* Dazip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Dazip.m; sourceTree = "<group>"; };
@@ -121,7 +131,6 @@
 		6662531D11C6B74500AA6A27 /* DataProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataProxy.m; sourceTree = "<group>"; };
 		6662532E11C6BA6000AA6A27 /* MagickImageRep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagickImageRep.h; sourceTree = "<group>"; };
 		6662532F11C6BA6000AA6A27 /* MagickImageRep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagickImageRep.m; sourceTree = "<group>"; };
-		6662533A11C6C19A00AA6A27 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
 		6662533B11C6C19A00AA6A27 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		666F424311E4E11C005CFFD7 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/ConfigSection.xib; sourceTree = "<group>"; };
 		666F43D211E4FBAB005CFFD7 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/ConfigKey.xib; sourceTree = "<group>"; };
@@ -138,7 +147,7 @@
 		66A067B3113AC18400A68244 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scanner.h; sourceTree = "<group>"; };
 		66A067B4113AC18400A68244 /* Scanner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Scanner.m; sourceTree = "<group>"; };
 		66A57F9811C965C700787850 /* delegates.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = delegates.xml; sourceTree = BUILT_PRODUCTS_DIR; };
-		66A57FB411C9678C00787850 /* libMagickCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMagickCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		66A57FB411C9678C00787850 /* libMagickCore-6.Q16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libMagickCore-6.Q16.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A57FBA11C967C700787850 /* OpenCL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenCL.framework; path = System/Library/Frameworks/OpenCL.framework; sourceTree = SDKROOT; };
 		66A57FC711C967E500787850 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		66A57FCB11C967F900787850 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -167,12 +176,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				664D4F7D188740D100721172 /* libiconv.a in Frameworks */,
+				664D4F7918873FC200721172 /* liblzo2.a in Frameworks */,
+				664D4F7718873F7000721172 /* liblzma.a in Frameworks */,
+				664D4F7018847F5200721172 /* libarchive.a in Frameworks */,
+				664D4F6E18847E1A00721172 /* libxml2.dylib in Frameworks */,
 				775DFF38067A968500C5B868 /* Cocoa.framework in Frameworks */,
-				66581ED610F3A7C00088EC73 /* libarchive.dylib in Frameworks */,
 				667505EE1131AC9F002BA240 /* WebKit.framework in Frameworks */,
-				6662533C11C6C19A00AA6A27 /* Quartz.framework in Frameworks */,
 				6662533D11C6C19A00AA6A27 /* QuartzCore.framework in Frameworks */,
-				66A57FB511C9678C00787850 /* libMagickCore.a in Frameworks */,
+				66A57FB511C9678C00787850 /* libMagickCore-6.Q16.a in Frameworks */,
 				66A57FC811C967E500787850 /* libbz2.dylib in Frameworks */,
 				66A57FCC11C967F900787850 /* libz.dylib in Frameworks */,
 				66A57FE311C96A7500787850 /* OpenCL.framework in Frameworks */,
@@ -203,7 +215,7 @@
 		19C28FB0FE9D524F11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				66A57FB411C9678C00787850 /* libMagickCore.a */,
+				66A57FB411C9678C00787850 /* libMagickCore-6.Q16.a */,
 				66A57F9811C965C700787850 /* delegates.xml */,
 				8D15AC370486D014006FF6A4 /* Modazipin.app */,
 			);
@@ -250,6 +262,8 @@
 				66581F0B10F3B0400088EC73 /* Dazip.m */,
 				665295ED10F2AC3D0095E65F /* DataStore.h */,
 				665295EE10F2AC3D0095E65F /* DataStore.m */,
+				664D4F7118848A8200721172 /* GenericStore.h */,
+				664D4F7218848A8200721172 /* GenericStore.m */,
 				2A37F4AEFDCFA73011CA2CEA /* AddInsList.h */,
 				2A37F4ACFDCFA73011CA2CEA /* AddInsList.m */,
 				6652961C10F2AF300095E65F /* AppDelegate.h */,
@@ -298,16 +312,19 @@
 		2A37F4C3FDCFA73011CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				664D4F7C188740D000721172 /* libiconv.a */,
+				664D4F7818873FC200721172 /* liblzo2.a */,
+				664D4F7618873F7000721172 /* liblzma.a */,
+				664D4F6F18847F5200721172 /* libarchive.a */,
+				664D4F6D18847E1A00721172 /* libxml2.dylib */,
 				66A5800911C96F3B00787850 /* LICENSE */,
 				666252B311C6A5CA00AA6A27 /* MagickCore.h */,
 				66A57FCB11C967F900787850 /* libz.dylib */,
 				66A57FC711C967E500787850 /* libbz2.dylib */,
 				66A57FBA11C967C700787850 /* OpenCL.framework */,
-				6662533A11C6C19A00AA6A27 /* Quartz.framework */,
 				6662533B11C6C19A00AA6A27 /* QuartzCore.framework */,
 				667505ED1131AC9F002BA240 /* WebKit.framework */,
 				66581EE610F3AAFC0088EC73 /* archive_entry.h */,
-				66581ED510F3A7C00088EC73 /* libarchive.dylib */,
 				66581ECD10F3A7840088EC73 /* archive.h */,
 				1058C7A6FEA54F5311CA2CBB /* Linked Frameworks */,
 				1058C7A8FEA54F5311CA2CBB /* Other Frameworks */,
@@ -371,9 +388,16 @@
 /* Begin PBXProject section */
 		2A37F4A9FDCFA73011CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+			};
 			buildConfigurationList = 26FC0AA90875C8B900E6366F /* Build configuration list for PBXProject "modazipin" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 2A37F4AAFDCFA73011CA2CEA /* modazipin */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -443,6 +467,7 @@
 				6652961E10F2AF300095E65F /* AppDelegate.m in Sources */,
 				66581F0C10F3B0400088EC73 /* Dazip.m in Sources */,
 				66D0F66210F677F400C5B31A /* erf.c in Sources */,
+				664D4F7318848A8200721172 /* GenericStore.m in Sources */,
 				66D0F76A10F8F54100C5B31A /* ArchiveWrapper.m in Sources */,
 				66BBE8F4110C704100F4B94A /* DataStoreObject.m in Sources */,
 				66C74A0E111F0BEF0084E7AC /* DAArchive.m in Sources */,
@@ -536,17 +561,17 @@
 		26FC0AA60875C8B900E6366F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = modazipin_Prefix.pch;
 				INFOPLIST_FILE = "modazipin-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = Modazipin;
 				WRAPPER_EXTENSION = app;
 			};
@@ -555,13 +580,14 @@
 		26FC0AA70875C8B900E6366F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = modazipin_Prefix.pch;
 				INFOPLIST_FILE = "modazipin-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = Modazipin;
 				WRAPPER_EXTENSION = app;
 			};
@@ -570,13 +596,18 @@
 		26FC0AAA0875C8B900E6366F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				BUNDLE_VERSION = 1;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				BUNDLE_VERSION = 1.1.1;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_ENABLE_OBJC_GC = required;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
@@ -584,14 +615,18 @@
 				GCC_WARN_MISSING_PARENTHESES = YES;
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "${SRCROOT}/ImageMagick";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				VERSION = 1.0.2;
+				VERSION = 1.1.1;
 				WARNING_CFLAGS = "-Wreturn-type";
 			};
 			name = Debug;
@@ -599,12 +634,17 @@
 		26FC0AAB0875C8B900E6366F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				BUNDLE_VERSION = 1;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_ENABLE_OBJC_GC = required;
+				BUNDLE_VERSION = 1.1.1;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
@@ -612,12 +652,16 @@
 				GCC_WARN_MISSING_PARENTHESES = YES;
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "${SRCROOT}/ImageMagick";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = macosx10.6;
-				VERSION = 1.1;
+				SDKROOT = macosx;
+				VERSION = 1.1.1;
 				WARNING_CFLAGS = "-Wreturn-type";
 			};
 			name = Release;
@@ -625,8 +669,6 @@
 		66A57F5E11C951F800787850 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = ImageMagick;
 			};
@@ -635,8 +677,6 @@
 		66A57F5F11C951F800787850 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				PRODUCT_NAME = ImageMagick;
 				ZERO_LINK = NO;

@@ -167,10 +167,12 @@ static NSArray *resourceKeys;
 
 - (id)initForReadingFromURL:(NSURL *)url encoding:(NSStringEncoding)enc error:(NSError **)error
 {
-	if ([url getResourceValue:&isDir forKey:NSURLIsDirectoryKey error:nil] && [isDir boolValue])
+	NSNumber *isd;
+
+	if ([url getResourceValue:&isd forKey:NSURLIsDirectoryKey error:nil] && [isd boolValue])
 	{
 		self = [self init];
-		
+
 		if (self)
 		{
 			errPtr = nil;
@@ -184,6 +186,8 @@ static NSArray *resourceKeys;
 	else
 		self = [super initForReadingFromURL:url encoding:enc error:error];
 	
+	isDir = isd;
+		
 	return self;
 }
 

@@ -50,7 +50,7 @@ if ! test -f Makefile; then
 	echo "Patching configure to ignore MacPorts/fink"
 	sed -i .bak -E -e 's,^[[:space:]]*(CPP|LD)FLAGS=.*(/opt/local/|/sw/),: &,' "$SRCROOT/ImageMagick/configure"
 	echo "Running configure"
-	"$SRCROOT/ImageMagick/configure" --disable-installed --without-x --without-magick-plus-plus --disable-dependency-tracking --disable-shared CFLAGS="$config" CC='clang'
+	env -i "$SRCROOT/ImageMagick/configure" --disable-installed --without-x --without-magick-plus-plus --disable-dependency-tracking --disable-shared CFLAGS="$config" CC='clang'
 fi
 
 #printenv
@@ -58,7 +58,8 @@ fi
 echo make "$@"
 make "$@"
 
-for f in magick/.libs/libMagickCore.a config/coder.xml config/delegates.xml; do
+mkdir -p "$BUILT_PRODUCTS_DIR"
+for f in magick/.libs/libMagickCore-6.Q16.a config/coder.xml config/delegates.xml; do
 	dst="$BUILT_PRODUCTS_DIR/`basename $f`"
 	if ! test -f "$f" ; then
 		echo rm -f "\"$dst\""

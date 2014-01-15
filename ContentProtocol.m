@@ -51,16 +51,8 @@
 	self = [super initWithRequest:request cachedResponse:cachedResponse client:client];
 	if (self)
 	{
-		/* XXX Needed for GC project, but this leaks and seems to create a retain cycle, can't find any way around it. */
-		CFRetain(client);
 	}
 	return self;
-}
-
-- (void)finalize
-{
-	NSLog(@"Content protocol released!");
-	[super finalize];
 }
 
 - (void)startLoading

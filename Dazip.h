@@ -22,8 +22,11 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 
+#import "DetailsDelegate.h"
+
 @interface Dazip : NSPersistentDocument {
 	IBOutlet WebView *detailsView;
+	IBOutlet DetailsDelegate *detailsDelegate;
 }
 
 - (void)detailsDidLoad;

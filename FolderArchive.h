@@ -35,7 +35,7 @@
 	NSNumber *isDir;
 	
 	NSDirectoryEnumerator *enumerator;
-	NSError **errPtr;
+	NSError * __autoreleasing *errPtr;
 }
 
 - (id)initForReadingFromURL:(NSURL *)url encoding:(NSStringEncoding)enc error:(NSError **)error;

@@ -25,69 +25,6 @@
 
 #include "erf.h"
 
-@implementation NSAtomicStore (CacheNodeCreation)
-
-- (NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject
-{
-	/* This function is completely generic, except it requires all stores to be NSAtomicStore */
-	NSMutableDictionary *data = [NSMutableDictionary dictionary];
-	NSAtomicStoreCacheNode *cnode;
-	
-	for (NSPropertyDescription *prop in [managedObject entity])
-	{
-		NSString *key = [prop name];
-		id value = [managedObject valueForKey:key];
-		
-		if (!value)
-			continue;
-		
-		if ([[prop class] isSubclassOfClass:[NSRelationshipDescription class]])
-		{
-			NSRelationshipDescription *rel = (NSRelationshipDescription*)prop;
-			
-			if ([rel isToMany])
-			{
-				NSMutableSet *set = [NSMutableSet set];
-				
-				for (NSManagedObject *o in value)
-				{
-					cnode = [(NSAtomicStore*)[[o objectID] persistentStore] cacheNodeForObjectID:[o objectID]];
-					
-					if (!cnode)
-					{
-						cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[o objectID]];
-						[(NSAtomicStore*)[[o objectID] persistentStore] addCacheNodes:[NSSet setWithObject:cnode]];
-					}
-					[set addObject:cnode];
-				}
-				[data setObject:set forKey:key];
-			}
-			else
-			{
-				NSManagedObject *o = value;
-				
-				cnode = [(NSAtomicStore*)[[o objectID] persistentStore] cacheNodeForObjectID:[o objectID]];
-				if (!cnode)
-				{
-					cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[o objectID]];
-					[(NSAtomicStore*)[[o objectID] persistentStore] addCacheNodes:[NSSet setWithObject:cnode]];
-				}
-				[data setObject:cnode forKey:key];
-			}
-		}
-		else
-			[data setObject:value forKey:key];
-	}
-	
-	cnode = [self cacheNodeForObjectID:[managedObject objectID]];
-	if (!cnode)
-		cnode = [[NSAtomicStoreCacheNode alloc] initWithObjectID:[managedObject objectID]];
-	[cnode setPropertyCache:data];
-	return cnode;
-}
-
-@end
-
 @interface DataStore (Errors)
 
 - (NSError*)dataStoreError:(NSInteger)code msg:(NSString*)fmt, ... NS_FORMAT_FUNCTION(2,3);
@@ -739,7 +676,7 @@
 	
 	IMP imp = [self methodForSelector:sel];
 	if (!imp)
-		[NSException raise:NSInvalidArgumentException format:@"%s is not a method of this object.", (char*)sel];
+		[NSException raise:NSInvalidArgumentException format:@"%s is not a method of this object.", sel_getName(sel)];
 	
 	id res = (*imp)(self, sel, node, nil, error, ^(NSXMLElement *elem, NSString *entityName)
 			  {
@@ -794,7 +731,7 @@
 	
 	BOOL (*imp)(id, SEL, NSXMLElement*, NSError**, createObjBlock, setDataBlock) = (void*)[self methodForSelector:sel];
 	if (!imp)
-		[NSException raise:NSInvalidArgumentException format:@"%s is not a method of this object.", (char*)sel];
+		[NSException raise:NSInvalidArgumentException format:@"%s is not a method of this object.", sel_getName(sel)];
 	
 	BOOL res = (*imp)(self, sel, [xmldoc rootElement], error, createBlock, setBlock);
 	
@@ -922,11 +859,13 @@
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self && url)
 	{
-		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&loadError];
+		NSError *err = nil;
+		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&err];
 
 		if (xmldata)
-			[self loadXML:xmldata ofType:@"AddInsList" error:&loadError];
-		
+			[self loadXML:xmldata ofType:@"AddInsList" error:&err];
+
+		loadError = err;
 		self.identifier = @"AddInsList";
 	}
 	return self;
@@ -961,25 +900,27 @@
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self && url)
 	{
-		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&loadError];
+		NSError *err;
+		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&err];
 		
-		if (loadError && [[loadError domain] isEqualToString:NSCocoaErrorDomain] && [loadError code] == NSFileReadNoSuchFileError)
+		if (err && [[err domain] isEqualToString:NSCocoaErrorDomain] && [err code] == NSFileReadNoSuchFileError)
 		{
 			/* Presumably AddIns.xml was already loaded correctly, so create a matching empty Offers.xml */
 			NSURL *emptyUrl = [[NSBundle mainBundle] URLForResource:@"EmptyOffers" withExtension:@"xml"];
 			
 			if (emptyUrl)
 			{
-				loadError = nil;
+				err = nil;
 				
-				if ([[NSFileManager defaultManager] copyItemAtURL:emptyUrl toURL:url error:&loadError])
-					xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&loadError];
+				if ([[NSFileManager defaultManager] copyItemAtURL:emptyUrl toURL:url error:&err])
+					xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&err];
 			}
 		}
 		
 		if (xmldata)
-			[self loadXML:xmldata ofType:@"OfferList" error:&loadError];
-		
+			[self loadXML:xmldata ofType:@"OfferList" error:&err];
+
+		loadError = err;
 		self.identifier = @"OfferList";
 	}
 	return self;
@@ -1015,20 +956,22 @@
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self && url)
 	{
-		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&loadError];
+		NSError *err = nil;
+		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&err];
 		
 		if (xmldata)
-			[self loadXML:xmldata ofType:@"OverrideList" error:&loadError];
+			[self loadXML:xmldata ofType:@"OverrideList" error:&err];
 		else if ([loadError domain] == NSCocoaErrorDomain && [loadError code] == NSFileReadNoSuchFileError)
 		{
-			loadError = nil;
+			err = nil;
 			xmldoc = [NSXMLNode documentWithRootElement:[NSXMLElement elementWithName:@"OverrideList"]];
 			[xmldoc setVersion:@"1.0"];
 			[xmldoc setCharacterEncoding:@"UTF-8"];
 			[xmldoc setStandalone:YES];
-			[self save:&loadError];
+			[self save:&err];
 		}
-		
+
+		loadError = err;
 		self.identifier = @"OverrideList";
 	}
 	return self;
@@ -1145,18 +1088,25 @@
     self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self)
 	{
-		NSDictionary *dazipData = [self loadArchive:url error:&loadError];
+		NSError *err = nil;
+		NSDictionary *dazipData = [self loadArchive:url error:&err];
 		
 		if (!dazipData)
+		{
+			loadError = err;
 			return self;
+		}
 		
 		NSData *xmldata = [dazipData objectForKey:@"manifest"];
 		NSMutableSet *files = [dazipData objectForKey:@"files"];
 		NSMutableSet *dirs = [dazipData objectForKey:@"directories"];
 		//NSMutableSet *contents = [dazipData objectForKey:@"contents"];
 		
-		if (![self loadXML:xmldata ofType:@"Manifest" error:&loadError])
+		if (![self loadXML:xmldata ofType:@"Manifest" error:&err])
+		{
+			loadError = err;
 			return self;
+		}
 		
 		NSString *manifestType = [[[xmldoc rootElement] attributeForName:@"Type"] stringValue];
 		NSString *listNodeType = nil;
@@ -1178,9 +1128,12 @@
 			return self;
 		}
 			
-		NSArray *itemNodes = [self verifyManifestOfType:manifestType listNodeType:listNodeType error:&loadError];
+		NSArray *itemNodes = [self verifyManifestOfType:manifestType listNodeType:listNodeType error:&err];
 		if (!itemNodes)
+		{
+			loadError = err;
 			return self;
+		}
 		
 		for (NSXMLElement *itemNode in itemNodes)
 		{
@@ -1294,7 +1247,8 @@
 			
 			[[itemNodes objectAtIndex:0] addChild:modNode];
 		}
-		
+
+		loadError = err;
 		self.identifier = [[[itemNodes objectAtIndex:0] attributeForName:@"UID"] stringValue];
 	}
 	return self;
@@ -1331,15 +1285,19 @@
 	self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self)
 	{
-		NSDictionary *overrideData = [self loadArchive:url error:&loadError];
+		NSError *err = nil;
+		NSDictionary *overrideData = [self loadArchive:url error:&err];
 		
 		NSData *xmldata = [overrideData objectForKey:@"manifest"];
 		NSMutableSet *files = [overrideData objectForKey:@"files"];
 		NSMutableSet *dirs = [overrideData objectForKey:@"directories"];
 		//NSMutableSet *contents = [overrideData objectForKey:@"contents"];
 		
-		if (![self loadXML:xmldata ofType:@"OverrideList" error:&loadError])
+		if (![self loadXML:xmldata ofType:@"OverrideList" error:&err])
+		{
+			loadError = err;
 			return self;
+		}
 		
 		NSXMLElement *root = [xmldoc rootElement];
 		
@@ -1366,7 +1324,8 @@
 		
 		NSXMLElement *modazipinNode = [self makeModazipinNodeForFiles:files dirs:dirs];
 		[itemNode addChild:modazipinNode];
-		
+
+		loadError = err;
 		self.identifier = uid;
 	}
 	return self;
@@ -1395,11 +1354,13 @@
 	self = [super initWithPersistentStoreCoordinator:coordinator configurationName:configurationName URL:url options:options];
 	if (self)
 	{
-		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&loadError];
+		NSError *err;
+		NSData *xmldata = [NSData dataWithContentsOfURL:url options:NSDataReadingMapped error:&err];
 		
 		if (xmldata)
-			[self loadXML:xmldata ofType:@"OverrideConfig" error:&loadError];
+			[self loadXML:xmldata ofType:@"OverrideConfig" error:&err];
 		
+		loadError = err;
 		item = [options objectForKey:@"item"];
 		self.identifier = [NSString stringWithFormat:@"%@:OverrideConfig", item.UID];
 	}

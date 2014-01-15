@@ -189,6 +189,7 @@
 	[list selectItemWithUid:[[arr objectAtIndex:0] UID]];
 	[list saveDocument:self];
 	[list showWindows];
+
 	[self close];
 }
 

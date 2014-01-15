@@ -142,8 +142,6 @@ static NSPredicate *isERF;
     [self didChangeValueForKey:@"paths" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
 	
 	[self addPathNodes:changedObjects];
-    
-    [changedObjects release];
 }
 
 - (void)addPaths:(NSSet *)value 
@@ -309,7 +307,7 @@ static NSPredicate *isERF;
 		NSString *repTo = nil;
 		NSString *secStart = [NSString stringWithFormat:@"%%?%@%%", [prop name]];
 		NSString *secEnd = [NSString stringWithFormat:@"%%!%@%%", [prop name]];
-		
+
 		if ([[prop class] isSubclassOfClass:[NSRelationshipDescription class]])
 		{
 			NSRelationshipDescription *rel = (NSRelationshipDescription*)prop;
@@ -415,7 +413,7 @@ static NSPredicate *isERF;
 	
 	NSString *secStart = [NSString stringWithFormat:@"%%?%@%%", [[self entity] name]];
 	NSString *secEnd = [NSString stringWithFormat:@"%%!%@%%", [[self entity] name]];
-	
+
 	[str replaceOccurrencesOfString:secStart withString:@"" options:0 range:NSMakeRange(0, [str length])];
 	[str replaceOccurrencesOfString:secEnd withString:@"" options:0 range:NSMakeRange(0, [str length])];
 	
@@ -429,11 +427,14 @@ static NSPredicate *isERF;
 		while ([str characterAtIndex:rs.location + rs.length] != '%')
 			rs.length++;
 		
-		secEnd = [NSString stringWithFormat:@"%%!%@%", [str substringWithRange:NSMakeRange(rs.location + 2, rs.length - 1)]];
+		secEnd = [NSString stringWithFormat:@"%%!%@", [str substringWithRange:NSMakeRange(rs.location + 2, rs.length - 1)]];
 		NSRange re = [str rangeOfString:secEnd];
 		
 		if (re.location == NSNotFound || re.location < rs.location)
+		{
+			NSLog(@"didn't find %@ to match %@", secEnd, [str substringWithRange:rs]);
 			break;
+		}
 		
 		rs.length = re.location + re.length - rs.location;
 		[str deleteCharactersInRange:rs];
@@ -475,7 +476,7 @@ static NSPredicate *isERF;
 	return [self replaceProperties:cachedDetails];
 }
 
-- (NSMutableString*)galleryHTMLWithContents:(NSDictionary**)outContents;
+- (NSMutableString*)galleryHTMLWithContents:(NSDictionary**)outContents
 {
 	NSError *err = nil;
 	NSFetchRequest *req = [[[self entity] managedObjectModel] fetchRequestFromTemplateWithName:@"contentsOfTypeForItem" substitutionVariables:[NSDictionary dictionaryWithObjectsAndKeys:@".dds", @"type", self, @"item", nil]];
@@ -594,7 +595,11 @@ static NSPredicate *isERF;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if (object == self && [keyPath isEqualToString:@"configSections"])
+	{
 		[self updateConfigView];
+		/* This is a one-shot. */
+		[self removeObserver:self forKeyPath:@"configSections"];
+	}
 	else
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
@@ -660,7 +665,20 @@ static NSPredicate *isERF;
 {
 	if (!view)
 	{
-		[NSBundle loadNibNamed:@"ConfigSection" owner:self];
+#if MACOS_DEPLOYMENT_TARGET < 1080
+		if ([[NSBundle mainBundle] respondsToSelector:@selector(loadNibNamed:owner:topLevelObjects:)])
+#endif
+			[[NSBundle mainBundle] loadNibNamed:@"ConfigSection" owner:self topLevelObjects:nil];
+#if MACOS_DEPLOYMENT_TARGET < 1080
+		else
+		{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+			[NSBundle loadNibNamed:@"ConfigSection" owner:self];
+#pragma clang diagnostic pop
+		}
+#endif
+
 		NSPoint loc = {8, 10};
 		NSInteger width = 0;
 		
@@ -715,7 +733,19 @@ static NSPredicate *isERF;
 {
 	if (!view)
 	{
-		[NSBundle loadNibNamed:@"ConfigKey" owner:self];
+#if MACOS_DEPLOYMENT_TARGET < 1080
+		if ([[NSBundle mainBundle] respondsToSelector:@selector(loadNibNamed:owner:topLevelObjects:)])
+#endif
+			[[NSBundle mainBundle] loadNibNamed:@"ConfigKey" owner:self topLevelObjects:nil];
+#if MACOS_DEPLOYMENT_TARGET < 1080
+		else
+		{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+			[NSBundle loadNibNamed:@"ConfigKey" owner:self];
+#pragma clang diagnostic pop
+		}
+#endif
 		NSRect r = [view frame];
 		
 		r.size.height = 28;

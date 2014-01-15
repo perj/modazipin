@@ -47,14 +47,27 @@
 
 + (NSArray *)imageRepsWithData:(NSData *)data
 {
-	return [NSArray arrayWithObject:[self imageRepWithData:data]];
+	id obj = [self imageRepWithData:data];
+
+	if (!obj)
+		return nil;
+	return [NSArray arrayWithObject:obj];
 }
 
 + (id)imageRepWithData:(NSData*)data
 {
 	ExceptionInfo *exception = AcquireExceptionInfo();
 	ImageInfo *info = CloneImageInfo(NULL);
-	Image *image = BlobToImage(info, [data bytes], [data length], exception);
+
+	/*
+	 * It seems BlobToImage will sometimes call realloc on the passed pointer.
+	 * That's a bug obviously, but I need this working for now.
+	 */
+	void *mem = AcquireMagickMemory([data length]);
+	assert(mem);
+	memcpy(mem, [data bytes], [data length]);
+	Image *image = BlobToImage(info, mem, [data length], exception);
+	//RelinquishMagickMemory(mem);
 	
 	if (!image)
 	{
@@ -76,20 +89,8 @@
 		return nil;
 	}
 	
-	unsigned char **blobs = malloc(sizeof(*blobs));
-	if (!blobs)
-	{
-		RelinquishMagickMemory(blob);
-		DestroyImage(image);
-		DestroyImageInfo(info);
-		DestroyExceptionInfo(exception);
-		return nil;
-	}
-	
-	*blobs = blob;
-	
-	MagickImageRep *res = [[MagickImageRep alloc] initWithBitmapDataPlanes:blobs pixelsWide:image->columns pixelsHigh:image->rows bitsPerSample:8 samplesPerPixel:4 hasAlpha:YES isPlanar:NO colorSpaceName:NSCalibratedRGBColorSpace bytesPerRow:image->columns * 4 bitsPerPixel:8 * 4];
-	
+	MagickImageRep *res = [[MagickImageRep alloc] initWithBitmapDataPlanes:&blob pixelsWide:image->columns pixelsHigh:image->rows bitsPerSample:8 samplesPerPixel:4 hasAlpha:YES isPlanar:NO colorSpaceName:NSCalibratedRGBColorSpace bytesPerRow:image->columns * 4 bitsPerPixel:8 * 4];
+
 	DestroyImage(image);
 	DestroyImageInfo(info);
 	DestroyExceptionInfo(exception);
@@ -101,7 +102,10 @@
 	self = [super initWithBitmapDataPlanes:pns pixelsWide:width pixelsHigh:height bitsPerSample:bps samplesPerPixel:spp hasAlpha:alpha isPlanar:isPlanar colorSpaceName:colorSpaceName bytesPerRow:rBytes bitsPerPixel:pBits];
 	if (self)
 	{
-		planes = pns;
+		planes = malloc(spp * sizeof (*planes));
+		if (!planes)
+			return nil;
+		memcpy(planes, pns, spp * sizeof (*planes));
 		if (isPlanar)
 			nplanes = spp;
 		else
@@ -110,14 +114,13 @@
 	return self;
 }
 
-- (void)finalize
+- (void)dealloc
 {
 	NSInteger i;
 	
 	for (i = 0 ; i < nplanes ; i++)
 		RelinquishMagickMemory(planes[i]);
 	free(planes);
-	[super finalize];
 }
 
 @end

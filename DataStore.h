@@ -21,11 +21,12 @@
 
 #import <Cocoa/Cocoa.h>
 #import "DataStoreObject.h"
+#import "GenericStore.h"
 
 typedef id (^createObjBlock)(NSXMLNode *elem, NSString *entityName);
 typedef id (^setDataBlock)(id obj, NSMutableDictionary *data);
 
-@interface DataStore : NSAtomicStore
+@interface DataStore : GenericStore
 {
 	NSString *identifier;
 	NSXMLDocument *xmldoc;

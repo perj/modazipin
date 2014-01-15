@@ -20,9 +20,9 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import "GenericStore.h"
 
-
-@interface NullStore : NSAtomicStore
+@interface NullStore : GenericStore
 {
 	int cntr;
 	NSString *identifier;

@@ -25,6 +25,7 @@
 #import "DataStoreObject.h"
 #import "ArchiveWrapper.h"
 #import "NullStore.h"
+#import "DetailsDelegate.h"
 
 @class DAArchive;
 
@@ -42,6 +43,7 @@
 	IBOutlet NSToolbarItem *launchGameButton;
 	IBOutlet NSArrayController *itemsController;
 	IBOutlet WebView *detailsView;
+	IBOutlet DetailsDelegate *detailsDelegate;
 	IBOutlet NSButtonCell *detailsCell, *configCell, *galleryCell;
 	
 	IBOutlet NSWindow *progressWindow;

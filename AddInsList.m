@@ -151,7 +151,7 @@ static NSPredicate *isREADME;
 	else if ([keyPath isEqualToString:@"uncompressedOffset"])
 		[self progressChanged:object session:context];
 	else if (object == operationQueue)
-		[self updateOperationCount];
+		[self performSelectorOnMainThread:@selector(updateOperationCount) withObject:nil waitUntilDone:NO];
 	else if (object == [NSUserDefaultsController sharedUserDefaultsController])
 		[self updateDefaults:[keyPath substringFromIndex:sizeof("values.") - 1]];
 	else if (object == self && [keyPath isEqualToString:@"randomScreenshotURL"])
@@ -227,8 +227,10 @@ static NSPredicate *isREADME;
 		[self willChangeValueForKey:@"detailedItem"];
 		detailedItem = [objects objectAtIndex:0];
 		[self didChangeValueForKey:@"detailedItem"];
-		
-		NSMutableString *html = detailsTabSelected == 3 ? [detailedItem galleryHTMLWithContents:&contentsData] : [detailedItem detailsHTML];
+
+		NSDictionary *data = nil;
+		NSMutableString *html = detailsTabSelected == 3 ? [detailedItem galleryHTMLWithContents:&data] : [detailedItem detailsHTML];
+		contentsData = data;
 		
 		[html replaceOccurrencesOfString:@"<!--dazip-->" withString:@"<!--" options:0 range:NSMakeRange(0, [html length])];
 		[html replaceOccurrencesOfString:@"<!--/dazip-->" withString:@"-->" options:0 range:NSMakeRange(0, [html length])];
@@ -582,7 +584,8 @@ static NSPredicate *isREADME;
 	NSModalSession modal = [NSApp beginModalSessionForWindow:progressWindow];
 	
 	[archive addObserver:self forKeyPath:@"uncompressedOffset" options:0 context:modal];
-	
+
+	BOOL ret = YES;
 	for (DAArchiveMember *entry in archive)
 	{
 		NSString *path;
@@ -617,7 +620,10 @@ static NSPredicate *isREADME;
 		NSURL *dst = [base URLByAppendingPathComponent:path];
 		/* XXX delete all files on error. */
 		if (![entry extractToURL:dst createDirectories:YES error:error])
-			return NO;
+		{
+			ret = NO;
+			goto out;
+		}
 	}
 	
 	/* XXX delete all files and items on error. */
@@ -630,8 +636,11 @@ static NSPredicate *isREADME;
 			item = [addinsStore insertAddInNode:node error:error intoContext:[self managedObjectContext]];
 			
 			if (!item)
-				return NO;
-			
+			{
+				ret = NO;
+				goto out;
+			}
+
 			[[item valueForKey:@"offers"] setValue:[NSNumber numberWithBool:NO] forKey:@"displayed"];
 		}
 		else if ([[node name] isEqualToString:@"OfferItem"])
@@ -639,8 +648,11 @@ static NSPredicate *isREADME;
 			item = [offersStore insertOfferNode:node error:error intoContext:[self managedObjectContext]];
 			
 			if (!item)
-				return NO;
-			
+			{
+				ret = NO;
+				goto out;
+			}
+
 			NSArray *related = [item valueForKey:@"addins"];
 			for (AddInItem *rel in related) {
 				[[self managedObjectContext] refreshObject:rel mergeChanges:NO];
@@ -654,7 +666,10 @@ static NSPredicate *isREADME;
 			item = [overridesStore insertOverrideNode:node error:error intoContext:[self managedObjectContext]];
 			
 			if (!item)
-				return NO;
+			{
+				ret = NO;
+				goto out;
+			}
 		}
 		
 		if (item)
@@ -667,11 +682,13 @@ static NSPredicate *isREADME;
 			[self enabledChanged:item canInteract:NO];
 		}
 	}
-	
+
+out:
+	[archive removeObserver:self forKeyPath:@"uncompressedOffset"];
 	[NSApp endModalSession:modal];
 	[progressWindow close];
 	
-	return YES;
+	return ret;
 }
 
 - (void)progressChanged:(ArchiveWrapper*)archive session:(NSModalSession)modal
@@ -687,7 +704,7 @@ static NSPredicate *isREADME;
 
 - (void)askAssign:(Item*)item
 {
-	[NSApp beginSheet:assignSheet modalForWindow:[self windowForSheet] modalDelegate:self didEndSelector:@selector(verifyAssign:returnCode:contextInfo:) contextInfo:item];
+	[NSApp beginSheet:assignSheet modalForWindow:[self windowForSheet] modalDelegate:self didEndSelector:@selector(verifyAssign:returnCode:contextInfo:) contextInfo:(__bridge void *)(item)];
 }
 
 - (IBAction)closeAssign:(id)sender
@@ -706,7 +723,7 @@ static NSPredicate *isREADME;
 		if ([selection count] == 1)
 		{
 			AddInItem *addin = [selection objectAtIndex:0];
-			Item *item = contextInfo;
+			Item *item = (__bridge Item *)(contextInfo);
 			
 			NSBeginCriticalAlertSheet(@"Assign item",
 					  @"Assign",
@@ -716,7 +733,7 @@ static NSPredicate *isREADME;
 					  self,
 					  @selector(answerAssign:returnCode:contextInfo:),
 					  NULL,
-					  [NSArray arrayWithObjects:item, addin, nil],
+					  (void*)CFBridgingRetain([NSArray arrayWithObjects:item, addin, nil]),
 					  @"Permanently assign the item \"%@\" to the addin \"%@\"? This action can not be undone.",
 					  item.Title.localizedValue,
 					  addin.Title.localizedValue);
@@ -727,7 +744,7 @@ static NSPredicate *isREADME;
 	
 - (void)answerAssign:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
-	NSArray *args = contextInfo;
+	NSArray *args = CFBridgingRelease(contextInfo);
 	
 	[sheet close];
 	
@@ -791,12 +808,12 @@ static NSPredicate *isREADME;
 
 - (void)askOverrideGameVersion:(Item*)item
 {
-	NSBeginAlertSheet(@"Override required game version", @"Override", @"Cancel", nil, [self windowForSheet], self, @selector(answerOverrideGameVersion:returnCode:contextInfo:), nil, item, @"\"%@\" requires game version %@, but you have %@. Override the required game version check?", item.Title.localizedValue, item.GameVersion, [[Game sharedGame] gameVersion]);
+	NSBeginAlertSheet(@"Override required game version", @"Override", @"Cancel", nil, [self windowForSheet], self, @selector(answerOverrideGameVersion:returnCode:contextInfo:), nil, (void*)CFBridgingRetain(item), @"\"%@\" requires game version %@, but you have %@. Override the required game version check?", item.Title.localizedValue, item.GameVersion, [[Game sharedGame] gameVersion]);
 }
 
 - (void)answerOverrideGameVersion:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
-	Item *item = contextInfo;
+	Item *item = CFBridgingRelease(contextInfo);
 	
 	if (returnCode == NSOKButton)
 	{
@@ -1012,17 +1029,18 @@ static NSPredicate *isREADME;
 					  self,
 					  @selector(answerUninstall:returnCode:contextInfo:),
 					  NULL,
-					  item,
+					  (void*)CFBridgingRetain(item),
 					  msg,
 					  ((Item*)item).Title.localizedValue);
 }
 								  
 - (void)answerUninstall:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
+	Item *item = CFBridgingRelease(contextInfo);
 	if (returnCode != NSOKButton)
 		return;
 	
-	[self uninstall:contextInfo error:NULL];
+	[self uninstall:item error:NULL];
 }
 
 - (BOOL)uninstall:(Item*)item error:(NSError **)error

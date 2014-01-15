@@ -31,7 +31,7 @@
 }
 
 @property(retain) NSImage *gameAppImage;
-@property NSMetadataItem *spotlightGameItem;
+@property(retain) NSMetadataItem *spotlightGameItem;
 
 + (Game*)sharedGame;
 
