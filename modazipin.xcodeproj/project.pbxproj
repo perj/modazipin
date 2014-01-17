@@ -450,7 +450,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# shell script goes here\nif [ \"$CONFIGURATION\" != \"Release\" ]; then\n\texit 1\nfi\ncd \"$TARGET_BUILD_DIR\"\nrm -f \"$PRODUCT_NAME\"\nzip -r \"$PRODUCT_NAME\" Modazipin.app\nzip -j \"$PRODUCT_NAME\" \"$SRCROOT/README.rtf\"";
+			shellScript = "# shell script goes here\nif [ \"$CONFIGURATION\" != \"Release\" ]; then\n\texit 1\nfi\nrm -rf \"$TARGET_BUILD_DIR\"\nV=\"$(git describe)\"\nif [ -z \"$V\" ]; then\n    exit 1\nfi\nxcodebuild -target Modazipin VERSION=\"$V\" BUNDLE_VERSION=\"$V\"\nPRODUCT_NAME=\"Modazipin-$V.zip\"\ncd \"$TARGET_BUILD_DIR\"\nrm -f \"$PRODUCT_NAME\"\nzip -r \"$PRODUCT_NAME\" Modazipin.app\nzip -j \"$PRODUCT_NAME\" \"$SRCROOT/README.rtf\"\nopen \"$TARGET_BUILD_DIR\"";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -596,7 +596,7 @@
 		26FC0AAA0875C8B900E6366F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_VERSION = 1.1.1;
+				BUNDLE_VERSION = dev;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -626,7 +626,7 @@
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				VERSION = 1.1.1;
+				VERSION = dev;
 				WARNING_CFLAGS = "-Wreturn-type";
 			};
 			name = Debug;
@@ -634,7 +634,6 @@
 		26FC0AAB0875C8B900E6366F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_VERSION = 1.1.1;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -661,7 +660,6 @@
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
-				VERSION = 1.1.1;
 				WARNING_CFLAGS = "-Wreturn-type";
 			};
 			name = Release;
