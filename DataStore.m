@@ -961,7 +961,7 @@
 		
 		if (xmldata)
 			[self loadXML:xmldata ofType:@"OverrideList" error:&err];
-		else if ([loadError domain] == NSCocoaErrorDomain && [loadError code] == NSFileReadNoSuchFileError)
+		else if ([err domain] == NSCocoaErrorDomain && [err code] == NSFileReadNoSuchFileError)
 		{
 			err = nil;
 			xmldoc = [NSXMLNode documentWithRootElement:[NSXMLElement elementWithName:@"OverrideList"]];
